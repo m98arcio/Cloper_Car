@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Nome app e API key Google Maps -->
+    <string name="app_name">Concessionario SuperCar</string>
+    <string name="google_maps_api_key">LA_TUA_API_KEY</string>
+
+    <!-- Tema applicato alla finestra Android mentre il processo si avvia
+         quando la modalità scura del sistema è disattivata -->
+    <style name="LaunchTheme" parent="@android:style/Theme.Light.NoTitleBar">
+        <!-- Splash screen mostrata finché Flutter non disegna il primo frame -->
+        <item name="android:windowBackground">@drawable/launch_background</item>
+    </style>
+
+    <!-- Tema usato quando l'app è in esecuzione (Flutter V2 embedding) -->
+    <style name="NormalTheme" parent="@android:style/Theme.Light.NoTitleBar">
+        <item name="android:windowBackground">?android:colorBackground</item>
+    </style>
+</resources>

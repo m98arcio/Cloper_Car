@@ -1,0 +1,46 @@
+[
+  {
+    "id": "1",
+    "brand": "Ferrari",
+    "model": "SF90 Stradale",
+    "priceEur": 430000,
+    "powerHp": 986,
+    "images": [
+      "assets/ferrari_offer.jpg",
+      "assets/supercar.jpg"
+    ]
+  },
+  {
+    "id": "2",
+    "brand": "Lamborghini",
+    "model": "Aventador SVJ",
+    "priceEur": 517000,
+    "powerHp": 770,
+    "images": [
+      "assets/lamborghini.jpg",
+      "assets/supercar.jpg"
+    ]
+  },
+  {
+    "id": "3",
+    "brand": "McLaren",
+    "model": "720S",
+    "priceEur": 300000,
+    "powerHp": 710,
+    "images": [
+      "assets/mclaren.jpg",
+      "assets/supercar.jpg"
+    ]
+  },
+  {
+    "id": "4",
+    "brand": "Bugatti",
+    "model": "Chiron",
+    "priceEur": 2500000,
+    "powerHp": 1479,
+    "images": [
+      "assets/bugatti.jpg",
+      "assets/supercar.jpg"
+    ]
+  }
+]
