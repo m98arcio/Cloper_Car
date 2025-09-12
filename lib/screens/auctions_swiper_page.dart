@@ -143,7 +143,7 @@ class _AuctionSlide extends StatelessWidget {
               ),
             ),
 
-            // “prezzo di partenza” (al posto del pulsante Explore)
+            // “prezzo di partenza”
             Container(
               margin: const EdgeInsets.symmetric(vertical: 24),
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
@@ -167,7 +167,7 @@ class _AuctionSlide extends StatelessWidget {
   List<Color> _brandBackground(String brand) {
     switch (brand.toLowerCase()) {
       case 'ferrari':
-        return [const Color(0xFF1976D2), const Color(0xFF0D47A1)]; // blu profondo (come screenshot BMW)
+        return [const Color(0xFF1976D2), const Color(0xFF0D47A1)]; // blu profondo
       case 'lamborghini':
         return [const Color(0xFF2E7D32), const Color(0xFF1B5E20)]; // verde
       case 'mclaren':

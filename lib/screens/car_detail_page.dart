@@ -1,20 +1,31 @@
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../models/car.dart';
-import '../widgets/tilt_gallery.dart';
+import '../widgets/dark_live_background.dart';
 
 class CarDetailPage extends StatefulWidget {
   final Car car;
-  const CarDetailPage({super.key, required this.car});
+  final Map<String, double>? rates;
+  final String preferredCurrency;
+
+  const CarDetailPage({
+    super.key,
+    required this.car,
+    this.rates,
+    required this.preferredCurrency,
+  });
 
   @override
   State<CarDetailPage> createState() => _CarDetailPageState();
 }
 
 class _CarDetailPageState extends State<CarDetailPage> {
+  int _tab = 1; // 0 = Descrizione, 1 = Scheda
+  bool _priceOpen = false;
+
   Position? _pos;
   String? _locError;
   GoogleMapController? _map;
@@ -22,43 +33,31 @@ class _CarDetailPageState extends State<CarDetailPage> {
   @override
   void initState() {
     super.initState();
-    _safeGetPosition();
+    _getPositionSafe();
   }
 
-  /// Richiede i permessi e recupera la posizione in modo sicuro.
-  /// Mostra messaggi di errore (senza crash) e consente di riprovare.
-  Future<void> _safeGetPosition() async {
-    if (!mounted) return;
-    setState(() {
-      _locError = null;
-      _pos = null;
-    });
+  @override
+  void dispose() {
+    _map?.dispose();
+    super.dispose();
+  }
 
+  Future<void> _getPositionSafe() async {
     try {
-      // 1) Servizi di localizzazione attivi?
-      final serviceEnabled = await Geolocator.isLocationServiceEnabled();
-      if (!serviceEnabled) {
-        throw Exception('GPS disattivato. Attivalo e riprova.');
+      if (!await Geolocator.isLocationServiceEnabled()) {
+        throw Exception('GPS disattivato.');
       }
-
-      // 2) Permessi
-      var permission = await Geolocator.checkPermission();
-      if (permission == LocationPermission.denied) {
-        permission = await Geolocator.requestPermission();
+      var perm = await Geolocator.checkPermission();
+      if (perm == LocationPermission.denied) {
+        perm = await Geolocator.requestPermission();
       }
-      if (permission == LocationPermission.denied) {
+      if (perm == LocationPermission.denied) {
         throw Exception('Permesso posizione negato.');
       }
-      if (permission == LocationPermission.deniedForever) {
-        throw Exception(
-          'Permesso posizione negato in modo permanente.\n'
-          'Apri le Impostazioni e abilita la posizione per l’app.',
-        );
+      if (perm == LocationPermission.deniedForever) {
+        throw Exception('Permesso negato in modo permanente.');
       }
-
-      // 3) Posizione corrente
       final p = await Geolocator.getCurrentPosition();
-
       if (!mounted) return;
       setState(() => _pos = p);
     } catch (e) {
@@ -68,38 +67,69 @@ class _CarDetailPageState extends State<CarDetailPage> {
   }
 
   @override
-  void dispose() {
-    _map?.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final car = widget.car;
+    final c = widget.car;
+
+    // Prezzi nella valuta preferita + eventuali righe extra
+    final mainPriceText = _formatPrice(
+      eur: c.priceEur,
+      preferred: widget.preferredCurrency,
+      rates: widget.rates,
+    );
+    final otherPrices = _otherPrices(
+      eur: c.priceEur,
+      preferred: widget.preferredCurrency,
+      rates: widget.rates,
+    );
 
     return Scaffold(
-      appBar: AppBar(title: Text('${car.brand} ${car.model}')),
-      body: ListView(
+      backgroundColor: Colors.transparent,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        title: Text('${c.brand} ${c.model}'),
+      ),
+      body: Stack(
         children: [
-          // Gallery con accelerometro (tilt)
-          TiltGallery(images: car.images),
-
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+          const DarkLiveBackground(), // sfondo onde scure
+          SafeArea(
+            child: ListView(
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
               children: [
-                Text('Prezzo: € ${car.priceEur.toStringAsFixed(0)}',
-                    style: Theme.of(context).textTheme.titleLarge),
-                const SizedBox(height: 8),
-                Text('Potenza: ${car.powerHp} HP'),
+                _HeroGallery(images: c.images),
+                const SizedBox(height: 12),
+
+                _SegmentedPill(
+                  index: _tab,
+                  onChanged: (i) => setState(() => _tab = i),
+                  leftIcon: Icons.menu,
+                  rightIcon: Icons.description_outlined,
+                ),
+
+                const SizedBox(height: 14),
+
+                AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 180),
+                  child: _tab == 0
+                      ? _DescriptionCard(text: c.description ?? _defaultDesc(c))
+                      : _SpecsCard(car: c),
+                ),
+
                 const SizedBox(height: 16),
 
-                Text('Concessionari vicini',
-                    style: Theme.of(context).textTheme.titleMedium),
-                const SizedBox(height: 8),
+                // Card PREZZO espandibile (valuta preferita + extra)
+                _PriceCard(
+                  mainText: mainPriceText,
+                  open: _priceOpen,
+                  onToggle: () => setState(() => _priceOpen = !_priceOpen),
+                  extras: otherPrices,
+                ),
 
-                SizedBox(height: 220, child: _mapSection()),
+                const SizedBox(height: 18),
+
+                _SectionTitle('Concessionari vicini'),
+                const SizedBox(height: 8),
+                _MapCard(pos: _pos, error: _locError, onRetry: _getPositionSafe),
               ],
             ),
           ),
@@ -108,60 +138,444 @@ class _CarDetailPageState extends State<CarDetailPage> {
     );
   }
 
-  /// Costruisce la sezione mappa in modo resiliente:
-  /// - Se errore → messaggio + pulsante "Riprova"
-  /// - Se in attesa → progress indicator
-  /// - Se posizione pronta → GoogleMap con marker demo e navigazione
-  Widget _mapSection() {
-    if (_locError != null) {
-      return Center(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                _locError!,
-                textAlign: TextAlign.center,
+  String _defaultDesc(Car c) =>
+      '${c.brand} ${c.model} unisce design iconico e prestazioni da pista. '
+      'Questa scheda è alimentata dai dati locali del catalogo.';
+
+  // --------- PRICE HELPERS ---------
+
+  String _formatPrice({
+    required double eur,
+    required String preferred,
+    required Map<String, double>? rates,
+  }) {
+    double value = eur;
+    String symbol = '€';
+
+    if (preferred == 'USD' && (rates?['USD'] != null)) {
+      value = eur * rates!['USD']!;
+      symbol = r'$';
+    } else if (preferred == 'GBP' && (rates?['GBP'] != null)) {
+      value = eur * rates!['GBP']!;
+      symbol = '£';
+    }
+
+    return '$symbol ${_kSep(value)}';
+  }
+
+  List<String> _otherPrices({
+    required double eur,
+    required String preferred,
+    required Map<String, double>? rates,
+  }) {
+    final out = <String>[];
+    final usd = rates?['USD'];
+    final gbp = rates?['GBP'];
+
+    if (preferred != 'EUR') out.add('€ ${_kSep(eur)}');
+    if (preferred != 'USD' && usd != null) out.add('\$ ${_kSep(eur * usd)}');
+    if (preferred != 'GBP' && gbp != null) out.add('£ ${_kSep(eur * gbp)}');
+
+    return out;
+  }
+
+  String _kSep(double v) {
+    final s = v.toStringAsFixed(0);
+    final b = StringBuffer();
+    for (int i = 0; i < s.length; i++) {
+      final idxFromEnd = s.length - i;
+      b.write(s[i]);
+      final group = idxFromEnd > 1 && (idxFromEnd - 1) % 3 == 0;
+      if (group) b.write('.');
+    }
+    return b.toString();
+  }
+}
+
+/* ======================  WIDGETS  ====================== */
+
+class _HeroGallery extends StatefulWidget {
+  final List<String> images;
+  const _HeroGallery({required this.images});
+
+  @override
+  State<_HeroGallery> createState() => _HeroGalleryState();
+}
+
+class _HeroGalleryState extends State<_HeroGallery> {
+  final _pc = PageController();
+  int _i = 0;
+
+  @override
+  void dispose() {
+    _pc.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final imgs = widget.images.isNotEmpty ? widget.images : const ['assets/supercar.jpg'];
+
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(22),
+      child: Stack(
+        alignment: Alignment.bottomCenter,
+        children: [
+          AspectRatio(
+            aspectRatio: 16 / 9,
+            child: PageView.builder(
+              controller: _pc,
+              onPageChanged: (v) => setState(() => _i = v),
+              itemCount: imgs.length,
+              itemBuilder: (_, k) => Image.asset(imgs[k], fit: BoxFit.cover),
+            ),
+          ),
+          if (imgs.length > 1)
+            Positioned(
+              bottom: 10,
+              child: Row(
+                children: List.generate(imgs.length, (k) {
+                  final on = k == _i;
+                  return AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    margin: const EdgeInsets.symmetric(horizontal: 3),
+                    height: 6,
+                    width: on ? 18 : 6,
+                    decoration: BoxDecoration(
+                      color: on ? Colors.white : Colors.white54,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                  );
+                }),
               ),
-              const SizedBox(height: 8),
-              ElevatedButton(
-                onPressed: _safeGetPosition,
-                child: const Text('Riprova'),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SegmentedPill extends StatelessWidget {
+  final int index;
+  final ValueChanged<int> onChanged;
+  final IconData leftIcon;
+  final IconData rightIcon;
+  const _SegmentedPill({
+    required this.index,
+    required this.onChanged,
+    required this.leftIcon,
+    required this.rightIcon,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 46,
+      decoration: BoxDecoration(
+        color: Colors.white12,
+        borderRadius: BorderRadius.circular(24),
+      ),
+      child: Stack(
+        children: [
+          AnimatedAlign(
+            duration: const Duration(milliseconds: 180),
+            alignment: index == 0 ? Alignment.centerLeft : Alignment.centerRight,
+            child: Padding(
+              padding: const EdgeInsets.all(4),
+              child: Container(
+                width: (MediaQuery.of(context).size.width - 16 * 2) / 2 - 4,
+                decoration: BoxDecoration(
+                  color: Colors.white24,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+              ),
+            ),
+          ),
+          Row(
+            children: [
+              Expanded(
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(24),
+                  onTap: () => onChanged(0),
+                  child: const Center(child: Icon(Icons.menu, size: 22)),
+                ),
+              ),
+              Expanded(
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(24),
+                  onTap: () => onChanged(1),
+                  child: const Center(child: Icon(Icons.description_outlined, size: 22)),
+                ),
               ),
             ],
           ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SectionTitle extends StatelessWidget {
+  final String text;
+  const _SectionTitle(this.text);
+
+  @override
+  Widget build(BuildContext context) => Padding(
+        padding: const EdgeInsets.only(left: 4),
+        child: Text(text, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
+      );
+}
+
+class _Card extends StatelessWidget {
+  final Widget child;
+  const _Card({required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: const Color(0xFFEFEFEF).withOpacity(0.07),
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: const [BoxShadow(blurRadius: 16, color: Colors.black38)],
+      ),
+      padding: const EdgeInsets.all(18),
+      child: child,
+    );
+  }
+}
+
+class _DescriptionCard extends StatelessWidget {
+  final String text;
+  const _DescriptionCard({required this.text});
+
+  @override
+  Widget build(BuildContext context) {
+    return _Card(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text('Descrizione', style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800)),
+          const SizedBox(height: 10),
+          Text(text, style: const TextStyle(fontSize: 16, height: 1.35)),
+        ],
+      ),
+    );
+  }
+}
+
+class _SpecsCard extends StatelessWidget {
+  final Car car;
+  const _SpecsCard({required this.car});
+
+  @override
+  Widget build(BuildContext context) {
+    String fmtCm(double? v) =>
+        v == null ? '—' : (v % 1 == 0 ? '${v.toStringAsFixed(0)} cm' : '${v.toStringAsFixed(1)} cm');
+
+    return _Card(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('${car.brand.toUpperCase()} ${car.model.toUpperCase()}',
+              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w900)),
+          const SizedBox(height: 6),
+          Row(
+            children: const [
+              Text('Dati tecnici', style: TextStyle(color: Colors.white70)),
+              Spacer(),
+              Icon(Icons.settings, size: 18, color: Colors.white70),
+            ],
+          ),
+          const Divider(height: 24),
+
+          _SpecGroup(
+            title: 'Motore e Prestazioni',
+            icon: Icons.settings,
+            rows: [
+              _kv('Motore', car.engine ?? '—'),
+              _kv('Cambio', car.gearbox ?? '—'),
+              _kv('Potenza', '${car.powerHp} CV'),
+              _kv('0–100 km/h', car.zeroTo100 ?? '—'),
+              _kv('Velocità max', car.topSpeed ?? '—'),
+            ],
+          ),
+          const SizedBox(height: 12),
+
+          _SpecGroup(
+            title: 'Dimensioni',
+            icon: Icons.straighten,
+            rows: [
+              _kv('Lunghezza', fmtCm(car.lengthCm)),
+              _kv('Larghezza', fmtCm(car.widthCm)),
+              _kv('Passo', fmtCm(car.wheelbaseCm)),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  static MapEntry<String, String> _kv(String k, String v) => MapEntry(k, v);
+}
+
+class _SpecGroup extends StatelessWidget {
+  final String title;
+  final IconData icon;
+  final List<MapEntry<String, String>> rows;
+  const _SpecGroup({required this.title, required this.icon, required this.rows});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(children: [
+          Icon(icon, size: 18),
+          const SizedBox(width: 8),
+          Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),
+        ]),
+        const SizedBox(height: 8),
+        ...rows.map(
+          (e) => Padding(
+            padding: const EdgeInsets.symmetric(vertical: 4),
+            child: Row(
+              children: [
+                Expanded(child: Text('${e.key}:', style: const TextStyle(fontWeight: FontWeight.w700))),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(e.value, textAlign: TextAlign.right, style: const TextStyle(color: Colors.white70)),
+                ),
+              ],
+            ),
+          ),
         ),
+      ],
+    );
+  }
+}
+
+/* ======================  CARD PREZZO  ====================== */
+
+class _PriceCard extends StatelessWidget {
+  final String mainText;
+  final bool open;
+  final VoidCallback onToggle;
+  final List<String> extras;
+
+  const _PriceCard({
+    required this.mainText,
+    required this.open,
+    required this.onToggle,
+    this.extras = const [],
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onToggle,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 220),
+        curve: Curves.easeOutCubic,
+        padding: const EdgeInsets.all(18),
+        decoration: BoxDecoration(
+          color: const Color(0xFFEFEFEF).withOpacity(0.07),
+          borderRadius: BorderRadius.circular(24),
+          boxShadow: const [BoxShadow(blurRadius: 16, color: Colors.black38)],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Icon(Icons.sell_outlined),
+                const SizedBox(width: 10),
+                const Text('Prezzo', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
+                const Spacer(),
+                AnimatedRotation(
+                  duration: const Duration(milliseconds: 200),
+                  turns: open ? 0.5 : 0.0,
+                  child: const Icon(Icons.expand_more),
+                ),
+              ],
+            ),
+            AnimatedCrossFade(
+              firstChild: const SizedBox(height: 0),
+              secondChild: Padding(
+                padding: const EdgeInsets.only(top: 12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(mainText, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w900)),
+                    for (final line in extras) ...[
+                      const SizedBox(height: 6),
+                      Text(line),
+                    ],
+                  ],
+                ),
+              ),
+              crossFadeState: open ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+              duration: const Duration(milliseconds: 200),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/* ======================  MAPPA (FACOLTATIVA)  ====================== */
+
+class _MapCard extends StatelessWidget {
+  final Position? pos;
+  final String? error;
+  final VoidCallback onRetry;
+  const _MapCard({required this.pos, required this.error, required this.onRetry});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 220,
+      decoration: BoxDecoration(
+        color: const Color(0xFFEFEFEF).withOpacity(0.07),
+        borderRadius: BorderRadius.circular(24),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: _content(),
+    );
+  }
+
+  Widget _content() {
+    if (error != null) {
+      return Center(
+        child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+          Text(error!, textAlign: TextAlign.center),
+          const SizedBox(height: 8),
+          ElevatedButton(onPressed: onRetry, child: const Text('Riprova')),
+        ]),
       );
     }
+    if (pos == null) return const Center(child: CircularProgressIndicator());
 
-    if (_pos == null) {
-      return const Center(child: CircularProgressIndicator());
-    }
-
-    final user = LatLng(_pos!.latitude, _pos!.longitude);
-
-    // Concessionari (demo) vicini alla posizione dell'utente
+    final user = LatLng(pos!.latitude, pos!.longitude);
     final dealers = <LatLng>[
-      LatLng(user.latitude + 0.010, user.longitude + 0.010),
+      LatLng(user.latitude + 0.01, user.longitude + 0.01),
       LatLng(user.latitude - 0.012, user.longitude + 0.008),
       LatLng(user.latitude + 0.008, user.longitude - 0.009),
     ];
 
     final markers = dealers.asMap().entries.map((e) {
-      final idx = e.key;
-      final pos = e.value;
+      final p = e.value;
       return Marker(
-        markerId: MarkerId('dealer_$idx'),
-        position: pos,
+        markerId: MarkerId('d_${e.key}'),
+        position: p,
         infoWindow: InfoWindow(
-          title: 'Concessionario #${idx + 1}',
-          snippet: 'Tocca per navigare',
+          title: 'Concessionario',
           onTap: () async {
             final uri = Uri.parse(
-                'google.navigation:q=${pos.latitude},${pos.longitude}');
+              'https://www.google.com/maps/dir/?api=1&destination=${p.latitude},${p.longitude}',
+            );
             if (await canLaunchUrl(uri)) {
-              await launchUrl(uri);
+              await launchUrl(uri, mode: LaunchMode.externalApplication);
             }
           },
         ),
@@ -171,12 +585,8 @@ class _CarDetailPageState extends State<CarDetailPage> {
     return GoogleMap(
       initialCameraPosition: CameraPosition(target: user, zoom: 13),
       myLocationEnabled: true,
-      markers: markers,
-      onMapCreated: (c) => _map = c,
-      // Evita gesture eccessive su device lenti
-      compassEnabled: true,
-      myLocationButtonEnabled: true,
       zoomControlsEnabled: false,
+      markers: markers,
     );
   }
 }

@@ -1,46 +1,66 @@
 [
   {
-    "id": "1",
+    "id": "ferrari-sf90",
     "brand": "Ferrari",
     "model": "SF90 Stradale",
     "priceEur": 430000,
     "powerHp": 986,
-    "images": [
-      "assets/ferrari_offer.jpg",
-      "assets/supercar.jpg"
-    ]
+    "images": ["assets/ferrari.jpg", "assets/ferrari_offer.jpg"],
+    "description": "Ispirata alla Formula 1, la SF90 unisce potenza ibrida plug-in, trazione integrale e un'aerodinamica attiva che massimizza le prestazioni su strada e in pista.",
+    "zeroTo100": "2.5 s",
+    "topSpeed": "340 km/h",
+    "engine": "V8 4.0 biturbo + 3 e-motors",
+    "gearbox": "DCT 8 marce",
+    "lengthCm": 471.0,
+    "widthCm": 197.2,
+    "wheelbaseCm": 265.0
   },
   {
-    "id": "2",
+    "id": "lamborghini-aventador",
     "brand": "Lamborghini",
-    "model": "Aventador SVJ",
+    "model": "Aventador",
     "priceEur": 517000,
     "powerHp": 770,
-    "images": [
-      "assets/lamborghini.jpg",
-      "assets/supercar.jpg"
-    ]
+    "images": ["assets/lamborghini.jpg"],
+    "description": "V12 iconico, linee taglienti e presenza scenica. L’Aventador è la massima espressione del design Lamborghini e della tradizione del dodici cilindri.",
+    "zeroTo100": "2.8 s",
+    "topSpeed": "350 km/h",
+    "engine": "V12 6.5 aspirato",
+    "gearbox": "ISR 7 marce",
+    "lengthCm": 479.7,
+    "widthCm": 203.0,
+    "wheelbaseCm": 270.0
   },
   {
-    "id": "3",
+    "id": "mclaren-720s",
     "brand": "McLaren",
     "model": "720S",
-    "priceEur": 300000,
-    "powerHp": 710,
-    "images": [
-      "assets/mclaren.jpg",
-      "assets/supercar.jpg"
-    ]
+    "priceEur": 280000,
+    "powerHp": 720,
+    "images": ["assets/mclaren.jpg"],
+    "description": "Telaio Monocage in fibra di carbonio, leggerezza estrema e aerodinamica attiva: la 720S è progettata per trasformare ogni curva in precisione pura.",
+    "zeroTo100": "2.9 s",
+    "topSpeed": "341 km/h",
+    "engine": "V8 4.0 biturbo",
+    "gearbox": "SSG 7 marce",
+    "lengthCm": 454.3,
+    "widthCm": 193.0,
+    "wheelbaseCm": 267.0
   },
   {
-    "id": "4",
+    "id": "bugatti-chiron",
     "brand": "Bugatti",
     "model": "Chiron",
-    "priceEur": 2500000,
-    "powerHp": 1479,
-    "images": [
-      "assets/bugatti.jpg",
-      "assets/supercar.jpg"
-    ]
+    "priceEur": 2400000,
+    "powerHp": 1500,
+    "images": ["assets/bugatti.jpg"],
+    "description": "Lusso estremo e potenza colossale. Il W16 quadri-turbocompresso della Chiron ridefinisce il concetto di hypercar stradale.",
+    "zeroTo100": "2.4 s",
+    "topSpeed": "420+ km/h",
+    "engine": "W16 8.0 quad-turbo",
+    "gearbox": "DSG 7 marce",
+    "lengthCm": 454.4,
+    "widthCm": 203.8,
+    "wheelbaseCm": 271.1
   }
 ]
