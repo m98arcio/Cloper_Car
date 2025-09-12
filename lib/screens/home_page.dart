@@ -5,6 +5,8 @@ import '../services/rates_api.dart';
 import 'brand_catalog_page.dart';
 import 'car_list_page.dart';
 import '../widgets/brand_logo.dart';
+import 'auctions_page.dart';
+import 'auctions_swiper_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -223,26 +225,38 @@ class _HomePageState extends State<HomePage> {
     return map; // brand -> path immagine
   }
 
-  Widget _bottomBar() => BottomNavigationBar(
-        currentIndex: 0,
-        selectedItemColor: Colors.redAccent,
-        unselectedItemColor: Colors.grey.shade400,
-        backgroundColor: const Color(0xFF1B171A),
-        type: BottomNavigationBarType.fixed,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.directions_car), label: 'Modelli'),
-          BottomNavigationBarItem(icon: Icon(Icons.local_offer), label: 'Offerte'),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profilo'),
-        ],
-      );
+Widget _bottomBar() => BottomNavigationBar(
+  currentIndex: 0,
+  selectedItemColor: Colors.redAccent,
+  unselectedItemColor: Colors.grey.shade400,
+  backgroundColor: const Color(0xFF1B171A),
+  type: BottomNavigationBarType.fixed,
+  onTap: (i) {
+    if (i == 1) {
+      // Catalogo (auto)
+      Navigator.push(context, MaterialPageRoute(
+        builder: (_) => BrandCatalogPage(cars: _cars),
+      ));
+    } else if (i == 2) {
+  Navigator.push(context, MaterialPageRoute(
+    builder: (_) => AuctionsSwiperPage(cars: _cars),
+  ));
+} // i==0 Home, i==3 Profilo (per ora no-op)
+  },
+  items: const [
+    BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+    BottomNavigationBarItem(icon: Icon(Icons.directions_car), label: 'Catalogo'),
+    BottomNavigationBarItem(icon: Icon(Icons.gavel), label: 'Aste'),
+    BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profilo'),
+  ],
+);
 }
 
 class _BrandChip extends StatelessWidget {
   final String brand;
   final String? imagePath;
   final VoidCallback onTap;
-  const _BrandChip({required this.brand, required this.imagePath, required this.onTap, super.key});
+  const _BrandChip({required this.brand, required this.imagePath, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
