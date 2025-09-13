@@ -1,14 +1,43 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import '../models/car.dart';
+import 'brand_catalog_page.dart';
+import 'profile_page.dart';
 
-class AuctionsSwiperPage extends StatelessWidget {
+class AuctionsSwiperPage extends StatefulWidget {
   final List<Car> cars;
   const AuctionsSwiperPage({super.key, required this.cars});
 
   @override
+  State<AuctionsSwiperPage> createState() => _AuctionsSwiperPageState();
+}
+
+class _AuctionsSwiperPageState extends State<AuctionsSwiperPage> {
+  int _currentIndex = 2; // BottomNavigationBar indice
+  late PageController _pageController;
+  static const int _initialPage = 1000; // per simulare il loop infinito
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController(initialPage: _initialPage);
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  int _realIndex(int page) {
+    final count = widget.cars.length;
+    if (count == 0) return 0;
+    return page % count;
+  }
+
+  @override
   Widget build(BuildContext context) {
-    if (cars.isEmpty) {
+    if (widget.cars.isEmpty) {
       return Scaffold(
         appBar: AppBar(title: const Text('Aste')),
         body: const Center(child: Text('Nessuna auto in asta al momento')),
@@ -18,9 +47,54 @@ class AuctionsSwiperPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.black,
       body: PageView.builder(
-        controller: PageController(viewportFraction: 1), // niente peek
-        itemCount: cars.length,
-        itemBuilder: (_, i) => _AuctionSlide(car: cars[i]),
+        controller: _pageController,
+        onPageChanged: (page) {},
+        itemBuilder: (_, pageIndex) {
+          final car = widget.cars[_realIndex(pageIndex)];
+          return _AuctionSlide(car: car);
+        },
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _currentIndex,
+        selectedItemColor: Colors.redAccent,
+        unselectedItemColor: Colors.grey.shade400,
+        backgroundColor: Colors.black.withOpacity(0.15),
+        type: BottomNavigationBarType.fixed,
+        onTap: (i) {
+          setState(() => _currentIndex = i);
+          if (i == 0) {
+            Navigator.popUntil(context, (route) => route.isFirst);
+          } else if (i == 1) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder:
+                    (_) => BrandCatalogPage(
+                      cars: widget.cars,
+                      preferredCurrency: 'EUR', // o la tua variabile
+                    ),
+              ),
+            );
+          } else if (i == 3) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder:
+                    (_) =>
+                        ProfilePage(initialCurrency: 'EUR', onChanged: (_) {}),
+              ),
+            );
+          }
+        },
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.directions_car),
+            label: 'Catalogo',
+          ),
+          BottomNavigationBarItem(icon: Icon(Icons.gavel), label: 'Aste'),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profilo'),
+        ],
       ),
     );
   }
@@ -56,7 +130,7 @@ class _AuctionSlide extends StatelessWidget {
     return Stack(
       fit: StackFit.expand,
       children: [
-        // ---- sfondo gradiente
+        // Sfondo gradiente
         Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(
@@ -71,7 +145,7 @@ class _AuctionSlide extends StatelessWidget {
           ),
         ),
 
-        // ---- brand in alto, più grande e centrato
+        // Brand
         SafeArea(
           child: Align(
             alignment: Alignment.topCenter,
@@ -81,7 +155,7 @@ class _AuctionSlide extends StatelessWidget {
                 car.brand.toUpperCase(),
                 style: const TextStyle(
                   color: Colors.white,
-                  fontSize: 36, // <- più grande
+                  fontSize: 36,
                   fontWeight: FontWeight.w900,
                   letterSpacing: 2,
                 ),
@@ -90,9 +164,9 @@ class _AuctionSlide extends StatelessWidget {
           ),
         ),
 
-        // ---- watermark del modello (più su e più chiaro)
+        // Watermark modello
         Align(
-          alignment: const Alignment(0, -0.05), // <- più alto
+          alignment: const Alignment(0, -0.05),
           child: IgnorePointer(
             child: Text(
               car.model.toUpperCase(),
@@ -103,7 +177,7 @@ class _AuctionSlide extends StatelessWidget {
                 fontSize: math.min(size.width * 0.22, 96),
                 fontWeight: FontWeight.w900,
                 letterSpacing: 2,
-                color: Colors.white.withOpacity(0.18), // <- più visibile
+                color: Colors.white.withOpacity(0.18),
                 shadows: [
                   Shadow(
                     color: Colors.black.withOpacity(0.35),
@@ -116,10 +190,10 @@ class _AuctionSlide extends StatelessWidget {
           ),
         ),
 
-        // ---- auto PNG più grande + ombra ELLITTICA senza rettangolo
+        // Auto con ombra ellittica
         LayoutBuilder(
           builder: (_, c) {
-            final h = math.max(320.0, c.maxHeight * 0.48); // <- più grande
+            final h = math.max(320.0, c.maxHeight * 0.48);
             final shadowW = math.min(size.width * 0.75, 500.0);
 
             return Align(
@@ -129,17 +203,15 @@ class _AuctionSlide extends StatelessWidget {
                 child: Stack(
                   alignment: Alignment.center,
                   children: [
-                    // Ombra ellittica “morbida” (niente rettangolo visibile)
                     Positioned(
                       bottom: 6,
                       child: Transform.scale(
-                        scaleY: 0.32, // schiaccia il cerchio in un’ellisse
+                        scaleY: 0.32,
                         child: Container(
                           width: shadowW,
-                          height: shadowW, // parte da un cerchio…
+                          height: shadowW,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            // …e usa un RadialGradient che sfuma in trasparenza
                             gradient: RadialGradient(
                               colors: [
                                 Colors.black.withOpacity(0.55),
@@ -151,7 +223,6 @@ class _AuctionSlide extends StatelessWidget {
                         ),
                       ),
                     ),
-                    // PNG dell’auto
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 12),
                       child: Image.asset(
@@ -168,15 +239,17 @@ class _AuctionSlide extends StatelessWidget {
           },
         ),
 
-        // ---- pill prezzo in basso
+        // Pill prezzo
         SafeArea(
           child: Align(
             alignment: Alignment.bottomCenter,
             child: Padding(
               padding: const EdgeInsets.fromLTRB(18, 8, 18, 18),
               child: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 18,
+                  vertical: 14,
+                ),
                 decoration: BoxDecoration(
                   color: Colors.white.withOpacity(0.93),
                   borderRadius: BorderRadius.circular(28),

@@ -19,6 +19,7 @@ dependencies:
   shared_preferences: ^2.3.2
   webfeed: ^0.7.0
   palette_generator: ^0.3.3+2
+  google_fonts: ^6.1.0
 
 dev_dependencies:
   flutter_test:
@@ -28,6 +29,7 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
+    # Macchine
     - assets/supercar.jpg
     - assets/ferrari.jpg
     - assets/lamborghini.jpg
@@ -35,3 +37,27 @@ flutter:
     - assets/bugatti.jpg
     - assets/cars.json
     - assets/Ferrari_250_GTO.png 
+    - assets/porsche.jpg
+    - assets/rolls_royce.jpg
+    - assets/aston_martin.jpg
+    - assets/maserati.jpg
+    - assets/bentley.jpg
+    - assets/koenigsegg.jpg
+    - assets/pagani.jpg
+    - assets/jaguar.jpg
+    - assets/lotus.jpg
+
+    # Loghi macchine
+    - assets/loghi/bugatti_logo.png
+    - assets/loghi/ferrari_logo.png
+    - assets/loghi/lamborghini_logo.png
+    - assets/loghi/mclaren_logo.png
+    - assets/loghi/porsche_logo.png
+    - assets/loghi/rolls_royce_logo.png
+    - assets/loghi/aston_martin_logo.png
+    - assets/loghi/maserati_logo.png
+    - assets/loghi/bentley_logo.png
+    - assets/loghi/koenigsegg_logo.png
+    - assets/loghi/pagani_logo.png
+    - assets/loghi/jaguar_logo.png
+    - assets/loghi/lotus_logo.png 

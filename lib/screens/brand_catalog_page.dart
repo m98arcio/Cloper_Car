@@ -6,7 +6,7 @@ import 'auctions_swiper_page.dart';
 import 'profile_page.dart';
 import '../widgets/dark_live_background.dart';
 
-class BrandCatalogPage extends StatelessWidget {
+class BrandCatalogPage extends StatefulWidget {
   final List<Car> cars;
   final Map<String, double>? rates;
   final String preferredCurrency;
@@ -19,9 +19,17 @@ class BrandCatalogPage extends StatelessWidget {
   });
 
   @override
+  State<BrandCatalogPage> createState() => _BrandCatalogPageState();
+}
+
+class _BrandCatalogPageState extends State<BrandCatalogPage> {
+  final Map<String, bool> _pressed = {};
+
+  @override
   Widget build(BuildContext context) {
-    final brands = _uniqueBrands(cars);
-    final thumbs = _brandThumbnails(cars);
+    final brands = _luxuryBrands();
+    final thumbs = _brandThumbnails();
+    final logos = _brandLogos();
 
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -34,7 +42,7 @@ class BrandCatalogPage extends StatelessWidget {
             fontWeight: FontWeight.w900,
             fontSize: 26,
             color: Colors.white,
-            fontFamily: 'Cinzel', // font elegante solo per titolo
+            fontFamily: 'Cinzel',
             shadows: [Shadow(blurRadius: 6, color: Colors.black54)],
           ),
         ),
@@ -48,14 +56,20 @@ class BrandCatalogPage extends StatelessWidget {
               itemCount: brands.length,
               separatorBuilder: (_, __) => const SizedBox(height: 12),
               itemBuilder: (_, i) {
-                final b = brands[i];
-                final cover = thumbs[b] ?? 'assets/supercar.jpg';
-                return InkWell(
-                  onTap: () {
+                final brand = brands[i];
+                final cover = thumbs[brand] ?? 'assets/images/mclaren.jpg';
+                final logo = logos[brand] ?? 'assets/images/mclaren_logo.png';
+                final isPressed = _pressed[brand] ?? false;
+
+                return GestureDetector(
+                  onTapDown: (_) => setState(() => _pressed[brand] = true),
+                  onTapUp: (_) {
+                    setState(() => _pressed[brand] = false);
                     final filtered =
-                        cars
+                        widget.cars
                             .where(
-                              (c) => c.brand.toLowerCase() == b.toLowerCase(),
+                              (c) =>
+                                  c.brand.toLowerCase() == brand.toLowerCase(),
                             )
                             .toList();
                     Navigator.push(
@@ -63,55 +77,71 @@ class BrandCatalogPage extends StatelessWidget {
                       MaterialPageRoute(
                         builder:
                             (_) => CarListPage(
-                              brand: b,
+                              brand: brand,
                               cars: filtered,
-                              rates: rates,
-                              preferredCurrency: preferredCurrency,
+                              rates: widget.rates,
+                              preferredCurrency: widget.preferredCurrency,
                             ),
                       ),
                     );
                   },
-                  child: Container(
+                  onTapCancel: () => setState(() => _pressed[brand] = false),
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 150),
+                    curve: Curves.easeOut,
+                    transform:
+                        Matrix4.identity()..scale(isPressed ? 0.97 : 1.0),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFEFEFEF).withOpacity(0.08),
+                      color: Colors.grey.withOpacity(
+                        0.15,
+                      ), // grigio chiaro semi-trasparente
                       borderRadius: BorderRadius.circular(16),
-                      boxShadow: const [
-                        BoxShadow(blurRadius: 10, color: Colors.black45),
-                      ],
                     ),
                     padding: const EdgeInsets.all(12),
-                    child: Row(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(12),
-                          child: Image.asset(
-                            cover,
-                            width: 90,
-                            height: 90,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                        const SizedBox(width: 18),
-                        Expanded(
-                          child: Center(
-                            child: Text(
-                              b,
-                              textAlign: TextAlign.center,
-                              style: GoogleFonts.cinzelDecorative(
-                                textStyle: const TextStyle(
-                                  fontSize: 22,
-                                  fontWeight: FontWeight.w700,
-                                  color: Color(0xFFE5C07B),
-                                  letterSpacing: 1.4,
-                                  shadows: [
-                                    Shadow(
-                                      blurRadius: 10,
-                                      color: Colors.black87,
+                        Row(
+                          children: [
+                            Image.asset(
+                              logo,
+                              height: 60,
+                              width: 60,
+                              fit: BoxFit.contain,
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: Center(
+                                child: Text(
+                                  brand,
+                                  style: GoogleFonts.cinzelDecorative(
+                                    textStyle: const TextStyle(
+                                      fontSize: 22,
+                                      fontWeight: FontWeight.w700,
+                                      color: Colors.white,
+                                      letterSpacing: 1.2,
+                                      shadows: [
+                                        Shadow(
+                                          blurRadius: 6,
+                                          color: Colors.black87,
+                                        ),
+                                      ],
                                     ),
-                                  ],
+                                  ),
                                 ),
                               ),
                             ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        // Immagine nitida sotto il testo
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(16),
+                          child: Image.asset(
+                            cover,
+                            width: double.infinity,
+                            height: 100,
+                            fit: BoxFit.cover,
                           ),
                         ),
                       ],
@@ -124,7 +154,7 @@ class BrandCatalogPage extends StatelessWidget {
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
-        currentIndex: 1, // Catalogo attivo
+        currentIndex: 1,
         selectedItemColor: Colors.redAccent,
         unselectedItemColor: Colors.grey.shade400,
         backgroundColor: Colors.black.withOpacity(0.15),
@@ -135,7 +165,9 @@ class BrandCatalogPage extends StatelessWidget {
           } else if (i == 2) {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (_) => AuctionsSwiperPage(cars: cars)),
+              MaterialPageRoute(
+                builder: (_) => AuctionsSwiperPage(cars: widget.cars),
+              ),
             );
           } else if (i == 3) {
             Navigator.push(
@@ -143,7 +175,7 @@ class BrandCatalogPage extends StatelessWidget {
               MaterialPageRoute(
                 builder:
                     (_) => ProfilePage(
-                      initialCurrency: preferredCurrency,
+                      initialCurrency: widget.preferredCurrency,
                       onChanged: (_) {},
                     ),
               ),
@@ -163,20 +195,51 @@ class BrandCatalogPage extends StatelessWidget {
     );
   }
 
-  List<String> _uniqueBrands(List<Car> cars) {
-    final s = <String>{};
-    for (final c in cars) s.add(c.brand);
-    final list = s.toList()..sort();
-    return list;
-  }
+  List<String> _luxuryBrands() => [
+    'Bugatti',
+    'Ferrari',
+    'Lamborghini',
+    'McLaren',
+    'Porsche',
+    'Rolls-Royce',
+    'Aston Martin',
+    'Maserati',
+    'Bentley',
+    'Koenigsegg',
+    'Pagani',
+    'Jaguar',
+    'Lotus',
+  ];
 
-  Map<String, String> _brandThumbnails(List<Car> cars) {
-    final map = <String, String>{};
-    for (final c in cars) {
-      if (!map.containsKey(c.brand) && c.images.isNotEmpty) {
-        map[c.brand] = c.images.first;
-      }
-    }
-    return map;
-  }
+  Map<String, String> _brandThumbnails() => {
+    'Bugatti': 'assets/bugatti.jpg',
+    'Ferrari': 'assets/ferrari.jpg',
+    'Lamborghini': 'assets/lamborghini.jpg',
+    'McLaren': 'assets/mclaren.jpg',
+    'Porsche': 'assets/porsche.jpg',
+    'Rolls-Royce': 'assets/rolls_royce.jpg',
+    'Aston Martin': 'assets/aston_martin.jpg',
+    'Maserati': 'assets/maserati.jpg',
+    'Bentley': 'assets/bentley.jpg',
+    'Koenigsegg': 'assets/koenigsegg.jpg',
+    'Pagani': 'assets/pagani.jpg',
+    'Jaguar': 'assets/jaguar.jpg',
+    'Lotus': 'assets/lotus.jpg',
+  };
+
+  Map<String, String> _brandLogos() => {
+    'Bugatti': 'assets/loghi/bugatti_logo.png',
+    'Ferrari': 'assets/loghi/ferrari_logo.png',
+    'Lamborghini': 'assets/loghi/lamborghini_logo.png',
+    'McLaren': 'assets/loghi/mclaren_logo.png',
+    'Porsche': 'assets/loghi/porsche_logo.png',
+    'Rolls-Royce': 'assets/loghi/rolls_royce_logo.png',
+    'Aston Martin': 'assets/loghi/aston_martin_logo.png',
+    'Maserati': 'assets/loghi/maserati_logo.png',
+    'Bentley': 'assets/loghi/bentley_logo.png',
+    'Koenigsegg': 'assets/loghi/koenigsegg_logo.png',
+    'Pagani': 'assets/loghi/pagani_logo.png',
+    'Jaguar': 'assets/loghi/jaguar_logo.png',
+    'Lotus': 'assets/loghi/lotus_logo.png',
+  };
 }
