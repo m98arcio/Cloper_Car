@@ -44,7 +44,10 @@ class _ProfilePageState extends State<ProfilePage> {
           const SizedBox(height: 8),
           const Padding(
             padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: Text('Impostazioni', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
+            child: Text(
+              'Impostazioni',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
+            ),
           ),
           _tile(
             title: 'Valuta preferita',
@@ -76,7 +79,11 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Widget _tile({required String title, required String subtitle, required IconData icon}) {
+  Widget _tile({
+    required String title,
+    required String subtitle,
+    required IconData icon,
+  }) {
     return ListTile(
       leading: Icon(icon),
       title: Text(title, style: const TextStyle(fontWeight: FontWeight.w700)),
@@ -86,10 +93,13 @@ class _ProfilePageState extends State<ProfilePage> {
 
   String _currencyLabel(String c) {
     switch (c) {
-      case 'USD': return 'Dollaro USA';
-      case 'GBP': return 'Sterlina';
+      case 'USD':
+        return 'Dollaro USA';
+      case 'GBP':
+        return 'Sterlina';
       case 'EUR':
-      default: return 'Euro';
+      default:
+        return 'Euro';
     }
   }
 }
