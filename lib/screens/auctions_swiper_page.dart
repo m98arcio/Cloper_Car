@@ -1,66 +1,26 @@
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import '../models/car.dart';
 
-class AuctionsSwiperPage extends StatefulWidget {
+class AuctionsSwiperPage extends StatelessWidget {
   final List<Car> cars;
   const AuctionsSwiperPage({super.key, required this.cars});
 
   @override
-  State<AuctionsSwiperPage> createState() => _AuctionsSwiperPageState();
-}
-
-class _AuctionsSwiperPageState extends State<AuctionsSwiperPage> {
-  late final PageController _controller;
-  int _index = 0;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = PageController();
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final cars = widget.cars;
-    return Scaffold(
-      body: Stack(
-        children: [
-          // pagine a scorrimento orizzontale
-          PageView.builder(
-            controller: _controller,
-            onPageChanged: (i) => setState(() => _index = i),
-            itemCount: cars.length,
-            itemBuilder: (_, i) => _AuctionSlide(car: cars[i]),
-          ),
+    if (cars.isEmpty) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('Aste')),
+        body: const Center(child: Text('Nessuna auto in asta al momento')),
+      );
+    }
 
-          // indicatori tipo onboarding
-          Positioned(
-            bottom: 16,
-            left: 0, right: 0,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(cars.length, (i) {
-                final active = i == _index;
-                return AnimatedContainer(
-                  duration: const Duration(milliseconds: 250),
-                  margin: const EdgeInsets.symmetric(horizontal: 4),
-                  height: 8,
-                  width: active ? 22 : 8,
-                  decoration: BoxDecoration(
-                    color: active ? Colors.white : Colors.white38,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                );
-              }),
-            ),
-          ),
-        ],
+    return Scaffold(
+      backgroundColor: Colors.black,
+      body: PageView.builder(
+        controller: PageController(viewportFraction: 1), // niente peek
+        itemCount: cars.length,
+        itemBuilder: (_, i) => _AuctionSlide(car: cars[i]),
       ),
     );
   }
@@ -70,127 +30,191 @@ class _AuctionSlide extends StatelessWidget {
   final Car car;
   const _AuctionSlide({required this.car});
 
+  Color _brandColor(String brand) {
+    switch (brand.toLowerCase()) {
+      case 'ferrari':
+        return const Color(0xFF9B0010);
+      case 'lamborghini':
+        return const Color(0xFF2D2A00);
+      case 'mclaren':
+        return const Color(0xFF0E2A33);
+      case 'bugatti':
+        return const Color(0xFF1D2038);
+      case 'porsche':
+        return const Color(0xFF2A2A2A);
+      default:
+        return const Color(0xFF4A0010);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final bg = _brandBackground(car.brand);
+    final base = _brandColor(car.brand);
+    final size = MediaQuery.of(context).size;
+    final startPrice = car.auctionStartEur ?? car.priceEur;
 
-    // userò la prima immagine disponibile degli asset
-    final imagePath = car.images.isNotEmpty ? car.images.first : 'assets/supercar.jpg';
-
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: bg,
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        // ---- sfondo gradiente
+        Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                base.withOpacity(0.98),
+                base.withOpacity(0.90),
+                Colors.black.withOpacity(0.92),
+              ],
+            ),
+          ),
         ),
-      ),
-      child: SafeArea(
-        child: Column(
-          children: [
-            const SizedBox(height: 24),
-            // Headline
-            const Text(
-              'Find Your',
-              style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w600),
-            ),
-            const SizedBox(height: 6),
-            const Text(
-              'DREAM CAR',
-              style: TextStyle(color: Colors.white, fontSize: 34, fontWeight: FontWeight.w900, letterSpacing: 1.2),
-            ),
-            const SizedBox(height: 8),
-            Container(
-              width: 56, height: 4,
-              decoration: BoxDecoration(color: Colors.white70, borderRadius: BorderRadius.circular(2)),
-            ),
-            const SizedBox(height: 18),
 
-            // chip brand
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 10),
-              decoration: BoxDecoration(
-                color: Colors.white24, borderRadius: BorderRadius.circular(28),
-              ),
+        // ---- brand in alto, più grande e centrato
+        SafeArea(
+          child: Align(
+            alignment: Alignment.topCenter,
+            child: Padding(
+              padding: const EdgeInsets.only(top: 16),
               child: Text(
                 car.brand.toUpperCase(),
-                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700, letterSpacing: 1.1),
-              ),
-            ),
-
-            const SizedBox(height: 18),
-
-            // immagine auto
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                child: Center(
-                  child: Image.asset(
-                    imagePath,
-                    fit: BoxFit.contain,
-                  ),
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 36, // <- più grande
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 2,
                 ),
               ),
             ),
-
-            // descrizione breve
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Text(
-                _taglineForBrand(car.brand),
-                textAlign: TextAlign.center,
-                style: const TextStyle(color: Colors.white70, fontSize: 14, height: 1.35),
-              ),
-            ),
-
-            // “prezzo di partenza”
-            Container(
-              margin: const EdgeInsets.symmetric(vertical: 24),
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(28),
-                boxShadow: const [BoxShadow(blurRadius: 10, color: Colors.black26)],
-              ),
-              child: Text(
-                'Prezzo di partenza: € ${car.priceEur.toStringAsFixed(0)}',
-                style: const TextStyle(color: Colors.black87, fontWeight: FontWeight.w800, fontSize: 16),
-              ),
-            ),
-          ],
+          ),
         ),
-      ),
+
+        // ---- watermark del modello (più su e più chiaro)
+        Align(
+          alignment: const Alignment(0, -0.05), // <- più alto
+          child: IgnorePointer(
+            child: Text(
+              car.model.toUpperCase(),
+              textAlign: TextAlign.center,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                fontSize: math.min(size.width * 0.22, 96),
+                fontWeight: FontWeight.w900,
+                letterSpacing: 2,
+                color: Colors.white.withOpacity(0.18), // <- più visibile
+                shadows: [
+                  Shadow(
+                    color: Colors.black.withOpacity(0.35),
+                    blurRadius: 10,
+                    offset: const Offset(0, 5),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+
+        // ---- auto PNG più grande + ombra ELLITTICA senza rettangolo
+        LayoutBuilder(
+          builder: (_, c) {
+            final h = math.max(320.0, c.maxHeight * 0.48); // <- più grande
+            final shadowW = math.min(size.width * 0.75, 500.0);
+
+            return Align(
+              alignment: const Alignment(0, 0.28),
+              child: SizedBox(
+                height: h,
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    // Ombra ellittica “morbida” (niente rettangolo visibile)
+                    Positioned(
+                      bottom: 6,
+                      child: Transform.scale(
+                        scaleY: 0.32, // schiaccia il cerchio in un’ellisse
+                        child: Container(
+                          width: shadowW,
+                          height: shadowW, // parte da un cerchio…
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            // …e usa un RadialGradient che sfuma in trasparenza
+                            gradient: RadialGradient(
+                              colors: [
+                                Colors.black.withOpacity(0.55),
+                                Colors.black.withOpacity(0.0),
+                              ],
+                              stops: const [0.0, 1.0],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    // PNG dell’auto
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      child: Image.asset(
+                        car.images.isNotEmpty
+                            ? car.images.first
+                            : 'assets/supercar.jpg',
+                        fit: BoxFit.contain,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        ),
+
+        // ---- pill prezzo in basso
+        SafeArea(
+          child: Align(
+            alignment: Alignment.bottomCenter,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(18, 8, 18, 18),
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.93),
+                  borderRadius: BorderRadius.circular(28),
+                  boxShadow: const [
+                    BoxShadow(blurRadius: 16, color: Colors.black38),
+                  ],
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.gavel_rounded, size: 20),
+                    const SizedBox(width: 10),
+                    Text(
+                      'Prezzo di partenza: € ${_kSep(startPrice)}',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w900,
+                        fontSize: 16,
+                        color: Colors.black87,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 
-  // Palette di sfondo per dare “mood” tipo video
-  List<Color> _brandBackground(String brand) {
-    switch (brand.toLowerCase()) {
-      case 'ferrari':
-        return [const Color(0xFF1976D2), const Color(0xFF0D47A1)]; // blu profondo
-      case 'lamborghini':
-        return [const Color(0xFF2E7D32), const Color(0xFF1B5E20)]; // verde
-      case 'mclaren':
-        return [const Color(0xFF37474F), const Color(0xFF263238)]; // grigio scuro
-      case 'bugatti':
-        return [const Color(0xFF546E7A), const Color(0xFF37474F)]; // blu/grey
-      default:
-        return [const Color(0xFF303030), const Color(0xFF121212)];
+  String _kSep(double v) {
+    final s = v.toStringAsFixed(0);
+    final b = StringBuffer();
+    for (int i = 0; i < s.length; i++) {
+      final idxFromEnd = s.length - i;
+      b.write(s[i]);
+      if (idxFromEnd > 1 && (idxFromEnd - 1) % 3 == 0) b.write('.');
     }
-  }
-
-  String _taglineForBrand(String brand) {
-    switch (brand.toLowerCase()) {
-      case 'ferrari':
-        return 'Italian performance with precision and power.';
-      case 'lamborghini':
-        return 'Raw design and uncompromised performance.';
-      case 'mclaren':
-        return 'Lightweight engineering for pure speed and control.';
-      case 'bugatti':
-        return 'Unmatched luxury with extraordinary power.';
-      default:
-        return 'Excellence in performance and luxury.';
-    }
+    return b.toString();
   }
 }
