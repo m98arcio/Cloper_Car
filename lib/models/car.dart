@@ -16,6 +16,10 @@ class Car {
   final double? wheelbaseCm;
   final String? description;
 
+  // 👉 campi per aste
+  final bool auction;           // true = va mostrata in pagina Aste
+  final double? auctionStartEur; // prezzo di partenza (se diverso da priceEur)
+
   Car({
     required this.id,
     required this.brand,
@@ -31,6 +35,8 @@ class Car {
     this.widthCm,
     this.wheelbaseCm,
     this.description,
+    this.auction = false,
+    this.auctionStartEur,
   });
 
   factory Car.fromJson(Map<String, dynamic> j) => Car(
@@ -48,6 +54,8 @@ class Car {
         widthCm: (j['widthCm'] as num?)?.toDouble(),
         wheelbaseCm: (j['wheelbaseCm'] as num?)?.toDouble(),
         description: j['description'] as String?,
+        auction: j['auction'] as bool? ?? false,
+        auctionStartEur: (j['auctionStartEur'] as num?)?.toDouble(),
       );
 
   Map<String, dynamic> toJson() => {
@@ -65,5 +73,7 @@ class Car {
         if (widthCm != null) 'widthCm': widthCm,
         if (wheelbaseCm != null) 'wheelbaseCm': wheelbaseCm,
         if (description != null) 'description': description,
+        if (auction) 'auction': auction,
+        if (auctionStartEur != null) 'auctionStartEur': auctionStartEur,
       };
 }

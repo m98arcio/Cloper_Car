@@ -4,9 +4,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/car.dart';
 import '../services/local_catalog.dart';
 import '../services/rates_api.dart';
+import '../services/news_service.dart';
 
 import '../widgets/dark_live_background.dart';
 import '../widgets/brand_logo.dart';
+import '../widgets/news_strip.dart';
 
 import 'brand_catalog_page.dart';
 import 'car_list_page.dart';
@@ -20,51 +22,80 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  static const _prefKeyCurrency = 'preferred_currency'; // EUR, USD, GBP
+  // --- Preferenze / Valuta ---
+  static const _prefKeyCurrency = 'preferred_currency'; // 'EUR' | 'USD' | 'GBP'
+  String _preferred = 'EUR';
 
+  // --- Dati catalogo ---
   final RatesApi _ratesApi = RatesApi();
   List<Car> _cars = [];
   Map<String, double>? _rates;
-  String _preferred = 'EUR'; // default
   bool _loading = true;
   String _error = '';
+
+  // --- Notizie ---
+  final _newsService = NewsService();
+  List<NewsItem> _news = [];
+  bool _newsLoading = true;
+  String _newsError = '';
 
   @override
   void initState() {
     super.initState();
     _bootstrap();
+    _loadNews();
   }
 
   Future<void> _bootstrap() async {
-    setState(() => _loading = true);
+    setState(() {
+      _loading = true;
+      _error = '';
+    });
     try {
-      // 1) preferenze
+      // 1) preferenza valuta
       final prefs = await SharedPreferences.getInstance();
       _preferred = prefs.getString(_prefKeyCurrency) ?? 'EUR';
 
-      // 2) catalogo locale
+      // 2) catalogo da assets
       final cars = await LocalCatalog.load();
 
-      // 3) tassi (se servono)
+      // 3) tassi (opzionali)
       Map<String, double>? rates;
       try {
         rates = await _ratesApi.fetchRates();
       } catch (_) {
-        rates = null; // rete non disponibile -> useremo solo EUR
+        rates = null; // offline o errore: si resta in EUR
       }
 
       if (!mounted) return;
       setState(() {
         _cars = cars;
         _rates = rates;
-        _loading = false;
       });
     } catch (e) {
       if (!mounted) return;
-      setState(() {
-        _error = e.toString();
-        _loading = false;
-      });
+      setState(() => _error = e.toString());
+    } finally {
+      if (!mounted) return;
+      setState(() => _loading = false);
+    }
+  }
+
+  Future<void> _loadNews() async {
+    setState(() {
+      _newsLoading = true;
+      _newsError = '';
+    });
+    try {
+      final items = await _newsService.fetchLatest();
+      if (!mounted) return;
+      setState(() => _news = items);
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _newsError = e.toString());
+    } finally {
+      if (!mounted) return;
+      setState(() => _newsLoading = false);
     }
   }
 
@@ -83,7 +114,6 @@ class _HomePageState extends State<HomePage> {
       ),
     );
 
-    // Se rientriamo e la valuta è cambiata, ricarico solo preferenza (tassi già in cache)
     if (changed == true) {
       final prefs = await SharedPreferences.getInstance();
       if (!mounted) return;
@@ -95,22 +125,20 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    final title =
-        _preferred == 'EUR'
-            ? 'Luxury Supercars • €'
-            : _preferred == 'USD'
-            ? 'Luxury Supercars • \$'
-            : 'Luxury Supercars • £';
-
     return Scaffold(
       backgroundColor: Colors.transparent,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        title: Text(title, style: const TextStyle(fontWeight: FontWeight.w700)),
-        actions: [
-          IconButton(icon: const Icon(Icons.refresh), onPressed: _bootstrap),
-        ],
+        centerTitle: true,
+        title: const Text(
+          'CloperCar',
+          style: TextStyle(
+            fontSize: 26,
+            fontWeight: FontWeight.w900,
+            letterSpacing: 1.2,
+          ),
+        ),
       ),
       body: Stack(
         children: [const DarkLiveBackground(), SafeArea(child: _buildBody())],
@@ -129,7 +157,7 @@ class _HomePageState extends State<HomePage> {
     return ListView(
       padding: const EdgeInsets.only(bottom: 16),
       children: [
-        // HERO
+        // ---------- HERO ----------
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
           child: ClipRRect(
@@ -169,7 +197,7 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
 
-        // Header Catalogo + Vedi tutto
+        // ---------- CATALOGO ----------
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 18, 16, 10),
           child: Row(
@@ -201,7 +229,7 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
 
-        // Anteprima marchi
+        // Chips brand orizzontali
         SizedBox(
           height: 110,
           child: ListView.separated(
@@ -216,20 +244,19 @@ class _HomePageState extends State<HomePage> {
                 brand: b,
                 imagePath: cover,
                 onTap: () {
+                  final filtered =
+                      _cars
+                          .where(
+                            (c) => c.brand.toLowerCase() == b.toLowerCase(),
+                          )
+                          .toList();
                   Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder:
                           (_) => CarListPage(
                             brand: b,
-                            cars:
-                                _cars
-                                    .where(
-                                      (c) =>
-                                          c.brand.toLowerCase() ==
-                                          b.toLowerCase(),
-                                    )
-                                    .toList(),
+                            cars: filtered,
                             rates: _rates,
                             preferredCurrency: _preferred,
                           ),
@@ -241,134 +268,43 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
 
-        // Nuovi arrivi (prime 4 per esempio)
-        if (_cars.isNotEmpty) ...[
-          const Padding(
-            padding: EdgeInsets.fromLTRB(16, 22, 16, 10),
-            child: Text(
-              'Nuovi arrivi',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
-            ),
+        // ---------- ULTIME NOTIZIE ----------
+        const Padding(
+          padding: EdgeInsets.fromLTRB(16, 22, 16, 10),
+          child: Text(
+            'Ultime notizie',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
           ),
-          _carsGrid(_cars.take(4).toList()),
-        ],
+        ),
+        if (_newsLoading)
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: 12),
+            child: Center(child: CircularProgressIndicator()),
+          )
+        else if (_newsError.isNotEmpty)
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            child: Row(
+              children: [
+                const Icon(Icons.error_outline),
+                const SizedBox(width: 8),
+                Expanded(child: Text('Errore notizie: $_newsError')),
+                IconButton(
+                  onPressed: _loadNews,
+                  icon: const Icon(Icons.refresh),
+                ),
+              ],
+            ),
+          )
+        else
+          NewsStrip(items: _news, onRefresh: _loadNews),
+
+        // Se vuoi rimettere “Nuovi arrivi”, aggiungilo qui sotto
       ],
     );
   }
 
-  Widget _carsGrid(List<Car> cars) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12),
-      child: GridView.builder(
-        physics: const NeverScrollableScrollPhysics(),
-        shrinkWrap: true,
-        itemCount: cars.length,
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          mainAxisSpacing: 12,
-          crossAxisSpacing: 12,
-          childAspectRatio: 0.88,
-        ),
-        itemBuilder: (_, i) {
-          final c = cars[i];
-          final priceText = _formatPrice(c.priceEur);
-
-          return InkWell(
-            onTap:
-                () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder:
-                        (_) => CarListPage(
-                          brand: c.brand,
-                          cars: _cars.where((x) => x.brand == c.brand).toList(),
-                          rates: _rates,
-                          preferredCurrency: _preferred,
-                        ),
-                  ),
-                ),
-            child: Container(
-              decoration: BoxDecoration(
-                color: const Color(0xFFEFEFEF).withOpacity(0.06),
-                borderRadius: BorderRadius.circular(18),
-                boxShadow: const [
-                  BoxShadow(blurRadius: 10, color: Colors.black26),
-                ],
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  ClipRRect(
-                    borderRadius: const BorderRadius.vertical(
-                      top: Radius.circular(18),
-                    ),
-                    child: AspectRatio(
-                      aspectRatio: 16 / 10,
-                      child: Image.asset(
-                        c.images.isNotEmpty
-                            ? c.images.first
-                            : 'assets/supercar.jpg',
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(12, 10, 12, 4),
-                    child: Text(
-                      '${c.brand} ${c.model}',
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
-                    child: Text(
-                      priceText,
-                      style: TextStyle(
-                        fontSize: 12.5,
-                        color: Colors.grey.shade300,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        },
-      ),
-    );
-  }
-
-  String _formatPrice(double eur) {
-    // EUR base, converto se preferito diverso e ho i tassi
-    switch (_preferred) {
-      case 'USD':
-        final r = _rates?['USD'];
-        return r == null ? '€ ${_kSep(eur)}' : '\$ ${_kSep(eur * r)}';
-      case 'GBP':
-        final r = _rates?['GBP'];
-        return r == null ? '€ ${_kSep(eur)}' : '£ ${_kSep(eur * r)}';
-      case 'EUR':
-      default:
-        return '€ ${_kSep(eur)}';
-    }
-  }
-
-  String _kSep(double v) {
-    final s = v.toStringAsFixed(0);
-    final b = StringBuffer();
-    for (int i = 0; i < s.length; i++) {
-      final idxFromEnd = s.length - i;
-      b.write(s[i]);
-      final isBeforeGroup = idxFromEnd > 1 && (idxFromEnd - 1) % 3 == 0;
-      if (isBeforeGroup) b.write('.');
-    }
-    return b.toString();
-  }
+  // ---------- Helpers ----------
 
   List<String> _uniqueBrands(List<Car> cars) {
     final s = <String>{};
@@ -388,7 +324,7 @@ class _HomePageState extends State<HomePage> {
     return map;
   }
 
-  Widget _bottomBar() => BottomNavigationBar(
+  BottomNavigationBar _bottomBar() => BottomNavigationBar(
     currentIndex: 0,
     selectedItemColor: Colors.redAccent,
     unselectedItemColor: Colors.grey.shade400,
@@ -408,9 +344,13 @@ class _HomePageState extends State<HomePage> {
           ),
         );
       } else if (i == 2) {
+        final auctionCars = _cars.where((c) => c.auction).toList();
+
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (_) => AuctionsSwiperPage(cars: _cars)),
+          MaterialPageRoute(
+            builder: (_) => AuctionsSwiperPage(cars: auctionCars),
+          ),
         );
       } else if (i == 3) {
         _openProfile();

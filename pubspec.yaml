@@ -13,10 +13,12 @@ dependencies:
   cupertino_icons: ^1.0.8
   url_launcher: ^6.3.0
   google_maps_flutter: ^2.6.1
-  geolocator: ^14.0.2
+  geolocator: ^14.0.1
   sensors_plus: ^6.0.1
   http: ^1.2.2
   shared_preferences: ^2.3.2
+  webfeed: ^0.7.0
+  palette_generator: ^0.3.3+2
 
 dev_dependencies:
   flutter_test:
@@ -25,12 +27,11 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
-
   assets:
     - assets/supercar.jpg
-    - assets/ferrari_offer.jpg
     - assets/ferrari.jpg
     - assets/lamborghini.jpg
     - assets/mclaren.jpg
     - assets/bugatti.jpg
     - assets/cars.json
+    - assets/Ferrari_250_GTO.png 
