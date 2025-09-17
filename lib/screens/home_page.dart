@@ -94,28 +94,31 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  Future<void> _openProfile() async {
-    final changed = await Navigator.push<bool>(
-      context,
-      MaterialPageRoute(
-        builder: (_) => ProfilePage(
-          initialCurrency: _preferred,
-          onChanged: (c) async {
-            final prefs = await SharedPreferences.getInstance();
-            await prefs.setString(_prefKeyCurrency, c);
-          },
-        ),
+Future<void> _openProfile() async {
+  final changed = await Navigator.push<bool>(
+    context,
+    MaterialPageRoute(
+      builder: (_) => ProfilePage(
+        initialCurrency: _preferred,
+        onChanged: (c) async {
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setString(_prefKeyCurrency, c);
+        },
+        cars: _cars,       // lista completa di auto
+        rates: _rates,     // tassi di cambio
       ),
-    );
+    ),
+  );
 
-    if (changed == true) {
-      final prefs = await SharedPreferences.getInstance();
-      if (!mounted) return;
-      setState(() {
-        _preferred = prefs.getString(_prefKeyCurrency) ?? 'EUR';
-      });
-    }
+  if (changed == true) {
+    final prefs = await SharedPreferences.getInstance();
+    if (!mounted) return;
+    setState(() {
+      _preferred = prefs.getString(_prefKeyCurrency) ?? 'EUR';
+    });
   }
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -191,7 +194,7 @@ class _HomePageState extends State<HomePage> {
               children: [
                 AspectRatio(
                   aspectRatio: 16 / 9,
-                  child: Image.asset('assets/supercar.jpg', fit: BoxFit.cover),
+                  child: Image.asset('assets/macchine/supercar.jpg', fit: BoxFit.cover),
                 ),
                 Container(
                   width: double.infinity,

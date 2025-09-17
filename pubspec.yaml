@@ -32,22 +32,22 @@ flutter:
   uses-material-design: true
   assets:
     # Macchine
-    - assets/supercar.jpg
-    - assets/ferrari.jpg
-    - assets/lamborghini.jpg
-    - assets/mclaren.jpg
-    - assets/bugatti.jpg
-    - assets/cars.json
-    - assets/Ferrari_250_GTO.png 
-    - assets/porsche.jpg
-    - assets/rolls_royce.jpg
-    - assets/aston_martin.jpg
-    - assets/maserati.jpg
-    - assets/bentley.jpg
-    - assets/koenigsegg.jpg
-    - assets/pagani.jpg
-    - assets/jaguar.jpg
-    - assets/lotus.jpg
+    - assets/macchine/
+    - assets/macchine/supercar.jpg
+    - assets/macchine/ferrari.jpg
+    - assets/macchine/lamborghini.jpg
+    - assets/macchine/mclaren.jpg
+    - assets/macchine/bugatti.jpg
+    - assets/macchine/Ferrari_250_GTO.png 
+    - assets/macchine/porsche.jpg
+    - assets/macchine/rolls_royce.jpg
+    - assets/macchine/aston_martin.jpg
+    - assets/macchine/maserati.jpg
+    - assets/macchine/bentley.jpg
+    - assets/macchine/koenigsegg.jpg
+    - assets/macchine/pagani.jpg
+    - assets/macchine/jaguar.jpg
+    - assets/macchine/lotus.jpg
 
     # Loghi macchine
     - assets/loghi/bugatti_logo.png
@@ -64,8 +64,11 @@ flutter:
     - assets/loghi/jaguar_logo.png
     - assets/loghi/lotus_logo.png 
 
-    #video macchine
+    # Video macchine
     - assets/video/ferrari.mp4
 
-    #concessionari
+    # Concessionari
     - assets/dealers.json
+
+    # Macchine
+    - assets/cars.json

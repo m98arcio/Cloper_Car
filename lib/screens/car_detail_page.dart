@@ -1,3 +1,4 @@
+import 'package:concessionario_supercar/widgets/app_bottom_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
@@ -5,17 +6,21 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../models/car.dart';
 import '../widgets/dark_live_background.dart';
+import 'profile_page.dart';
+import 'Incoming_page.dart';
 
 class CarDetailPage extends StatefulWidget {
   final Car car;
   final Map<String, double>? rates;
   final String preferredCurrency;
+  final List<Car> cars; // lista completa per la bottom bar / profilo
 
   const CarDetailPage({
     super.key,
     required this.car,
     this.rates,
     required this.preferredCurrency,
+    required this.cars,
   });
 
   @override
@@ -23,7 +28,7 @@ class CarDetailPage extends StatefulWidget {
 }
 
 class _CarDetailPageState extends State<CarDetailPage> {
-  int _tab = 1; // 0 = Descrizione, 1 = Scheda
+  int _tab = 0;
   bool _priceOpen = false;
 
   Position? _pos;
@@ -44,19 +49,11 @@ class _CarDetailPageState extends State<CarDetailPage> {
 
   Future<void> _getPositionSafe() async {
     try {
-      if (!await Geolocator.isLocationServiceEnabled()) {
-        throw Exception('GPS disattivato.');
-      }
+      if (!await Geolocator.isLocationServiceEnabled()) throw Exception('GPS disattivato.');
       var perm = await Geolocator.checkPermission();
-      if (perm == LocationPermission.denied) {
-        perm = await Geolocator.requestPermission();
-      }
-      if (perm == LocationPermission.denied) {
-        throw Exception('Permesso posizione negato.');
-      }
-      if (perm == LocationPermission.deniedForever) {
-        throw Exception('Permesso negato in modo permanente.');
-      }
+      if (perm == LocationPermission.denied) perm = await Geolocator.requestPermission();
+      if (perm == LocationPermission.denied) throw Exception('Permesso posizione negato.');
+      if (perm == LocationPermission.deniedForever) throw Exception('Permesso negato in modo permanente.');
       final p = await Geolocator.getCurrentPosition();
       if (!mounted) return;
       setState(() => _pos = p);
@@ -66,83 +63,22 @@ class _CarDetailPageState extends State<CarDetailPage> {
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final c = widget.car;
-
-    // Prezzi nella valuta preferita + eventuali righe extra
-    final mainPriceText = _formatPrice(
-      eur: c.priceEur,
-      preferred: widget.preferredCurrency,
-      rates: widget.rates,
-    );
-    final otherPrices = _otherPrices(
-      eur: c.priceEur,
-      preferred: widget.preferredCurrency,
-      rates: widget.rates,
-    );
-
-    return Scaffold(
-      backgroundColor: Colors.transparent,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        title: Text('${c.brand} ${c.model}'),
-      ),
-      body: Stack(
-        children: [
-          const DarkLiveBackground(), // sfondo onde scure
-          SafeArea(
-            child: ListView(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
-              children: [
-                _HeroGallery(images: c.images),
-                const SizedBox(height: 12),
-
-                _SegmentedPill(
-                  index: _tab,
-                  onChanged: (i) => setState(() => _tab = i),
-                  leftIcon: Icons.menu,
-                  rightIcon: Icons.description_outlined,
-                ),
-
-                const SizedBox(height: 14),
-
-                AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 180),
-                  child: _tab == 0
-                      ? _DescriptionCard(text: c.description ?? _defaultDesc(c))
-                      : _SpecsCard(car: c),
-                ),
-
-                const SizedBox(height: 16),
-
-                // Card PREZZO espandibile (valuta preferita + extra)
-                _PriceCard(
-                  mainText: mainPriceText,
-                  open: _priceOpen,
-                  onToggle: () => setState(() => _priceOpen = !_priceOpen),
-                  extras: otherPrices,
-                ),
-
-                const SizedBox(height: 18),
-
-                _SectionTitle('Concessionari vicini'),
-                const SizedBox(height: 8),
-                _MapCard(pos: _pos, error: _locError, onRetry: _getPositionSafe),
-              ],
-            ),
-          ),
-        ],
+  Future<void> _openProfile() async {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ProfilePage(
+          initialCurrency: widget.preferredCurrency,
+          onChanged: (_) {},
+          cars: widget.cars, // lista completa auto
+          rates: widget.rates,
+        ),
       ),
     );
   }
 
   String _defaultDesc(Car c) =>
-      '${c.brand} ${c.model} unisce design iconico e prestazioni da pista. '
-      'Questa scheda è alimentata dai dati locali del catalogo.';
-
-  // --------- PRICE HELPERS ---------
+      '${c.brand} ${c.model} unisce design iconico e prestazioni da pista. Questa scheda è alimentata dai dati locali del catalogo.';
 
   String _formatPrice({
     required double eur,
@@ -185,18 +121,91 @@ class _CarDetailPageState extends State<CarDetailPage> {
     for (int i = 0; i < s.length; i++) {
       final idxFromEnd = s.length - i;
       b.write(s[i]);
-      final group = idxFromEnd > 1 && (idxFromEnd - 1) % 3 == 0;
-      if (group) b.write('.');
+      if (idxFromEnd > 1 && (idxFromEnd - 1) % 3 == 0) b.write('.');
     }
     return b.toString();
   }
+
+  @override
+  Widget build(BuildContext context) {
+    final c = widget.car;
+
+    final mainPriceText = _formatPrice(
+      eur: c.priceEur,
+      preferred: widget.preferredCurrency,
+      rates: widget.rates,
+    );
+    final otherPrices = _otherPrices(
+      eur: c.priceEur,
+      preferred: widget.preferredCurrency,
+      rates: widget.rates,
+    );
+
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        title: Text('${c.brand} ${c.model}'),
+      ),
+      body: Stack(
+        children: [
+          const DarkLiveBackground(),
+          SafeArea(
+            child: ListView(
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+              children: [
+                _HeroGallery(images: c.images, title: '${c.brand} ${c.model}'),
+                const SizedBox(height: 12),
+                _SegmentedPill(
+                  index: _tab,
+                  onChanged: (i) => setState(() => _tab = i),
+                  leftIcon: Icons.description_outlined,
+                  rightIcon: Icons.menu,
+                ),
+                const SizedBox(height: 14),
+                AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 180),
+                  child: _tab == 0
+                      ? _DescriptionCard(text: c.description ?? _defaultDesc(c))
+                      : _SpecsCard(car: c),
+                ),
+                const SizedBox(height: 16),
+                _PriceCard(
+                  mainText: mainPriceText,
+                  open: _priceOpen,
+                  onToggle: () => setState(() => _priceOpen = !_priceOpen),
+                  extras: otherPrices,
+                ),
+                const SizedBox(height: 18),
+                _SectionTitle('Concessionari vicini'),
+                const SizedBox(height: 8),
+                _MapCard(pos: _pos, error: _locError, onRetry: _getPositionSafe),
+              ],
+            ),
+          ),
+        ],
+      ),
+      bottomNavigationBar: AppBottomBar(
+        currentIndex: 0,
+        cars: [c],
+        rates: widget.rates,
+        preferredCurrency: widget.preferredCurrency,
+        onProfileTap: _openProfile, // usa il nuovo metodo coerente
+      ),
+    );
+  }
 }
+
+// --- Resto dei widget (_HeroGallery, _SegmentedPill, _DescriptionCard, _SpecsCard, ecc.) rimane invariato ---
+
 
 /* ======================  WIDGETS  ====================== */
 
 class _HeroGallery extends StatefulWidget {
   final List<String> images;
-  const _HeroGallery({required this.images});
+  final String title;
+  const _HeroGallery({required this.images, required this.title});
 
   @override
   State<_HeroGallery> createState() => _HeroGalleryState();
@@ -214,14 +223,13 @@ class _HeroGalleryState extends State<_HeroGallery> {
 
   @override
   Widget build(BuildContext context) {
-    final imgs = widget.images.isNotEmpty ? widget.images : const ['assets/supercar.jpg'];
+    final imgs = widget.images.isNotEmpty ? widget.images : const ['assets/macchine/supercar.jpg'];
 
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(22),
-      child: Stack(
-        alignment: Alignment.bottomCenter,
-        children: [
-          AspectRatio(
+    return Column(
+      children: [
+        ClipRRect(
+          borderRadius: BorderRadius.circular(20),
+          child: AspectRatio(
             aspectRatio: 16 / 9,
             child: PageView.builder(
               controller: _pc,
@@ -230,27 +238,12 @@ class _HeroGalleryState extends State<_HeroGallery> {
               itemBuilder: (_, k) => Image.asset(imgs[k], fit: BoxFit.cover),
             ),
           ),
-          if (imgs.length > 1)
-            Positioned(
-              bottom: 10,
-              child: Row(
-                children: List.generate(imgs.length, (k) {
-                  final on = k == _i;
-                  return AnimatedContainer(
-                    duration: const Duration(milliseconds: 200),
-                    margin: const EdgeInsets.symmetric(horizontal: 3),
-                    height: 6,
-                    width: on ? 18 : 6,
-                    decoration: BoxDecoration(
-                      color: on ? Colors.white : Colors.white54,
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                  );
-                }),
-              ),
-            ),
-        ],
-      ),
+        ),
+        const SizedBox(height: 8),
+        Text(widget.title,
+            textAlign: TextAlign.center,
+            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+      ],
     );
   }
 }
@@ -270,7 +263,7 @@ class _SegmentedPill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 46,
+      height: 44,
       decoration: BoxDecoration(
         color: Colors.white12,
         borderRadius: BorderRadius.circular(24),
@@ -283,7 +276,7 @@ class _SegmentedPill extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.all(4),
               child: Container(
-                width: (MediaQuery.of(context).size.width - 16 * 2) / 2 - 4,
+                width: (MediaQuery.of(context).size.width - 32) / 2 - 4,
                 decoration: BoxDecoration(
                   color: Colors.white24,
                   borderRadius: BorderRadius.circular(20),
@@ -297,14 +290,14 @@ class _SegmentedPill extends StatelessWidget {
                 child: InkWell(
                   borderRadius: BorderRadius.circular(24),
                   onTap: () => onChanged(0),
-                  child: const Center(child: Icon(Icons.menu, size: 22)),
+                  child: Center(child: Icon(leftIcon, size: 22)),
                 ),
               ),
               Expanded(
                 child: InkWell(
                   borderRadius: BorderRadius.circular(24),
                   onTap: () => onChanged(1),
-                  child: const Center(child: Icon(Icons.description_outlined, size: 22)),
+                  child: Center(child: Icon(rightIcon, size: 22)),
                 ),
               ),
             ],
@@ -335,10 +328,10 @@ class _Card extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: const Color(0xFFEFEFEF).withOpacity(0.07),
-        borderRadius: BorderRadius.circular(24),
-        boxShadow: const [BoxShadow(blurRadius: 16, color: Colors.black38)],
+        borderRadius: BorderRadius.circular(22),
+        boxShadow: const [BoxShadow(blurRadius: 14, color: Colors.black38)],
       ),
-      padding: const EdgeInsets.all(18),
+      padding: const EdgeInsets.all(16),
       child: child,
     );
   }
@@ -354,8 +347,8 @@ class _DescriptionCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Descrizione', style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800)),
-          const SizedBox(height: 10),
+          const Text('Descrizione', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800)),
+          const SizedBox(height: 8),
           Text(text, style: const TextStyle(fontSize: 16, height: 1.35)),
         ],
       ),
@@ -363,21 +356,22 @@ class _DescriptionCard extends StatelessWidget {
   }
 }
 
+// ---------------- SpecsCard ----------------
+
 class _SpecsCard extends StatelessWidget {
   final Car car;
   const _SpecsCard({required this.car});
 
   @override
   Widget build(BuildContext context) {
-    String fmtCm(double? v) =>
-        v == null ? '—' : (v % 1 == 0 ? '${v.toStringAsFixed(0)} cm' : '${v.toStringAsFixed(1)} cm');
+    String fmtCm(double? v) => v == null ? '—' : (v % 1 == 0 ? '${v.toStringAsFixed(0)} cm' : '${v.toStringAsFixed(1)} cm');
 
     return _Card(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text('${car.brand.toUpperCase()} ${car.model.toUpperCase()}',
-              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w900)),
+              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w900)),
           const SizedBox(height: 6),
           Row(
             children: const [
@@ -386,8 +380,7 @@ class _SpecsCard extends StatelessWidget {
               Icon(Icons.settings, size: 18, color: Colors.white70),
             ],
           ),
-          const Divider(height: 24),
-
+          const Divider(height: 20),
           _SpecGroup(
             title: 'Motore e Prestazioni',
             icon: Icons.settings,
@@ -400,7 +393,6 @@ class _SpecsCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 12),
-
           _SpecGroup(
             title: 'Dimensioni',
             icon: Icons.straighten,
@@ -437,11 +429,11 @@ class _SpecGroup extends StatelessWidget {
         const SizedBox(height: 8),
         ...rows.map(
           (e) => Padding(
-            padding: const EdgeInsets.symmetric(vertical: 4),
+            padding: const EdgeInsets.symmetric(vertical: 3),
             child: Row(
               children: [
                 Expanded(child: Text('${e.key}:', style: const TextStyle(fontWeight: FontWeight.w700))),
-                const SizedBox(width: 8),
+                const SizedBox(width: 6),
                 Expanded(
                   child: Text(e.value, textAlign: TextAlign.right, style: const TextStyle(color: Colors.white70)),
                 ),
@@ -454,7 +446,7 @@ class _SpecGroup extends StatelessWidget {
   }
 }
 
-/* ======================  CARD PREZZO  ====================== */
+// ---------------- PriceCard ----------------
 
 class _PriceCard extends StatelessWidget {
   final String mainText;
@@ -476,11 +468,11 @@ class _PriceCard extends StatelessWidget {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 220),
         curve: Curves.easeOutCubic,
-        padding: const EdgeInsets.all(18),
+        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: const Color(0xFFEFEFEF).withOpacity(0.07),
-          borderRadius: BorderRadius.circular(24),
-          boxShadow: const [BoxShadow(blurRadius: 16, color: Colors.black38)],
+          borderRadius: BorderRadius.circular(22),
+          boxShadow: const [BoxShadow(blurRadius: 14, color: Colors.black38)],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -488,7 +480,7 @@ class _PriceCard extends StatelessWidget {
             Row(
               children: [
                 const Icon(Icons.sell_outlined),
-                const SizedBox(width: 10),
+                const SizedBox(width: 8),
                 const Text('Prezzo', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
                 const Spacer(),
                 AnimatedRotation(
@@ -505,7 +497,7 @@ class _PriceCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(mainText, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w900)),
+                    Text(mainText, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w900)),
                     for (final line in extras) ...[
                       const SizedBox(height: 6),
                       Text(line),
@@ -523,7 +515,7 @@ class _PriceCard extends StatelessWidget {
   }
 }
 
-/* ======================  MAPPA (FACOLTATIVA)  ====================== */
+// ---------------- MapCard ----------------
 
 class _MapCard extends StatelessWidget {
   final Position? pos;
@@ -534,10 +526,10 @@ class _MapCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 220,
+      height: 200,
       decoration: BoxDecoration(
         color: const Color(0xFFEFEFEF).withOpacity(0.07),
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(22),
       ),
       clipBehavior: Clip.antiAlias,
       child: _content(),
@@ -571,12 +563,8 @@ class _MapCard extends StatelessWidget {
         infoWindow: InfoWindow(
           title: 'Concessionario',
           onTap: () async {
-            final uri = Uri.parse(
-              'https://www.google.com/maps/dir/?api=1&destination=${p.latitude},${p.longitude}',
-            );
-            if (await canLaunchUrl(uri)) {
-              await launchUrl(uri, mode: LaunchMode.externalApplication);
-            }
+            final uri = Uri.parse('https://www.google.com/maps/dir/?api=1&destination=${p.latitude},${p.longitude}');
+            if (await canLaunchUrl(uri)) await launchUrl(uri, mode: LaunchMode.externalApplication);
           },
         ),
       );

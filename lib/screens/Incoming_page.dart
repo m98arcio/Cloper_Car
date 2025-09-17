@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:math' as math;
+import 'package:concessionario_supercar/screens/profile_page.dart';
+import 'package:concessionario_supercar/widgets/app_bottom_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:geolocator/geolocator.dart';
@@ -11,7 +13,7 @@ import '../models/car.dart';
 import '../widgets/dark_live_background.dart';
 
 class IncomingPage extends StatefulWidget {
-  const IncomingPage({super.key, required this.cars});
+  const IncomingPage({super.key, required this.cars, required Null Function() onProfileTap});
   final List<Car> cars;
 
   @override
@@ -134,80 +136,110 @@ class _IncomingPageState extends State<IncomingPage> with SingleTickerProviderSt
     super.dispose();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final cars = widget.cars.where((c) => c.incoming).toList();
+// ...tutto il codice precedente rimane uguale fino alla build() di _IncomingPageState...
 
-    if (cars.isEmpty) {
-      return const Scaffold(
-        body: Stack(children: [DarkLiveBackground(), SafeArea(child: Center(child: Text('Nessuna auto in arrivo.')))]),
-      );
-    }
+@override
+Widget build(BuildContext context) {
+  final cars = widget.cars.where((c) => c.incoming).toList();
 
-    if (_loadError != null) {
-      return Scaffold(
-        body: Stack(children: [const DarkLiveBackground(), SafeArea(child: Center(child: Text(_loadError!)))]),
-      );
-    }
-
-    return Scaffold(
-      body: Stack(
-        children: [
-          const DarkLiveBackground(),
-          SafeArea(
-            child: Column(
-              children: [
-                const _TopBar(),
-                const SizedBox(height: 8),
-                Expanded(
-                  child: PageView.builder(
-                    controller: _page,
-                    onPageChanged: (i) => setState(() => _index = i),
-                    itemCount: cars.length,
-                    itemBuilder: (context, i) {
-                      final car = cars[i];
-                      final eta = DateTime.now().add(Duration(days: (car.id.hashCode % 20).abs() + 3));
-                      final nearest = _nearestDealer();
-
-                      // rotazione SOLO rispetto alla baseline
-                      final rotY = _deadzone((_roll - (_baseRoll ?? 0))) * 0.45;
-                      final rotX = _deadzone((_pitch - (_basePitch ?? 0))) * 0.35;
-
-                      return Transform(
-                        alignment: Alignment.center,
-                        transform: _perspective(rotX: rotX, rotY: rotY),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
-                          child: _FlipIncomingCard(
-                            car: car,
-                            eta: eta,
-                            dealer: nearest,
-                            glow: _glow,
-                            userPos: _pos,
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-
-                // banner in basso (testuale)
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 14),
-                  child: _AvailabilityBanner(
-                    city: _nearestDealer()?.city ?? '—',
-                    eta: DateTime.now().add(
-                      Duration(days: (cars[_index].id.hashCode % 20).abs() + 3),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
+  if (cars.isEmpty) {
+    return const Scaffold(
+      body: Stack(children: [
+        DarkLiveBackground(),
+        SafeArea(child: Center(child: Text('Nessuna auto in arrivo.')))
+      ]),
     );
   }
+
+  if (_loadError != null) {
+    return Scaffold(
+      body: Stack(children: [
+        const DarkLiveBackground(),
+        SafeArea(child: Center(child: Text(_loadError!)))
+      ]),
+    );
+  }
+
+  return Scaffold(
+    body: Stack(
+      children: [
+        const DarkLiveBackground(),
+        SafeArea(
+          child: Column(
+            children: [
+              const _TopBar(),
+              const SizedBox(height: 8),
+              Expanded(
+                child: PageView.builder(
+                  controller: _page,
+                  onPageChanged: (i) => setState(() => _index = i),
+                  itemCount: cars.length,
+                  itemBuilder: (context, i) {
+                    final car = cars[i];
+                    final eta = DateTime.now().add(Duration(days: (car.id.hashCode % 20).abs() + 3));
+                    final nearest = _nearestDealer();
+
+                    final rotY = _deadzone((_roll - (_baseRoll ?? 0))) * 0.45;
+                    final rotX = _deadzone((_pitch - (_basePitch ?? 0))) * 0.35;
+
+                    return Transform(
+                      alignment: Alignment.center,
+                      transform: _perspective(rotX: rotX, rotY: rotY),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+                        child: _FlipIncomingCard(
+                          car: car,
+                          eta: eta,
+                          dealer: nearest,
+                          glow: _glow,
+                          userPos: _pos,
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+
+              // banner in basso (testuale)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+                child: _AvailabilityBanner(
+                  city: _nearestDealer()?.city ?? '—',
+                  eta: DateTime.now().add(
+                    Duration(days: (cars[_index].id.hashCode % 20).abs() + 3),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    ),
+
+    // -------------------- BOTTOM BAR --------------------
+    bottomNavigationBar: AppBottomBar(
+      currentIndex: 2, // indice della sezione "In arrivo"
+      cars: widget.cars,
+      rates: null,
+      preferredCurrency: 'EUR',
+      onProfileTap: () {
+        // navigazione verso ProfilePage
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => ProfilePage(
+              initialCurrency: 'EUR',
+              onChanged: (_) {},
+              cars: widget.cars,
+              rates: null,
+            ),
+          ),
+        );
+      },
+    ),
+  );
+}
+
 
   Dealer? _nearestDealer() {
     if (_dealers.isEmpty || _pos == null) return _dealers.isNotEmpty ? _dealers.first : null;

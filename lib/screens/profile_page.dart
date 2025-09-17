@@ -1,13 +1,20 @@
 import 'package:flutter/material.dart';
+import '../widgets/app_bottom_bar.dart';
+import '../widgets/dark_live_background.dart';
+import '../models/car.dart';
 
 class ProfilePage extends StatefulWidget {
   final String initialCurrency; // 'EUR' | 'USD' | 'GBP'
   final ValueChanged<String> onChanged;
+  final List<Car> cars; // ← lista completa di auto
+  final Map<String, double>? rates;
 
   const ProfilePage({
     super.key,
     required this.initialCurrency,
     required this.onChanged,
+    required this.cars,
+    this.rates,
   });
 
   @override
@@ -26,8 +33,11 @@ class _ProfilePageState extends State<ProfilePage> {
   void _set(String c) {
     setState(() => _currency = c);
     widget.onChanged(c);
-    // Torno indietro segnalando che è cambiato
-    Navigator.pop(context, true);
+    Navigator.pop(context, true); // segnala il cambiamento
+  }
+
+  Future<void> _openProfile() async {
+    // già siamo nella pagina profilo → niente da fare
   }
 
   @override
@@ -39,42 +49,55 @@ class _ProfilePageState extends State<ProfilePage> {
         backgroundColor: Colors.transparent,
         elevation: 0,
       ),
-      body: ListView(
+      body: Stack(
         children: [
-          const SizedBox(height: 8),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: Text(
-              'Impostazioni',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
+          const DarkLiveBackground(),
+          SafeArea(
+            child: ListView(
+              children: [
+                const SizedBox(height: 8),
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: Text(
+                    'Impostazioni',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
+                  ),
+                ),
+                _tile(
+                  title: 'Valuta preferita',
+                  subtitle: _currencyLabel(_currency),
+                  icon: Icons.currency_exchange,
+                ),
+                const Divider(height: 1, color: Colors.white12),
+                RadioListTile<String>(
+                  value: 'EUR',
+                  groupValue: _currency,
+                  onChanged: (v) => _set(v!),
+                  title: const Text('Euro (€)'),
+                ),
+                RadioListTile<String>(
+                  value: 'USD',
+                  groupValue: _currency,
+                  onChanged: (v) => _set(v!),
+                  title: const Text('Dollaro USA (\$)'),
+                ),
+                RadioListTile<String>(
+                  value: 'GBP',
+                  groupValue: _currency,
+                  onChanged: (v) => _set(v!),
+                  title: const Text('Sterlina (£)'),
+                ),
+              ],
             ),
           ),
-          _tile(
-            title: 'Valuta preferita',
-            subtitle: _currencyLabel(_currency),
-            icon: Icons.currency_exchange,
-          ),
-          const Divider(height: 1, color: Colors.white12),
-
-          RadioListTile<String>(
-            value: 'EUR',
-            groupValue: _currency,
-            onChanged: (v) => _set(v!),
-            title: const Text('Euro (€)'),
-          ),
-          RadioListTile<String>(
-            value: 'USD',
-            groupValue: _currency,
-            onChanged: (v) => _set(v!),
-            title: const Text('Dollaro USA (\$)'),
-          ),
-          RadioListTile<String>(
-            value: 'GBP',
-            groupValue: _currency,
-            onChanged: (v) => _set(v!),
-            title: const Text('Sterlina (£)'),
-          ),
         ],
+      ),
+      bottomNavigationBar: AppBottomBar(
+        currentIndex: 3, // Profilo
+        cars: widget.cars, // ← passiamo la lista completa di auto
+        rates: widget.rates,
+        preferredCurrency: _currency,
+        onProfileTap: _openProfile,
       ),
     );
   }

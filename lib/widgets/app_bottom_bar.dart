@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/car.dart';
 import '../screens/brand_catalog_page.dart';
-import '../screens/incoming_page.dart';
-import '../screens/profile_page.dart';
+import '../screens/Incoming_page.dart';
 
 class AppBottomBar extends StatelessWidget {
   final int currentIndex;
@@ -56,7 +55,7 @@ class AppBottomBar extends StatelessWidget {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (_) => IncomingPage(cars: cars),
+              builder: (_) => IncomingPage(cars: cars, onProfileTap: () {  },),
             ),
           );
         } else if (i == 3) {
