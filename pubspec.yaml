@@ -66,3 +66,6 @@ flutter:
 
     #video macchine
     - assets/video/ferrari.mp4
+
+    #concessionari
+    - assets/dealers.json

@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-
 import '../models/car.dart';
 import '../screens/brand_catalog_page.dart';
-import '../screens/auctions_page.dart';
+import '../screens/incoming_page.dart';
 import '../screens/profile_page.dart';
 
 class AppBottomBar extends StatelessWidget {
@@ -31,8 +30,10 @@ class AppBottomBar extends StatelessWidget {
       type: BottomNavigationBarType.fixed,
       onTap: (i) {
         if (i == 0) {
+          // Home
           Navigator.popUntil(context, (r) => r.isFirst);
         } else if (i == 1) {
+          // Catalogo
           Navigator.push(
             context,
             MaterialPageRoute(
@@ -44,27 +45,29 @@ class AppBottomBar extends StatelessWidget {
             ),
           );
         } else if (i == 2) {
-          final auctionCars = cars.where((c) => c.auction).toList();
-          if (auctionCars.isEmpty) {
+          // In arrivo (filtra incoming == true)
+          final incomingCars = cars.where((c) => c.incoming).toList();
+          if (incomingCars.isEmpty) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Nessuna auto in asta al momento.')),
+              const SnackBar(content: Text('Nessuna auto in arrivo.')),
             );
             return;
           }
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (_) => AuctionPage(items: auctionCars),
+              builder: (_) => IncomingPage(cars: cars),
             ),
           );
         } else if (i == 3) {
+          // Profilo
           onProfileTap();
         }
       },
       items: const [
         BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
         BottomNavigationBarItem(icon: Icon(Icons.directions_car), label: 'Catalogo'),
-        BottomNavigationBarItem(icon: Icon(Icons.gavel), label: 'Aste'),
+        BottomNavigationBarItem(icon: Icon(Icons.local_shipping), label: 'In arrivo'),
         BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profilo'),
       ],
     );

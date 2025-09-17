@@ -15,7 +15,7 @@ import '../widgets/app_bottom_bar.dart'; // ⬅️ nuova bottom bar condivisa
 import 'brand_catalog_page.dart';
 import 'car_list_page.dart';
 import 'profile_page.dart';
-import 'auctions_page.dart'; // pagina Aste
+import 'Incoming_page.dart'; // pagina Aste
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});

@@ -3,7 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../models/car.dart';
 import 'car_list_page.dart';
-import 'auctions_page.dart'; // ⬅ per CarAuction e AuctionPage
+import 'Incoming_page.dart'; // ⬅ per CarAuction e AuctionPage
 import 'profile_page.dart';
 import '../widgets/dark_live_background.dart';
 
@@ -161,11 +161,11 @@ class _BrandCatalogPageState extends State<BrandCatalogPage> {
           if (i == 0) {
             Navigator.popUntil(context, (route) => route.isFirst);
           } else if (i == 2) {
-            final auctionCars = widget.cars.where((c) => c.auction).toList();
+            final auctionCars = widget.cars.where((c) => c.incoming).toList();
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (_) => AuctionPage(items: auctionCars),
+                builder: (_) => IncomingPage(cars: auctionCars),
               ),
             );
           } else if (i == 3) {

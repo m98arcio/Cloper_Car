@@ -3,6 +3,7 @@
     "id": "ferrari-sf90",
     "brand": "Ferrari",
     "model": "SF90 Stradale",
+    "year": 2023,
     "priceEur": 430000,
     "powerHp": 986,
     "images": ["assets/ferrari.jpg", "assets/ferrari_offer.jpg"],
@@ -14,13 +15,13 @@
     "lengthCm": 471.0,
     "widthCm": 197.2,
     "wheelbaseCm": 265.0,
-    "auction": true,
-    "auctionStartEur": 20
+    "incoming": true
   },
   {
     "id": "lamborghini-aventador",
     "brand": "Lamborghini",
     "model": "Aventador",
+    "year": 2022,
     "priceEur": 517000,
     "powerHp": 770,
     "images": ["assets/lamborghini.jpg"],
@@ -32,13 +33,13 @@
     "lengthCm": 479.7,
     "widthCm": 203.0,
     "wheelbaseCm": 270.0,
-    "auction": false,
-    "auctionStartEur": 0
+    "incoming": false
   },
   {
     "id": "mclaren-720s",
     "brand": "McLaren",
     "model": "720S",
+    "year": 2021,
     "priceEur": 280000,
     "powerHp": 720,
     "images": ["assets/mclaren.jpg"],
@@ -50,13 +51,13 @@
     "lengthCm": 454.3,
     "widthCm": 193.0,
     "wheelbaseCm": 267.0,
-    "auction": false,
-    "auctionStartEur": 0
+    "incoming": true
   },
   {
     "id": "bugatti-chiron",
     "brand": "Bugatti",
     "model": "Chiron",
+    "year": 2023,
     "priceEur": 2400000,
     "powerHp": 1500,
     "images": ["assets/bugatti.jpg"],
@@ -68,25 +69,6 @@
     "lengthCm": 454.4,
     "widthCm": 203.8,
     "wheelbaseCm": 271.1,
-    "auction": true,
-    "auctionStartEur": 2000000
-  },
-{
-  "id": "ferrari-250-gto-1962",
-  "brand": "Ferrari",
-  "model": "250 GTO",
-  "priceEur": 43000000,
-  "powerHp": 300,
-  "engine": "V12 3.0",
-  "gearbox": "Manuale 5 marce",
-  "zeroTo100": "5.4 s",
-  "topSpeed": "280 km/h",
-  "lengthCm": 432.0,
-  "widthCm": 168.0,
-  "wheelbaseCm": 240.0,
-  "description": "Una delle Ferrari più iconiche di sempre, rarità assoluta e valore collezionistico.",
-  "images": ["assets/Ferrari_250_GTO.png"],
-  "auction": true,
-  "auctionStartEur": 43000000
-}
+    "incoming": true
+  }
 ]
