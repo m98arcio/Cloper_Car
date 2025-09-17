@@ -1,3 +1,4 @@
+// lib/screens/home_page.dart
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -9,11 +10,12 @@ import '../services/news_service.dart';
 import '../widgets/dark_live_background.dart';
 import '../widgets/brand_logo.dart';
 import '../widgets/news_strip.dart';
+import '../widgets/app_bottom_bar.dart'; // ⬅️ nuova bottom bar condivisa
 
 import 'brand_catalog_page.dart';
 import 'car_list_page.dart';
-import 'auctions_swiper_page.dart';
 import 'profile_page.dart';
+import 'auctions_page.dart'; // pagina Aste
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -64,7 +66,7 @@ class _HomePageState extends State<HomePage> {
       try {
         rates = await _ratesApi.fetchRates();
       } catch (_) {
-        rates = null; // offline o errore: si resta in EUR
+        rates = null; // offline o errore -> resta in EUR
       }
 
       if (!mounted) return;
@@ -103,14 +105,13 @@ class _HomePageState extends State<HomePage> {
     final changed = await Navigator.push<bool>(
       context,
       MaterialPageRoute(
-        builder:
-            (_) => ProfilePage(
-              initialCurrency: _preferred,
-              onChanged: (c) async {
-                final prefs = await SharedPreferences.getInstance();
-                await prefs.setString(_prefKeyCurrency, c);
-              },
-            ),
+        builder: (_) => ProfilePage(
+          initialCurrency: _preferred,
+          onChanged: (c) async {
+            final prefs = await SharedPreferences.getInstance();
+            await prefs.setString(_prefKeyCurrency, c);
+          },
+        ),
       ),
     );
 
@@ -141,9 +142,20 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
       body: Stack(
-        children: [const DarkLiveBackground(), SafeArea(child: _buildBody())],
+        children: [
+          const DarkLiveBackground(),
+          SafeArea(child: _buildBody()),
+        ],
       ),
-      bottomNavigationBar: _bottomBar(),
+
+      // ⬇️ Bottom bar centralizzata
+      bottomNavigationBar: AppBottomBar(
+        currentIndex: 0,              // tab "Home"
+        cars: _cars,
+        rates: _rates,
+        preferredCurrency: _preferred,
+        onProfileTap: _openProfile,
+      ),
     );
   }
 
@@ -213,12 +225,11 @@ class _HomePageState extends State<HomePage> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder:
-                          (_) => BrandCatalogPage(
-                            cars: _cars,
-                            rates: _rates,
-                            preferredCurrency: _preferred,
-                          ),
+                      builder: (_) => BrandCatalogPage(
+                        cars: _cars,
+                        rates: _rates,
+                        preferredCurrency: _preferred,
+                      ),
                     ),
                   );
                 },
@@ -244,22 +255,18 @@ class _HomePageState extends State<HomePage> {
                 brand: b,
                 imagePath: cover,
                 onTap: () {
-                  final filtered =
-                      _cars
-                          .where(
-                            (c) => c.brand.toLowerCase() == b.toLowerCase(),
-                          )
-                          .toList();
+                  final filtered = _cars
+                      .where((c) => c.brand.toLowerCase() == b.toLowerCase())
+                      .toList();
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder:
-                          (_) => CarListPage(
-                            brand: b,
-                            cars: filtered,
-                            rates: _rates,
-                            preferredCurrency: _preferred,
-                          ),
+                      builder: (_) => CarListPage(
+                        brand: b,
+                        cars: filtered,
+                        rates: _rates,
+                        preferredCurrency: _preferred,
+                      ),
                     ),
                   );
                 },
@@ -298,8 +305,6 @@ class _HomePageState extends State<HomePage> {
           )
         else
           NewsStrip(items: _news, onRefresh: _loadNews),
-
-        // Se vuoi rimettere “Nuovi arrivi”, aggiungilo qui sotto
       ],
     );
   }
@@ -323,49 +328,6 @@ class _HomePageState extends State<HomePage> {
     }
     return map;
   }
-
-  BottomNavigationBar _bottomBar() => BottomNavigationBar(
-    currentIndex: 0,
-    selectedItemColor: Colors.redAccent,
-    unselectedItemColor: Colors.grey.shade400,
-    backgroundColor: Colors.black.withOpacity(0.15),
-    type: BottomNavigationBarType.fixed,
-    onTap: (i) {
-      if (i == 1) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder:
-                (_) => BrandCatalogPage(
-                  cars: _cars,
-                  rates: _rates,
-                  preferredCurrency: _preferred,
-                ),
-          ),
-        );
-      } else if (i == 2) {
-        final auctionCars = _cars.where((c) => c.auction).toList();
-
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => AuctionsSwiperPage(cars: auctionCars),
-          ),
-        );
-      } else if (i == 3) {
-        _openProfile();
-      }
-    },
-    items: const [
-      BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-      BottomNavigationBarItem(
-        icon: Icon(Icons.directions_car),
-        label: 'Catalogo',
-      ),
-      BottomNavigationBarItem(icon: Icon(Icons.gavel), label: 'Aste'),
-      BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profilo'),
-    ],
-  );
 }
 
 class _BrandChip extends StatelessWidget {

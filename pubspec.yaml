@@ -20,6 +20,8 @@ dependencies:
   webfeed: ^0.7.0
   palette_generator: ^0.3.3+2
   google_fonts: ^6.1.0
+  carousel_slider: ^5.1.1
+  video_player: ^2.9.1
 
 dev_dependencies:
   flutter_test:
@@ -61,3 +63,6 @@ flutter:
     - assets/loghi/pagani_logo.png
     - assets/loghi/jaguar_logo.png
     - assets/loghi/lotus_logo.png 
+
+    #video macchine
+    - assets/video/ferrari.mp4

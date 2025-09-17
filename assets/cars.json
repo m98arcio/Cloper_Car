@@ -14,8 +14,8 @@
     "lengthCm": 471.0,
     "widthCm": 197.2,
     "wheelbaseCm": 265.0,
-    "auction": false,
-    "auctionStartEur": 0
+    "auction": true,
+    "auctionStartEur": 20
   },
   {
     "id": "lamborghini-aventador",

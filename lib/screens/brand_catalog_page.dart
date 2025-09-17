@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+
 import '../models/car.dart';
 import 'car_list_page.dart';
-import 'auctions_swiper_page.dart';
+import 'auctions_page.dart'; // ⬅ per CarAuction e AuctionPage
 import 'profile_page.dart';
 import '../widgets/dark_live_background.dart';
 
@@ -92,9 +93,7 @@ class _BrandCatalogPageState extends State<BrandCatalogPage> {
                     transform:
                         Matrix4.identity()..scale(isPressed ? 0.97 : 1.0),
                     decoration: BoxDecoration(
-                      color: Colors.grey.withOpacity(
-                        0.15,
-                      ), // grigio chiaro semi-trasparente
+                      color: Colors.grey.withOpacity(0.15),
                       borderRadius: BorderRadius.circular(16),
                     ),
                     padding: const EdgeInsets.all(12),
@@ -134,7 +133,6 @@ class _BrandCatalogPageState extends State<BrandCatalogPage> {
                           ],
                         ),
                         const SizedBox(height: 8),
-                        // Immagine nitida sotto il testo
                         ClipRRect(
                           borderRadius: BorderRadius.circular(16),
                           child: Image.asset(
@@ -163,10 +161,11 @@ class _BrandCatalogPageState extends State<BrandCatalogPage> {
           if (i == 0) {
             Navigator.popUntil(context, (route) => route.isFirst);
           } else if (i == 2) {
+            final auctionCars = widget.cars.where((c) => c.auction).toList();
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (_) => AuctionsSwiperPage(cars: widget.cars),
+                builder: (_) => AuctionPage(items: auctionCars),
               ),
             );
           } else if (i == 3) {
@@ -195,6 +194,7 @@ class _BrandCatalogPageState extends State<BrandCatalogPage> {
     );
   }
 
+  // ------ helpers di pagina (invariati) ------
   List<String> _luxuryBrands() => [
     'Bugatti',
     'Ferrari',
@@ -242,4 +242,5 @@ class _BrandCatalogPageState extends State<BrandCatalogPage> {
     'Jaguar': 'assets/loghi/jaguar_logo.png',
     'Lotus': 'assets/loghi/lotus_logo.png',
   };
+
 }
