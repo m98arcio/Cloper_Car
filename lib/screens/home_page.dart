@@ -10,12 +10,11 @@ import '../services/news_service.dart';
 import '../widgets/dark_live_background.dart';
 import '../widgets/brand_logo.dart';
 import '../widgets/news_strip.dart';
-import '../widgets/app_bottom_bar.dart'; // ⬅️ nuova bottom bar condivisa
+import '../widgets/app_bottom_bar.dart';
 
 import 'brand_catalog_page.dart';
 import 'car_list_page.dart';
 import 'profile_page.dart';
-import 'Incoming_page.dart'; // pagina Aste
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -24,18 +23,15 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  // --- Preferenze / Valuta ---
-  static const _prefKeyCurrency = 'preferred_currency'; // 'EUR' | 'USD' | 'GBP'
+  static const _prefKeyCurrency = 'preferred_currency';
   String _preferred = 'EUR';
 
-  // --- Dati catalogo ---
   final RatesApi _ratesApi = RatesApi();
   List<Car> _cars = [];
   Map<String, double>? _rates;
   bool _loading = true;
   String _error = '';
 
-  // --- Notizie ---
   final _newsService = NewsService();
   List<NewsItem> _news = [];
   bool _newsLoading = true;
@@ -54,19 +50,16 @@ class _HomePageState extends State<HomePage> {
       _error = '';
     });
     try {
-      // 1) preferenza valuta
       final prefs = await SharedPreferences.getInstance();
       _preferred = prefs.getString(_prefKeyCurrency) ?? 'EUR';
 
-      // 2) catalogo da assets
       final cars = await LocalCatalog.load();
 
-      // 3) tassi (opzionali)
       Map<String, double>? rates;
       try {
         rates = await _ratesApi.fetchRates();
       } catch (_) {
-        rates = null; // offline o errore -> resta in EUR
+        rates = null;
       }
 
       if (!mounted) return;
@@ -147,10 +140,8 @@ class _HomePageState extends State<HomePage> {
           SafeArea(child: _buildBody()),
         ],
       ),
-
-      // ⬇️ Bottom bar centralizzata
       bottomNavigationBar: AppBottomBar(
-        currentIndex: 0,              // tab "Home"
+        currentIndex: 0,
         cars: _cars,
         rates: _rates,
         preferredCurrency: _preferred,
@@ -163,13 +154,34 @@ class _HomePageState extends State<HomePage> {
     if (_loading) return const Center(child: CircularProgressIndicator());
     if (_error.isNotEmpty) return Center(child: Text(_error));
 
-    final brands = _uniqueBrands(_cars);
-    final brandThumb = _brandThumbnails(_cars);
+    final allBrands = _uniqueBrands(_cars);
+
+    // Mappa dei loghi dagli asset
+    final brandLogos = {
+      'Ferrari': 'assets/loghi/ferrari_logo.png',
+      'Lamborghini': 'assets/loghi/lamborghini_logo.png',
+      'Porsche': 'assets/loghi/porsche_logo.png',
+      'Lotus': 'assets/loghi/lotus_logo.png',
+      'Rolls Royce': 'assets/loghi/rolls_royce_logo.png',
+      'Aston Martin': 'assets/loghi/aston_martin_logo.png',
+      'Maserati': 'assets/loghi/maserati_logo.png',
+      'Bentley': 'assets/loghi/bentley_logo.png',
+      'Koenigsegg': 'assets/loghi/koenigsegg_logo.png',
+      'Pagani': 'assets/loghi/pagani_logo.png',
+      'Jaguar': 'assets/loghi/jaguar_logo.png',
+    };
+
+    // Sostituire Bugatti e McLaren con Porsche e Lotus
+    final brands = <String>[];
+    for (var b in allBrands) {
+      if (b.toLowerCase() == 'bugatti' || b.toLowerCase() == 'mclaren') continue;
+      brands.add(b);
+    }
+    brands.insertAll(0, ['Porsche', 'Lotus']); // all’inizio
 
     return ListView(
       padding: const EdgeInsets.only(bottom: 16),
       children: [
-        // ---------- HERO ----------
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
           child: ClipRRect(
@@ -208,8 +220,6 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
         ),
-
-        // ---------- CATALOGO ----------
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 18, 16, 10),
           child: Row(
@@ -239,43 +249,56 @@ class _HomePageState extends State<HomePage> {
             ],
           ),
         ),
-
-        // Chips brand orizzontali
         SizedBox(
-          height: 110,
+          height: 80,
           child: ListView.separated(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             scrollDirection: Axis.horizontal,
-            itemCount: brands.length,
+            itemCount: brands.length + 1,
             separatorBuilder: (_, __) => const SizedBox(width: 12),
             itemBuilder: (_, i) {
-              final b = brands[i];
-              final cover = brandThumb[b];
-              return _BrandChip(
-                brand: b,
-                imagePath: cover,
-                onTap: () {
-                  final filtered = _cars
-                      .where((c) => c.brand.toLowerCase() == b.toLowerCase())
-                      .toList();
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => CarListPage(
-                        brand: b,
-                        cars: filtered,
-                        rates: _rates,
-                        preferredCurrency: _preferred,
+              if (i < brands.length) {
+                final b = brands[i];
+                final logo = brandLogos[b] ?? '';
+                return _BrandChip(
+                  brand: b,
+                  imagePath: logo,
+                  onTap: () {
+                    final filtered = _cars
+                        .where((c) => c.brand.toLowerCase() == b.toLowerCase())
+                        .toList();
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => CarListPage(
+                          brand: b,
+                          cars: filtered,
+                          rates: _rates,
+                          preferredCurrency: _preferred,
+                        ),
                       ),
-                    ),
-                  );
-                },
-              );
+                    );
+                  },
+                );
+              } else {
+                return _SeeAllChip(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => BrandCatalogPage(
+                          cars: _cars,
+                          rates: _rates,
+                          preferredCurrency: _preferred,
+                        ),
+                      ),
+                    );
+                  },
+                );
+              }
             },
           ),
         ),
-
-        // ---------- ULTIME NOTIZIE ----------
         const Padding(
           padding: EdgeInsets.fromLTRB(16, 22, 16, 10),
           child: Text(
@@ -309,24 +332,13 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  // ---------- Helpers ----------
-
   List<String> _uniqueBrands(List<Car> cars) {
     final s = <String>{};
-    for (final c in cars) s.add(c.brand);
+    for (final c in cars) {
+      s.add(c.brand);
+    }
     final list = s.toList()..sort();
     return list;
-  }
-
-  Map<String, String> _brandThumbnails(List<Car> cars) {
-    final map = <String, String>{};
-    for (final c in cars) {
-      map.putIfAbsent(
-        c.brand,
-        () => c.images.isNotEmpty ? c.images.first : 'assets/supercar.jpg',
-      );
-    }
-    return map;
   }
 }
 
@@ -338,7 +350,6 @@ class _BrandChip extends StatelessWidget {
     required this.brand,
     required this.imagePath,
     required this.onTap,
-    super.key,
   });
 
   @override
@@ -359,7 +370,7 @@ class _BrandChip extends StatelessWidget {
             BrandLogo(
               brand: brand,
               imagePath: imagePath,
-              size: 70,
+              size: 50,
               round: true,
             ),
             const SizedBox(width: 10),
@@ -372,6 +383,43 @@ class _BrandChip extends StatelessWidget {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _SeeAllChip extends StatelessWidget {
+  final VoidCallback onTap;
+  const _SeeAllChip({required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(14),
+      child: Container(
+        width: 140,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(14),
+          gradient: LinearGradient(
+            begin: Alignment.centerLeft,
+            end: Alignment.centerRight,
+            colors: [
+              Colors.grey.withOpacity(0.5),
+              Colors.grey.withOpacity(0.25),
+              Colors.grey.withOpacity(0.125),
+              Colors.transparent,
+            ],
+            stops: [0.0, 0.5, 0.75, 1.0],
+          ),
+        ),
+        child: const Center(
+          child: Icon(
+            Icons.arrow_forward_ios,
+            size: 30,
+            color: Colors.black45,
+          ),
         ),
       ),
     );
