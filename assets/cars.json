@@ -7,7 +7,7 @@
     "priceEur": 430000,
     "powerHp": 986,
     "images": ["assets/macchine/ferrari.jpg", "assets/ferrari_offer.jpg"],
-    "description": "Ispirata alla Formula 1, la SF90 unisce potenza ibrida plug-in, trazione integrale e un'aerodinamica attiva che massimizza le prestazioni su strada e in pista.",
+    "description": "Ispirata alla Formula 1, la SF90 unisce potenza ibrida plug-in, trazione integrale e un'aerodinamica attiva.",
     "zeroTo100": "2.5 s",
     "topSpeed": "340 km/h",
     "engine": "V8 4.0 biturbo + 3 e-motors",
@@ -15,7 +15,9 @@
     "lengthCm": 471.0,
     "widthCm": 197.2,
     "wheelbaseCm": 265.0,
-    "incoming": true
+    "incoming": true,
+    "incomingAt": "2025-10-15",
+    "availableDealerIds": ["milano", "maranello", "roma"]
   },
   {
     "id": "lamborghini-aventador",
@@ -25,7 +27,7 @@
     "priceEur": 517000,
     "powerHp": 770,
     "images": ["assets/macchine/lamborghini.jpg"],
-    "description": "V12 iconico, linee taglienti e presenza scenica. L’Aventador è la massima espressione del design Lamborghini e della tradizione del dodici cilindri.",
+    "description": "V12 iconico, linee taglienti e presenza scenica.",
     "zeroTo100": "2.8 s",
     "topSpeed": "350 km/h",
     "engine": "V12 6.5 aspirato",
@@ -33,7 +35,8 @@
     "lengthCm": 479.7,
     "widthCm": 203.0,
     "wheelbaseCm": 270.0,
-    "incoming": false
+    "incoming": false,
+    "availableDealerIds": ["verona", "torino"]
   },
   {
     "id": "mclaren-720s",
@@ -43,7 +46,7 @@
     "priceEur": 280000,
     "powerHp": 720,
     "images": ["assets/macchine/mclaren.jpg"],
-    "description": "Telaio Monocage in fibra di carbonio, leggerezza estrema e aerodinamica attiva: la 720S è progettata per trasformare ogni curva in precisione pura.",
+    "description": "Monocage in carbonio e aerodinamica attiva.",
     "zeroTo100": "2.9 s",
     "topSpeed": "341 km/h",
     "engine": "V8 4.0 biturbo",
@@ -51,7 +54,9 @@
     "lengthCm": 454.3,
     "widthCm": 193.0,
     "wheelbaseCm": 267.0,
-    "incoming": true
+    "incoming": true,
+    "incomingAt": "2025-11-02",
+    "availableDealerIds": ["campobasso", "roma"]
   },
   {
     "id": "bugatti-chiron",
@@ -61,7 +66,7 @@
     "priceEur": 2400000,
     "powerHp": 1500,
     "images": ["assets/macchine/bugatti.jpg"],
-    "description": "Lusso estremo e potenza colossale. Il W16 quadri-turbocompresso della Chiron ridefinisce il concetto di hypercar stradale.",
+    "description": "W16 quadri-turbo da 1500 CV. Hypercar di riferimento.",
     "zeroTo100": "2.4 s",
     "topSpeed": "420+ km/h",
     "engine": "W16 8.0 quad-turbo",
@@ -69,6 +74,8 @@
     "lengthCm": 454.4,
     "widthCm": 203.8,
     "wheelbaseCm": 271.1,
-    "incoming": true
+    "incoming": true,
+    "incomingAt": "2025-12-12",
+    "availableDealerIds": ["roma", "torino"]
   }
 ]

@@ -1,7 +1,8 @@
+// lib/services/dealer_service.dart
 import 'dart:convert';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import "dart:math" as math;
+import 'dart:math' as math;
 
 class DealerPoint {
   final String id;
@@ -28,19 +29,20 @@ class DealerPoint {
 }
 
 class DealersRepo {
-  DealersRepo._();
   static List<DealerPoint>? _cache;
 
+  /// Carica tutti i dealer da assets/dealers.json (una volta sola, poi cache).
   static Future<List<DealerPoint>> load() async {
     if (_cache != null) return _cache!;
-    final txt = await rootBundle.loadString('assets/data/dealers.json');
-    final list = (json.decode(txt) as List).cast<Map<String, dynamic>>();
-    _cache = list.map(DealerPoint.fromJson).toList();
+    // 👇 PATH CORRETTO in base al tuo pubspec.yaml
+    final txt = await rootBundle.loadString('assets/dealers.json');
+    final raw = json.decode(txt) as List<dynamic>;
+    _cache = raw.map((e) => DealerPoint.fromJson(e as Map<String, dynamic>)).toList();
     return _cache!;
   }
 
-  /// Trova il dealer più vicino tra un sottoinsieme [allowedDealerIds].
-  /// Se la lista è vuota o null, considera TUTTI i dealer.
+  /// Dealer più vicino alla posizione [user].
+  /// Se [allowedDealerIds] è non vuoto, limita la ricerca a quell'elenco.
   static Future<DealerPoint> nearestTo(
     LatLng user, {
     List<String>? allowedDealerIds,
@@ -50,9 +52,12 @@ class DealersRepo {
         ? all
         : all.where((d) => allowedDealerIds.contains(d.id)).toList();
 
-    DealerPoint best = pool.first;
+    // safety: se il filtro svuota l’elenco, ricadi su tutti
+    final list = pool.isEmpty ? all : pool;
+
+    DealerPoint best = list.first;
     double bestDist = _haversine(user, best.latLng);
-    for (final d in pool.skip(1)) {
+    for (final d in list.skip(1)) {
       final dist = _haversine(user, d.latLng);
       if (dist < bestDist) {
         best = d;
@@ -62,6 +67,7 @@ class DealersRepo {
     return best;
   }
 
+  // Distanza Haversine in metri
   static double _haversine(LatLng a, LatLng b) {
     const R = 6371e3; // metri
     final dLat = _toRad(b.latitude - a.latitude);

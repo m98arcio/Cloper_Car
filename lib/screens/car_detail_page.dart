@@ -1,3 +1,4 @@
+// lib/screens/car_detail_page.dart
 import 'package:concessionario_supercar/widgets/app_bottom_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -6,14 +7,14 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../models/car.dart';
 import '../widgets/dark_live_background.dart';
+import '../services/dealer_service.dart';
 import 'profile_page.dart';
-import 'Incoming_page.dart';
 
 class CarDetailPage extends StatefulWidget {
   final Car car;
   final Map<String, double>? rates;
   final String preferredCurrency;
-  final List<Car> cars; // lista completa per la bottom bar / profilo
+  final List<Car> cars;
 
   const CarDetailPage({
     super.key,
@@ -33,7 +34,6 @@ class _CarDetailPageState extends State<CarDetailPage> {
 
   Position? _pos;
   String? _locError;
-  GoogleMapController? _map;
 
   @override
   void initState() {
@@ -41,19 +41,21 @@ class _CarDetailPageState extends State<CarDetailPage> {
     _getPositionSafe();
   }
 
-  @override
-  void dispose() {
-    _map?.dispose();
-    super.dispose();
-  }
-
   Future<void> _getPositionSafe() async {
     try {
-      if (!await Geolocator.isLocationServiceEnabled()) throw Exception('GPS disattivato.');
+      if (!await Geolocator.isLocationServiceEnabled()) {
+        throw Exception('GPS disattivato.');
+      }
       var perm = await Geolocator.checkPermission();
-      if (perm == LocationPermission.denied) perm = await Geolocator.requestPermission();
-      if (perm == LocationPermission.denied) throw Exception('Permesso posizione negato.');
-      if (perm == LocationPermission.deniedForever) throw Exception('Permesso negato in modo permanente.');
+      if (perm == LocationPermission.denied) {
+        perm = await Geolocator.requestPermission();
+      }
+      if (perm == LocationPermission.denied) {
+        throw Exception('Permesso posizione negato.');
+      }
+      if (perm == LocationPermission.deniedForever) {
+        throw Exception('Permesso negato in modo permanente.');
+      }
       final p = await Geolocator.getCurrentPosition();
       if (!mounted) return;
       setState(() => _pos = p);
@@ -67,12 +69,13 @@ class _CarDetailPageState extends State<CarDetailPage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => ProfilePage(
-          initialCurrency: widget.preferredCurrency,
-          onChanged: (_) {},
-          cars: widget.cars, // lista completa auto
-          rates: widget.rates,
-        ),
+        builder:
+            (_) => ProfilePage(
+              initialCurrency: widget.preferredCurrency,
+              onChanged: (_) {},
+              cars: widget.cars,
+              rates: widget.rates,
+            ),
       ),
     );
   }
@@ -87,7 +90,6 @@ class _CarDetailPageState extends State<CarDetailPage> {
   }) {
     double value = eur;
     String symbol = '€';
-
     if (preferred == 'USD' && (rates?['USD'] != null)) {
       value = eur * rates!['USD']!;
       symbol = r'$';
@@ -95,7 +97,6 @@ class _CarDetailPageState extends State<CarDetailPage> {
       value = eur * rates!['GBP']!;
       symbol = '£';
     }
-
     return '$symbol ${_kSep(value)}';
   }
 
@@ -107,11 +108,9 @@ class _CarDetailPageState extends State<CarDetailPage> {
     final out = <String>[];
     final usd = rates?['USD'];
     final gbp = rates?['GBP'];
-
     if (preferred != 'EUR') out.add('€ ${_kSep(eur)}');
     if (preferred != 'USD' && usd != null) out.add('\$ ${_kSep(eur * usd)}');
     if (preferred != 'GBP' && gbp != null) out.add('£ ${_kSep(eur * gbp)}');
-
     return out;
   }
 
@@ -166,9 +165,12 @@ class _CarDetailPageState extends State<CarDetailPage> {
                 const SizedBox(height: 14),
                 AnimatedSwitcher(
                   duration: const Duration(milliseconds: 180),
-                  child: _tab == 0
-                      ? _DescriptionCard(text: c.description ?? _defaultDesc(c))
-                      : _SpecsCard(car: c),
+                  child:
+                      _tab == 0
+                          ? _DescriptionCard(
+                            text: c.description ?? _defaultDesc(c),
+                          )
+                          : _SpecsCard(car: c),
                 ),
                 const SizedBox(height: 16),
                 _PriceCard(
@@ -178,9 +180,14 @@ class _CarDetailPageState extends State<CarDetailPage> {
                   extras: otherPrices,
                 ),
                 const SizedBox(height: 18),
-                _SectionTitle('Concessionari vicini'),
+                const _SectionTitle('Concessionari vicini'),
                 const SizedBox(height: 8),
-                _MapCard(pos: _pos, error: _locError, onRetry: _getPositionSafe),
+                _MapCard(
+                  car: c, // <-- passiamo l’auto
+                  pos: _pos, // posizione utente (può essere null)
+                  error: _locError, // eventuale errore
+                  onRetry: _getPositionSafe, // per riprovare i permessi
+                ),
               ],
             ),
           ),
@@ -188,17 +195,14 @@ class _CarDetailPageState extends State<CarDetailPage> {
       ),
       bottomNavigationBar: AppBottomBar(
         currentIndex: 0,
-        cars: [c],
+        cars: widget.cars,
         rates: widget.rates,
         preferredCurrency: widget.preferredCurrency,
-        onProfileTap: _openProfile, // usa il nuovo metodo coerente
+        onProfileTap: _openProfile,
       ),
     );
   }
 }
-
-// --- Resto dei widget (_HeroGallery, _SegmentedPill, _DescriptionCard, _SpecsCard, ecc.) rimane invariato ---
-
 
 /* ======================  WIDGETS  ====================== */
 
@@ -223,7 +227,10 @@ class _HeroGalleryState extends State<_HeroGallery> {
 
   @override
   Widget build(BuildContext context) {
-    final imgs = widget.images.isNotEmpty ? widget.images : const ['assets/macchine/supercar.jpg'];
+    final imgs =
+        widget.images.isNotEmpty
+            ? widget.images
+            : const ['assets/macchine/supercar.jpg'];
 
     return Column(
       children: [
@@ -240,9 +247,11 @@ class _HeroGalleryState extends State<_HeroGallery> {
           ),
         ),
         const SizedBox(height: 8),
-        Text(widget.title,
-            textAlign: TextAlign.center,
-            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+        Text(
+          widget.title,
+          textAlign: TextAlign.center,
+          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        ),
       ],
     );
   }
@@ -272,7 +281,8 @@ class _SegmentedPill extends StatelessWidget {
         children: [
           AnimatedAlign(
             duration: const Duration(milliseconds: 180),
-            alignment: index == 0 ? Alignment.centerLeft : Alignment.centerRight,
+            alignment:
+                index == 0 ? Alignment.centerLeft : Alignment.centerRight,
             child: Padding(
               padding: const EdgeInsets.all(4),
               child: Container(
@@ -314,9 +324,12 @@ class _SectionTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.only(left: 4),
-        child: Text(text, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
-      );
+    padding: const EdgeInsets.only(left: 4),
+    child: Text(
+      text,
+      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
+    ),
+  );
 }
 
 class _Card extends StatelessWidget {
@@ -347,7 +360,10 @@ class _DescriptionCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Descrizione', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800)),
+          const Text(
+            'Descrizione',
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800),
+          ),
           const SizedBox(height: 8),
           Text(text, style: const TextStyle(fontSize: 16, height: 1.35)),
         ],
@@ -356,22 +372,29 @@ class _DescriptionCard extends StatelessWidget {
   }
 }
 
-// ---------------- SpecsCard ----------------
-
 class _SpecsCard extends StatelessWidget {
   final Car car;
   const _SpecsCard({required this.car});
 
   @override
   Widget build(BuildContext context) {
-    String fmtCm(double? v) => v == null ? '—' : (v % 1 == 0 ? '${v.toStringAsFixed(0)} cm' : '${v.toStringAsFixed(1)} cm');
+    String fmtCm(double? v) =>
+        v == null
+            ? '—'
+            : (v % 1 == 0
+                ? '${v.toStringAsFixed(0)} cm'
+                : '${v.toStringAsFixed(1)} cm');
+
+    MapEntry<String, String> _kv(String k, String v) => MapEntry(k, v);
 
     return _Card(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('${car.brand.toUpperCase()} ${car.model.toUpperCase()}',
-              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w900)),
+          Text(
+            '${car.brand.toUpperCase()} ${car.model.toUpperCase()}',
+            style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w900),
+          ),
           const SizedBox(height: 6),
           Row(
             children: const [
@@ -406,36 +429,52 @@ class _SpecsCard extends StatelessWidget {
       ),
     );
   }
-
-  static MapEntry<String, String> _kv(String k, String v) => MapEntry(k, v);
 }
 
 class _SpecGroup extends StatelessWidget {
   final String title;
   final IconData icon;
   final List<MapEntry<String, String>> rows;
-  const _SpecGroup({required this.title, required this.icon, required this.rows});
+  const _SpecGroup({
+    required this.title,
+    required this.icon,
+    required this.rows,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(children: [
-          Icon(icon, size: 18),
-          const SizedBox(width: 8),
-          Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),
-        ]),
+        Row(
+          children: [
+            Icon(icon, size: 18),
+            const SizedBox(width: 8),
+            Text(
+              title,
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
+            ),
+          ],
+        ),
         const SizedBox(height: 8),
         ...rows.map(
           (e) => Padding(
             padding: const EdgeInsets.symmetric(vertical: 3),
             child: Row(
               children: [
-                Expanded(child: Text('${e.key}:', style: const TextStyle(fontWeight: FontWeight.w700))),
+                Expanded(
+                  child: Text(
+                    '${e.key}:',
+                    style: const TextStyle(fontWeight: FontWeight.w700),
+                  ),
+                ),
                 const SizedBox(width: 6),
                 Expanded(
-                  child: Text(e.value, textAlign: TextAlign.right, style: const TextStyle(color: Colors.white70)),
+                  child: Text(
+                    e.value,
+                    textAlign: TextAlign.right,
+                    style: const TextStyle(color: Colors.white70),
+                  ),
                 ),
               ],
             ),
@@ -445,8 +484,6 @@ class _SpecGroup extends StatelessWidget {
     );
   }
 }
-
-// ---------------- PriceCard ----------------
 
 class _PriceCard extends StatelessWidget {
   final String mainText;
@@ -481,7 +518,10 @@ class _PriceCard extends StatelessWidget {
               children: [
                 const Icon(Icons.sell_outlined),
                 const SizedBox(width: 8),
-                const Text('Prezzo', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
+                const Text(
+                  'Prezzo',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
+                ),
                 const Spacer(),
                 AnimatedRotation(
                   duration: const Duration(milliseconds: 200),
@@ -497,7 +537,13 @@ class _PriceCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(mainText, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w900)),
+                    Text(
+                      mainText,
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w900,
+                      ),
+                    ),
                     for (final line in extras) ...[
                       const SizedBox(height: 6),
                       Text(line),
@@ -505,7 +551,8 @@ class _PriceCard extends StatelessWidget {
                   ],
                 ),
               ),
-              crossFadeState: open ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+              crossFadeState:
+                  open ? CrossFadeState.showSecond : CrossFadeState.showFirst,
               duration: const Duration(milliseconds: 200),
             ),
           ],
@@ -515,66 +562,198 @@ class _PriceCard extends StatelessWidget {
   }
 }
 
-// ---------------- MapCard ----------------
+/* =================== MAP =================== */
+/* =================== MAP =================== */
 
-class _MapCard extends StatelessWidget {
+class _MapCard extends StatefulWidget {
+  final Car car;
   final Position? pos;
   final String? error;
   final VoidCallback onRetry;
-  const _MapCard({required this.pos, required this.error, required this.onRetry});
+
+  const _MapCard({
+    required this.car,
+    required this.pos,
+    required this.error,
+    required this.onRetry,
+  });
+
+  @override
+  State<_MapCard> createState() => _MapCardState();
+}
+
+class _MapCardState extends State<_MapCard> {
+  GoogleMapController? _controller;
+  Set<Marker> _markers = const <Marker>{};
+  CameraPosition? _initial;
+  String? _centeredDealerId;
+
+  @override
+  void didUpdateWidget(covariant _MapCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Quando arriva la posizione o cambia l'auto, prepara la mappa
+    if (oldWidget.pos != widget.pos || oldWidget.car != widget.car || oldWidget.error != widget.error) {
+      _prepare();
+    }
+  }
+
+  Future<void> _prepare() async {
+    // Se c'è un errore permessi → box errore (gestito in build), azzera stato interno
+    if (widget.error != null) {
+      setState(() {
+        _markers = const <Marker>{};
+        _initial = null;           // niente camera finché non si risolve
+        _centeredDealerId = null;
+      });
+      return;
+    }
+
+    // Finché NON ho la posizione, non calcolo nulla: mostro solo lo spinner
+    if (widget.pos == null) {
+      setState(() {
+        _markers = const <Marker>{};
+        _initial = null;
+        _centeredDealerId = null;
+      });
+      return;
+    }
+
+    // --- Da qui in poi POSIZIONE PRESENTE ---
+    final all = await DealersRepo.load();
+    final Map<String, DealerPoint> byId = {for (final d in all) d.id: d};
+
+    final allowedIds = widget.car.availableAt ?? const <String>[];
+    List<DealerPoint> visible;
+
+    if (allowedIds.isNotEmpty) {
+      // usa SOLO i dealer dichiarati nell’auto (ordine preservato)
+      visible = [
+        for (final id in allowedIds)
+          if (byId.containsKey(id)) byId[id]!,
+      ];
+      // Se per errore non ne trova nessuno, fallback: nessun marker (così è evidente il problema dati)
+      if (visible.isEmpty) {
+        setState(() {
+          _markers = const <Marker>{};
+          _initial = null;
+          _centeredDealerId = null;
+        });
+        return;
+      }
+    } else {
+      // auto senza availableAt: usa tutti
+      visible = all;
+    }
+
+    // Calcola il dealer più vicino tra i VISIBILI
+    final user = LatLng(widget.pos!.latitude, widget.pos!.longitude);
+    final nearest = await DealersRepo.nearestTo(
+      user,
+      allowedDealerIds: visible.map((d) => d.id).toList(),
+    );
+
+    // Marker dealer visibili
+    final markers = <Marker>{
+      for (final d in visible)
+        Marker(
+          markerId: MarkerId(d.id),
+          position: d.latLng,
+          infoWindow: InfoWindow(
+            title: d.name,
+            snippet: d.city,
+            onTap: () async {
+              final uri = Uri.parse(
+                'https://www.google.com/maps/dir/?api=1&destination=${d.latLng.latitude},${d.latLng.longitude}',
+              );
+              if (await canLaunchUrl(uri)) {
+                await launchUrl(uri, mode: LaunchMode.externalApplication);
+              }
+            },
+          ),
+        ),
+      // Marker dell’utente
+      Marker(
+        markerId: const MarkerId('me'),
+        position: user,
+        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure),
+        infoWindow: const InfoWindow(title: 'La tua posizione'),
+      ),
+    };
+
+    if (!mounted) return;
+
+    final shouldAnimate =
+        _controller != null && _centeredDealerId != nearest.id;
+
+    setState(() {
+      _markers = markers;
+      _initial ??= CameraPosition(target: nearest.latLng, zoom: 11.5);
+      _centeredDealerId = nearest.id;
+    });
+
+    if (shouldAnimate) {
+      await _controller!.animateCamera(
+        CameraUpdate.newLatLngZoom(nearest.latLng, 11.5),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    // Box errore permessi/GPS
+    if (widget.error != null) {
+      return _errorBox(widget.error!, widget.onRetry);
+    }
+
+    // Finché non ho la posizione → spinner (niente centering provvisorio)
+    if (widget.pos == null || _initial == null) {
+      return Container(
+        height: 220,
+        decoration: BoxDecoration(
+          color: const Color(0xFFEFEFEF).withOpacity(0.07),
+          borderRadius: BorderRadius.circular(22),
+        ),
+        child: const Center(child: CircularProgressIndicator()),
+      );
+    }
+
     return Container(
-      height: 200,
+      height: 220,
       decoration: BoxDecoration(
         color: const Color(0xFFEFEFEF).withOpacity(0.07),
         borderRadius: BorderRadius.circular(22),
       ),
       clipBehavior: Clip.antiAlias,
-      child: _content(),
+      child: GoogleMap(
+        initialCameraPosition: _initial!,
+        myLocationEnabled: true,
+        zoomControlsEnabled: false,
+        markers: _markers,
+        onMapCreated: (c) {
+          _controller = c;
+          // dopo la creazione, se serviva, centriamo (la prima volta _prepare lo ha già fatto)
+        },
+      ),
     );
   }
 
-  Widget _content() {
-    if (error != null) {
-      return Center(
-        child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-          Text(error!, textAlign: TextAlign.center),
+  Widget _errorBox(String msg, VoidCallback onRetry) {
+    return Container(
+      height: 220,
+      decoration: BoxDecoration(
+        color: const Color(0xFFEFEFEF).withOpacity(0.07),
+        borderRadius: BorderRadius.circular(22),
+      ),
+      child: Center(
+        child: Column(mainAxisSize: MainAxisSize.min, children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            child: Text(msg, textAlign: TextAlign.center),
+          ),
           const SizedBox(height: 8),
           ElevatedButton(onPressed: onRetry, child: const Text('Riprova')),
         ]),
-      );
-    }
-    if (pos == null) return const Center(child: CircularProgressIndicator());
-
-    final user = LatLng(pos!.latitude, pos!.longitude);
-    final dealers = <LatLng>[
-      LatLng(user.latitude + 0.01, user.longitude + 0.01),
-      LatLng(user.latitude - 0.012, user.longitude + 0.008),
-      LatLng(user.latitude + 0.008, user.longitude - 0.009),
-    ];
-
-    final markers = dealers.asMap().entries.map((e) {
-      final p = e.value;
-      return Marker(
-        markerId: MarkerId('d_${e.key}'),
-        position: p,
-        infoWindow: InfoWindow(
-          title: 'Concessionario',
-          onTap: () async {
-            final uri = Uri.parse('https://www.google.com/maps/dir/?api=1&destination=${p.latitude},${p.longitude}');
-            if (await canLaunchUrl(uri)) await launchUrl(uri, mode: LaunchMode.externalApplication);
-          },
-        ),
-      );
-    }).toSet();
-
-    return GoogleMap(
-      initialCameraPosition: CameraPosition(target: user, zoom: 13),
-      myLocationEnabled: true,
-      zoomControlsEnabled: false,
-      markers: markers,
+      ),
     );
   }
 }

@@ -167,11 +167,9 @@ Future<void> _openProfile() async {
       'Lotus': 'assets/loghi/lotus_logo.png',
       'Rolls Royce': 'assets/loghi/rolls_royce_logo.png',
       'Aston Martin': 'assets/loghi/aston_martin_logo.png',
-      'Maserati': 'assets/loghi/maserati_logo.png',
       'Bentley': 'assets/loghi/bentley_logo.png',
       'Koenigsegg': 'assets/loghi/koenigsegg_logo.png',
       'Pagani': 'assets/loghi/pagani_logo.png',
-      'Jaguar': 'assets/loghi/jaguar_logo.png',
     };
 
     // Sostituire Bugatti e McLaren con Porsche e Lotus

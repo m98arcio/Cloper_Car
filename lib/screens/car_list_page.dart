@@ -1,4 +1,3 @@
-// lib/screens/car_list_page.dart
 import 'package:concessionario_supercar/screens/car_detail_page.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
@@ -7,7 +6,6 @@ import '../models/car.dart';
 import '../widgets/dark_live_background.dart';
 import '../widgets/app_bottom_bar.dart';
 import 'profile_page.dart';
-import 'Incoming_page.dart';
 
 class CarListPage extends StatefulWidget {
   final String brand;
@@ -28,24 +26,74 @@ class CarListPage extends StatefulWidget {
 }
 
 class _CarListPageState extends State<CarListPage> {
-  late VideoPlayerController _videoController;
+  VideoPlayerController? _videoController;
+  Future<void>? _videoInit;
 
   @override
   void initState() {
     super.initState();
-    _videoController = VideoPlayerController.asset('assets/video/ferrari.mp4')
-      ..initialize().then((_) {
-        _videoController.setLooping(true);
-        _videoController.setVolume(0);
-        _videoController.play();
-        setState(() {});
-      });
+    _loadBrandVideo(_videoForBrand(widget.brand));
+  }
+
+  @override
+  void didUpdateWidget(covariant CarListPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.brand != widget.brand) {
+      _loadBrandVideo(_videoForBrand(widget.brand));
+    }
   }
 
   @override
   void dispose() {
-    _videoController.dispose();
+    _videoController?.dispose();
     super.dispose();
+  }
+
+  // Mappa brand -> video asset (aggiungi qui i tuoi file reali)
+  String _videoForBrand(String brand) {
+    final b = brand.toLowerCase().trim();
+    if (b.contains('ferrari')) return 'assets/video/ferrari.mp4';
+    if (b.contains('lamborghini')) return 'assets/video/Lamborghini.mp4';
+    if (b.contains('bugatti')) return 'assets/video/Bugatti.mp4';
+    if (b.contains('mclaren')) return 'assets/video/Mclaren.mp4';
+    if (b.contains('porsche')) return 'assets/video/porsche.mp4';
+    if (b.contains('aston')) return 'assets/video/Aston_Martin.mp4';
+    if (b.contains('bentley')) return 'assets/video/Bentley.mp4';
+    if (b.contains('rolls')) return 'assets/video/Rolls.mp4';
+    if (b.contains('pagani')) return 'assets/video/Pagani.mp4';
+    if (b.contains('koenigsegg')) return 'assets/video/Koenigsegg.mp4';
+    if (b.contains('lotus')) return 'assets/video/Lotus.mp4';
+    // fallback
+    return 'assets/video/ferrari.mp4';
+  }
+
+  void _loadBrandVideo(String assetPath) {
+    // Chiude il precedente controller (se c'è)
+    _videoController?.dispose();
+
+    // Prova a caricare il video del brand, se fallisse userà il fallback
+    final controller = VideoPlayerController.asset(assetPath);
+    setState(() {
+      _videoController = controller;
+      _videoInit = controller.initialize().then((_) {
+        controller
+          ..setLooping(true)
+          ..setVolume(0)
+          ..play();
+        if (mounted) setState(() {});
+      }).catchError((_) async {
+        // Fallback sicuro
+        final fb = VideoPlayerController.asset('assets/video/ferrari.mp4');
+        _videoController = fb;
+        _videoInit = fb.initialize().then((_) {
+          fb
+            ..setLooping(true)
+            ..setVolume(0)
+            ..play();
+          if (mounted) setState(() {});
+        });
+      });
+    });
   }
 
   Future<void> _openProfile() async {
@@ -55,7 +103,7 @@ class _CarListPageState extends State<CarListPage> {
         builder: (_) => ProfilePage(
           initialCurrency: widget.preferredCurrency,
           onChanged: (_) {},
-          cars: widget.cars, // lista completa auto
+          cars: widget.cars,
           rates: widget.rates,
         ),
       ),
@@ -64,6 +112,8 @@ class _CarListPageState extends State<CarListPage> {
 
   @override
   Widget build(BuildContext context) {
+    final brand = widget.brand;
+
     return Scaffold(
       backgroundColor: Colors.transparent,
       extendBody: true,
@@ -72,7 +122,7 @@ class _CarListPageState extends State<CarListPage> {
         elevation: 0,
         centerTitle: true,
         title: Text(
-          widget.brand,
+          brand,
           style: const TextStyle(
             fontSize: 26,
             fontWeight: FontWeight.w900,
@@ -85,16 +135,26 @@ class _CarListPageState extends State<CarListPage> {
           const DarkLiveBackground(),
           Column(
             children: [
-              // HERO VIDEO
+              // ---------- HERO VIDEO ----------
               Stack(
                 children: [
                   SizedBox(
                     height: 220,
                     width: double.infinity,
-                    child: _videoController.value.isInitialized
-                        ? VideoPlayer(_videoController)
+                    child: (_videoController != null)
+                        ? FutureBuilder<void>(
+                            future: _videoInit,
+                            builder: (context, snap) {
+                              if (snap.connectionState == ConnectionState.done &&
+                                  _videoController!.value.isInitialized) {
+                                return VideoPlayer(_videoController!);
+                              }
+                              return const Center(child: CircularProgressIndicator());
+                            },
+                          )
                         : const Center(child: CircularProgressIndicator()),
                   ),
+                  // overlay per leggere il testo
                   Container(
                     height: 220,
                     width: double.infinity,
@@ -112,8 +172,11 @@ class _CarListPageState extends State<CarListPage> {
                   Positioned(
                     bottom: 20,
                     left: 20,
+                    right: 20,
                     child: Text(
-                      "Scopri le auto di ${widget.brand}",
+                      'Scopri le auto di $brand',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 24,
@@ -124,7 +187,8 @@ class _CarListPageState extends State<CarListPage> {
                   ),
                 ],
               ),
-              // LISTA AUTO
+
+              // ---------- LISTA AUTO ----------
               Expanded(
                 child: GridView.builder(
                   padding: const EdgeInsets.all(16),
@@ -146,7 +210,7 @@ class _CarListPageState extends State<CarListPage> {
                               car: car,
                               rates: widget.rates,
                               preferredCurrency: widget.preferredCurrency,
-                              cars: widget.cars, // lista completa per bottom bar
+                              cars: widget.cars, // per la bottom bar nel dettaglio
                             ),
                           ),
                         );
@@ -159,7 +223,7 @@ class _CarListPageState extends State<CarListPage> {
                             end: Alignment.bottomRight,
                             colors: [
                               Color.fromARGB(255, 163, 10, 10),
-                              Color.fromARGB(255, 6, 19, 70)
+                              Color.fromARGB(255, 6, 19, 70),
                             ],
                           ),
                           border: Border.all(color: Colors.white24),
@@ -175,8 +239,9 @@ class _CarListPageState extends State<CarListPage> {
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             ClipRRect(
-                              borderRadius:
-                                  const BorderRadius.vertical(top: Radius.circular(22)),
+                              borderRadius: const BorderRadius.vertical(
+                                top: Radius.circular(22),
+                              ),
                               child: car.images.isNotEmpty
                                   ? Image.asset(
                                       car.images.first,
@@ -185,11 +250,14 @@ class _CarListPageState extends State<CarListPage> {
                                       fit: BoxFit.cover,
                                     )
                                   : Container(
-                                      height: 140,
+                                      height: 160,
                                       color: Colors.grey[800],
                                       alignment: Alignment.center,
-                                      child: const Icon(Icons.car_rental,
-                                          size: 40, color: Colors.white54),
+                                      child: const Icon(
+                                        Icons.car_rental,
+                                        size: 40,
+                                        color: Colors.white54,
+                                      ),
                                     ),
                             ),
                             Padding(
@@ -217,8 +285,9 @@ class _CarListPageState extends State<CarListPage> {
           ),
         ],
       ),
+      // Sei nella sezione Catalogo → indice 1
       bottomNavigationBar: AppBottomBar(
-        currentIndex: 0,
+        currentIndex: 1,
         cars: widget.cars,
         rates: widget.rates,
         preferredCurrency: widget.preferredCurrency,

@@ -6,7 +6,6 @@ import '../models/car.dart';
 import '../widgets/dark_live_background.dart';
 import '../widgets/app_bottom_bar.dart';
 import '../screens/car_list_page.dart';
-import '../screens/Incoming_page.dart';
 import '../screens/profile_page.dart';
 import '../services/rates_api.dart';
 
@@ -65,7 +64,8 @@ class _BrandCatalogPageState extends State<BrandCatalogPage> {
           onChanged: (c) async {
             final prefs = await SharedPreferences.getInstance();
             await prefs.setString('preferred_currency', c);
-          }, cars: [],
+          },
+          cars: [],
         ),
       ),
     );
@@ -119,8 +119,10 @@ class _BrandCatalogPageState extends State<BrandCatalogPage> {
                   onTapDown: (_) => setState(() => _pressed[brand] = true),
                   onTapUp: (_) {
                     setState(() => _pressed[brand] = false);
-                    final filtered =
-                        widget.cars.where((c) => c.brand.toLowerCase() == brand.toLowerCase()).toList();
+                    final filtered = widget.cars
+                        .where((c) =>
+                            c.brand.toLowerCase() == brand.toLowerCase())
+                        .toList();
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -137,7 +139,8 @@ class _BrandCatalogPageState extends State<BrandCatalogPage> {
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 150),
                     curve: Curves.easeOut,
-                    transform: Matrix4.identity()..scale(isPressed ? 0.97 : 1.0),
+                    transform: Matrix4.identity()
+                      ..scale(isPressed ? 0.97 : 1.0),
                     decoration: BoxDecoration(
                       color: Colors.grey.withOpacity(0.15),
                       borderRadius: BorderRadius.circular(16),
@@ -165,7 +168,11 @@ class _BrandCatalogPageState extends State<BrandCatalogPage> {
                                       fontWeight: FontWeight.w700,
                                       color: Colors.white,
                                       letterSpacing: 1.2,
-                                      shadows: [Shadow(blurRadius: 6, color: Colors.black87)],
+                                      shadows: [
+                                        Shadow(
+                                            blurRadius: 6,
+                                            color: Colors.black87)
+                                      ],
                                     ),
                                   ),
                                 ),
@@ -192,30 +199,29 @@ class _BrandCatalogPageState extends State<BrandCatalogPage> {
           ),
         ],
       ),
-bottomNavigationBar: AppBottomBar(
-  currentIndex: 1, // Catalogo
-  cars: widget.cars,
-  rates: widget.rates,
-  preferredCurrency: widget.preferredCurrency,
-  onProfileTap: () {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => ProfilePage(
-          initialCurrency: widget.preferredCurrency,
-          onChanged: (_) {},
-          cars: widget.cars,
-          rates: widget.rates,
-        ),
+      bottomNavigationBar: AppBottomBar(
+        currentIndex: 1, // Catalogo
+        cars: widget.cars,
+        rates: widget.rates,
+        preferredCurrency: widget.preferredCurrency,
+        onProfileTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => ProfilePage(
+                initialCurrency: widget.preferredCurrency,
+                onChanged: (_) {},
+                cars: widget.cars,
+                rates: widget.rates,
+              ),
+            ),
+          );
+        },
       ),
-    );
-  },
-),
-
     );
   }
 
-  // ------ helpers di pagina (invariati) ------
+  // ------ helpers di pagina (aggiornati) ------
   List<String> _luxuryBrands() => [
         'Bugatti',
         'Ferrari',
@@ -224,11 +230,9 @@ bottomNavigationBar: AppBottomBar(
         'Porsche',
         'Rolls-Royce',
         'Aston Martin',
-        'Maserati',
         'Bentley',
         'Koenigsegg',
         'Pagani',
-        'Jaguar',
         'Lotus',
       ];
 
@@ -240,11 +244,9 @@ bottomNavigationBar: AppBottomBar(
         'Porsche': 'assets/macchine/porsche.jpg',
         'Rolls-Royce': 'assets/macchine/rolls_royce.jpg',
         'Aston Martin': 'assets/macchine/aston_martin.jpg',
-        'Maserati': 'assets/macchine/maserati.jpg',
         'Bentley': 'assets/macchine/bentley.jpg',
         'Koenigsegg': 'assets/macchine/koenigsegg.jpg',
         'Pagani': 'assets/macchine/pagani.jpg',
-        'Jaguar': 'assets/macchine/jaguar.jpg',
         'Lotus': 'assets/macchine/lotus.jpg',
       };
 
@@ -256,11 +258,9 @@ bottomNavigationBar: AppBottomBar(
         'Porsche': 'assets/loghi/porsche_logo.png',
         'Rolls-Royce': 'assets/loghi/rolls_royce_logo.png',
         'Aston Martin': 'assets/loghi/aston_martin_logo.png',
-        'Maserati': 'assets/loghi/maserati_logo.png',
         'Bentley': 'assets/loghi/bentley_logo.png',
         'Koenigsegg': 'assets/loghi/koenigsegg_logo.png',
-        'Pagani': 'assets/loghi/pagani.png',
-        'Jaguar': 'assets/loghi/jaguar_logo.png',
+        'Pagani': 'assets/loghi/pagani_logo.png',
         'Lotus': 'assets/loghi/lotus_logo.png',
       };
 }

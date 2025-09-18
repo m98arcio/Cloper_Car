@@ -42,11 +42,9 @@ flutter:
     - assets/macchine/porsche.jpg
     - assets/macchine/rolls_royce.jpg
     - assets/macchine/aston_martin.jpg
-    - assets/macchine/maserati.jpg
     - assets/macchine/bentley.jpg
     - assets/macchine/koenigsegg.jpg
     - assets/macchine/pagani.jpg
-    - assets/macchine/jaguar.jpg
     - assets/macchine/lotus.jpg
 
     # Loghi macchine
@@ -57,15 +55,23 @@ flutter:
     - assets/loghi/porsche_logo.png
     - assets/loghi/rolls_royce_logo.png
     - assets/loghi/aston_martin_logo.png
-    - assets/loghi/maserati_logo.png
     - assets/loghi/bentley_logo.png
     - assets/loghi/koenigsegg_logo.png
     - assets/loghi/pagani_logo.png
-    - assets/loghi/jaguar_logo.png
     - assets/loghi/lotus_logo.png 
 
     # Video macchine
     - assets/video/ferrari.mp4
+    - assets/video/Aston_Martin.mp4
+    - assets/video/Bentley.mp4
+    - assets/video/Bugatti.mp4
+    - assets/video/Koenigsegg.mp4
+    - assets/video/Lamborghini.mp4
+    - assets/video/Mclaren.mp4
+    - assets/video/Pagani.mp4
+    - assets/video/porsche.mp4
+    - assets/video/Rolls.mp4
+    - assets/video/Lotus.mp4
 
     # Concessionari
     - assets/dealers.json
