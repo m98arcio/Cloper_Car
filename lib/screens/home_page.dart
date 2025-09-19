@@ -185,12 +185,13 @@ class _HomePageState extends State<HomePage> {
     return ListView(
       padding: const EdgeInsets.only(bottom: 16),
       children: [
+        // Immagine con titolo incavato
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(22),
             child: Stack(
-              alignment: Alignment.bottomLeft,
+              alignment: Alignment.center,
               children: [
                 AspectRatio(
                   aspectRatio: 16 / 9,
@@ -199,28 +200,39 @@ class _HomePageState extends State<HomePage> {
                     fit: BoxFit.cover,
                   ),
                 ),
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.bottomCenter,
-                      end: Alignment.topCenter,
-                      colors: [
-                        Colors.black.withOpacity(0.55),
-                        Colors.transparent,
-                      ],
+                // Testo effetto incavato
+                Stack(
+                  children: [
+                    AspectRatio(
+                      aspectRatio: 16 / 9,
+                      child: Image.asset(
+                        'assets/macchine/supercar.jpg',
+                        fit: BoxFit.cover,
+                      ),
                     ),
-                  ),
-                  child: const Text(
-                    'Cloper: Drive different',
-                    style: TextStyle(
-                      fontSize: 26,
-                      fontWeight: FontWeight.w900,
-                      color: Colors.white,
-                      shadows: [Shadow(blurRadius: 6, color: Colors.black54)],
+                    Positioned(
+                      top: 20,
+                      left: 0,
+                      right: 0,
+                      child: Text(
+                        'Drive Different',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 42,
+                          fontWeight: FontWeight.w800,
+                          fontStyle: FontStyle.italic,
+                          color: Colors.white,
+                          shadows: [
+                            Shadow(
+                              offset: const Offset(2, 2),
+                              blurRadius: 6,
+                              color: Colors.black45,
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
-                  ),
+                  ],
                 ),
               ],
             ),
@@ -334,6 +346,44 @@ class _HomePageState extends State<HomePage> {
           )
         else
           NewsStrip(items: _news, onRefresh: _loadNews),
+        const SizedBox(height: 100),
+        Container(
+          width: double.infinity,
+          color: const Color(0xFF212121),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 40),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Informazioni',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+              const SizedBox(height: 10),
+              const Text(
+                'CloperCar è un progetto fittizio dedicato agli appassionati di auto di lusso. '
+                'Tutti i contenuti, prezzi e marchi presenti sono simulati a scopo dimostrativo.',
+                style: TextStyle(color: Colors.white70),
+              ),
+              const SizedBox(height: 30),
+              const Text(
+                'Contatti',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+              const SizedBox(height: 10),
+              const Text('Email: info@clopercar.fake', style: TextStyle(color: Colors.white70)),
+              const Text('Telefono: +39 012 345 6789', style: TextStyle(color: Colors.white70)),
+              const SizedBox(height: 20),
+            ],
+          ),
+        ),
       ],
     );
   }
@@ -348,7 +398,9 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-class _BrandChip extends StatelessWidget {
+// ----------- Widget con tap e long press animato e ripple -----------
+
+class _BrandChip extends StatefulWidget {
   final String brand;
   final String? imagePath;
   final VoidCallback onTap;
@@ -360,73 +412,139 @@ class _BrandChip extends StatelessWidget {
   });
 
   @override
+  State<_BrandChip> createState() => _BrandChipState();
+}
+
+class _BrandChipState extends State<_BrandChip> {
+  double _scale = 1.0;
+
+  void _onTapDown(TapDownDetails details) => setState(() => _scale = 0.95);
+  void _onTapUp(TapUpDetails details) => setState(() => _scale = 1.0);
+  void _onTapCancel() => setState(() => _scale = 1.0);
+
+  void _onLongPress() {
+    setState(() => _scale = 0.9);
+    Future.delayed(const Duration(milliseconds: 200), () {
+      if (mounted) setState(() => _scale = 1.0);
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(14),
-      child: Container(
-        width: 160,
-        decoration: BoxDecoration(
-          color: const Color(0xFFEFEFEF).withOpacity(0.06),
+    return AnimatedScale(
+      scale: _scale,
+      duration: const Duration(milliseconds: 100),
+      curve: Curves.easeOut,
+      child: Material(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(14),
+        child: InkWell(
           borderRadius: BorderRadius.circular(14),
-          boxShadow: const [BoxShadow(blurRadius: 10, color: Colors.black26)],
-        ),
-        padding: const EdgeInsets.all(10),
-        child: Row(
-          children: [
-            BrandLogo(
-              brand: brand,
-              imagePath: imagePath,
-              size: 50,
-              round: true,
+          onTap: widget.onTap,
+          onLongPress: _onLongPress,
+          onTapDown: _onTapDown,
+          onTapUp: _onTapUp,
+          onTapCancel: _onTapCancel,
+          splashColor: Colors.white24,
+          highlightColor: Colors.white10,
+          child: Container(
+            width: 160,
+            decoration: BoxDecoration(
+              color: const Color(0xFFEFEFEF).withOpacity(0.06),
+              borderRadius: BorderRadius.circular(14),
+              boxShadow: const [BoxShadow(blurRadius: 10, color: Colors.black26)],
             ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Text(
-                brand,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(fontWeight: FontWeight.w700),
-              ),
+            padding: const EdgeInsets.all(10),
+            child: Row(
+              children: [
+                BrandLogo(
+                  brand: widget.brand,
+                  imagePath: widget.imagePath,
+                  size: 50,
+                  round: true,
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    widget.brand,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(fontWeight: FontWeight.w700),
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
   }
 }
 
-class _SeeAllChip extends StatelessWidget {
+class _SeeAllChip extends StatefulWidget {
   final VoidCallback onTap;
 
   const _SeeAllChip({required this.onTap});
 
   @override
+  State<_SeeAllChip> createState() => _SeeAllChipState();
+}
+
+class _SeeAllChipState extends State<_SeeAllChip> {
+  double _scale = 1.0;
+
+  void _onTapDown(TapDownDetails details) => setState(() => _scale = 0.95);
+  void _onTapUp(TapUpDetails details) => setState(() => _scale = 1.0);
+  void _onTapCancel() => setState(() => _scale = 1.0);
+
+  void _onLongPress() {
+    setState(() => _scale = 0.9);
+    Future.delayed(const Duration(milliseconds: 200), () {
+      if (mounted) setState(() => _scale = 1.0);
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(14),
-      child: Container(
-        width: 140,
-        decoration: BoxDecoration(
+    return AnimatedScale(
+      scale: _scale,
+      duration: const Duration(milliseconds: 100),
+      curve: Curves.easeOut,
+      child: Material(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(14),
+        child: InkWell(
           borderRadius: BorderRadius.circular(14),
-          gradient: LinearGradient(
-            begin: Alignment.centerLeft,
-            end: Alignment.centerRight,
-            colors: [
-              Colors.grey.withOpacity(0.5),
-              Colors.grey.withOpacity(0.25),
-              Colors.grey.withOpacity(0.125),
-              Colors.transparent,
-            ],
-            stops: [0.0, 0.5, 0.75, 1.0],
-          ),
-        ),
-        child: const Center(
-          child: Icon(
-            Icons.arrow_forward_ios,
-            size: 30,
-            color: Colors.black45,
+          onTap: widget.onTap,
+          onLongPress: _onLongPress,
+          onTapDown: _onTapDown,
+          onTapUp: _onTapUp,
+          onTapCancel: _onTapCancel,
+          splashColor: Colors.white24,
+          highlightColor: Colors.white10,
+          child: Container(
+            width: 140,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(14),
+              gradient: LinearGradient(
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+                colors: [
+                  Colors.grey.withOpacity(0.5),
+                  Colors.grey.withOpacity(0.25),
+                  Colors.grey.withOpacity(0.125),
+                  Colors.transparent,
+                ],
+                stops: [0.0, 0.5, 0.75, 1.0],
+              ),
+            ),
+            child: const Center(
+              child: Icon(
+                Icons.arrow_forward_ios,
+                size: 30,
+                color: Colors.black45,
+              ),
+            ),
           ),
         ),
       ),
