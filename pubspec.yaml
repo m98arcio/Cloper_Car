@@ -31,50 +31,15 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
-    # Macchine
+    #contiene tutti i loghi
+    - assets/loghi/
+    #contiene le immagini di presentazione delle auto
     - assets/macchine/
-    - assets/macchine/supercar.jpg
-    - assets/macchine/ferrari.jpg
-    - assets/macchine/lamborghini.jpg
-    - assets/macchine/mclaren.jpg
-    - assets/macchine/bugatti.jpg
-    - assets/macchine/Ferrari_250_GTO.png 
-    - assets/macchine/porsche.jpg
-    - assets/macchine/rolls_royce.jpg
-    - assets/macchine/aston_martin.jpg
-    - assets/macchine/bentley.jpg
-    - assets/macchine/koenigsegg.jpg
-    - assets/macchine/pagani.jpg
-    - assets/macchine/lotus.jpg
-
-    # Loghi macchine
-    - assets/loghi/bugatti_logo.png
-    - assets/loghi/ferrari_logo.png
-    - assets/loghi/lamborghini_logo.png
-    - assets/loghi/mclaren_logo.png
-    - assets/loghi/porsche_logo.png
-    - assets/loghi/rolls_royce_logo.png
-    - assets/loghi/aston_martin_logo.png
-    - assets/loghi/bentley_logo.png
-    - assets/loghi/koenigsegg_logo.png
-    - assets/loghi/pagani_logo.png
-    - assets/loghi/lotus_logo.png 
-
-    # Video macchine
-    - assets/video/ferrari.mp4
-    - assets/video/Aston_Martin.mp4
-    - assets/video/Bentley.mp4
-    - assets/video/Bugatti.mp4
-    - assets/video/Koenigsegg.mp4
-    - assets/video/Lamborghini.mp4
-    - assets/video/Mclaren.mp4
-    - assets/video/Pagani.mp4
-    - assets/video/porsche.mp4
-    - assets/video/Rolls.mp4
-    - assets/video/Lotus.mp4
-
-    # Concessionari
+    #contiene le singole auto per brand
+    - assets/macchine_per_brand/  
+    #contiene i video per i brand
+    - assets/video/
+    #luoghi concessionari
     - assets/dealers.json
-
-    # Macchine
+    #info auto
     - assets/cars.json
