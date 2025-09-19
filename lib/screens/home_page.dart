@@ -6,7 +6,6 @@ import '../models/car.dart';
 import '../services/local_catalog.dart';
 import '../services/rates_api.dart';
 import '../services/news_service.dart';
-
 import '../widgets/dark_live_background.dart';
 import '../widgets/brand_logo.dart';
 import '../widgets/news_strip.dart';
@@ -18,6 +17,7 @@ import 'profile_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
+
   @override
   State<HomePage> createState() => _HomePageState();
 }
@@ -29,6 +29,7 @@ class _HomePageState extends State<HomePage> {
   final RatesApi _ratesApi = RatesApi();
   List<Car> _cars = [];
   Map<String, double>? _rates;
+
   bool _loading = true;
   String _error = '';
 
@@ -49,13 +50,14 @@ class _HomePageState extends State<HomePage> {
       _loading = true;
       _error = '';
     });
+
     try {
       final prefs = await SharedPreferences.getInstance();
       _preferred = prefs.getString(_prefKeyCurrency) ?? 'EUR';
 
       final cars = await LocalCatalog.load();
-
       Map<String, double>? rates;
+
       try {
         rates = await _ratesApi.fetchRates();
       } catch (_) {
@@ -81,6 +83,7 @@ class _HomePageState extends State<HomePage> {
       _newsLoading = true;
       _newsError = '';
     });
+
     try {
       final items = await _newsService.fetchLatest();
       if (!mounted) return;
@@ -94,31 +97,30 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-Future<void> _openProfile() async {
-  final changed = await Navigator.push<bool>(
-    context,
-    MaterialPageRoute(
-      builder: (_) => ProfilePage(
-        initialCurrency: _preferred,
-        onChanged: (c) async {
-          final prefs = await SharedPreferences.getInstance();
-          await prefs.setString(_prefKeyCurrency, c);
-        },
-        cars: _cars,       // lista completa di auto
-        rates: _rates,     // tassi di cambio
+  Future<void> _openProfile() async {
+    final changed = await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ProfilePage(
+          initialCurrency: _preferred,
+          onChanged: (c) async {
+            final prefs = await SharedPreferences.getInstance();
+            await prefs.setString(_prefKeyCurrency, c);
+          },
+          cars: _cars,
+          rates: _rates,
+        ),
       ),
-    ),
-  );
+    );
 
-  if (changed == true) {
-    final prefs = await SharedPreferences.getInstance();
-    if (!mounted) return;
-    setState(() {
-      _preferred = prefs.getString(_prefKeyCurrency) ?? 'EUR';
-    });
+    if (changed == true) {
+      final prefs = await SharedPreferences.getInstance();
+      if (!mounted) return;
+      setState(() {
+        _preferred = prefs.getString(_prefKeyCurrency) ?? 'EUR';
+      });
+    }
   }
-}
-
 
   @override
   Widget build(BuildContext context) {
@@ -159,7 +161,6 @@ Future<void> _openProfile() async {
 
     final allBrands = _uniqueBrands(_cars);
 
-    // Mappa dei loghi dagli asset
     final brandLogos = {
       'Ferrari': 'assets/loghi/ferrari_logo.png',
       'Lamborghini': 'assets/loghi/lamborghini_logo.png',
@@ -172,13 +173,14 @@ Future<void> _openProfile() async {
       'Pagani': 'assets/loghi/pagani_logo.png',
     };
 
-    // Sostituire Bugatti e McLaren con Porsche e Lotus
     final brands = <String>[];
     for (var b in allBrands) {
-      if (b.toLowerCase() == 'bugatti' || b.toLowerCase() == 'mclaren') continue;
+      if (b.toLowerCase() == 'bugatti' || b.toLowerCase() == 'mclaren') {
+        continue;
+      }
       brands.add(b);
     }
-    brands.insertAll(0, ['Porsche', 'Lotus']); // all’inizio
+    brands.insertAll(0, ['Porsche', 'Lotus']);
 
     return ListView(
       padding: const EdgeInsets.only(bottom: 16),
@@ -192,7 +194,10 @@ Future<void> _openProfile() async {
               children: [
                 AspectRatio(
                   aspectRatio: 16 / 9,
-                  child: Image.asset('assets/macchine/supercar.jpg', fit: BoxFit.cover),
+                  child: Image.asset(
+                    'assets/macchine/supercar.jpg',
+                    fit: BoxFit.cover,
+                  ),
                 ),
                 Container(
                   width: double.infinity,
@@ -208,7 +213,7 @@ Future<void> _openProfile() async {
                     ),
                   ),
                   child: const Text(
-                    'Scopri le migliori supercar',
+                    'Cloper: Drive different',
                     style: TextStyle(
                       fontSize: 26,
                       fontWeight: FontWeight.w900,
@@ -347,6 +352,7 @@ class _BrandChip extends StatelessWidget {
   final String brand;
   final String? imagePath;
   final VoidCallback onTap;
+
   const _BrandChip({
     required this.brand,
     required this.imagePath,
@@ -392,6 +398,7 @@ class _BrandChip extends StatelessWidget {
 
 class _SeeAllChip extends StatelessWidget {
   final VoidCallback onTap;
+
   const _SeeAllChip({required this.onTap});
 
   @override
