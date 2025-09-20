@@ -31,15 +31,83 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
-    #contiene tutti i loghi
+    # Loghi
     - assets/loghi/
-    #contiene le immagini di presentazione delle auto
+    # Immagini di presentazione delle auto
     - assets/macchine/
-    #contiene le singole auto per brand
-    - assets/macchine_per_brand/  
-    #contiene i video per i brand
+    # Singole auto per brand
+    - assets/macchine_per_brand/
+    # Video per i brand
     - assets/video/
-    #luoghi concessionari
+    # Luoghi concessionari
     - assets/dealers.json
-    #info auto
+    # Info auto
     - assets/cars.json
+    # Cartelle dei brand (Flutter carica tutto dentro)
+    - assets/macchine_per_brand/
+
+    # Cartelle macchine per Aston_Martin
+    - assets/macchine_per_brand/Aston_Martin/Aston_Martin_Valkyrie/
+    - assets/macchine_per_brand/Aston_Martin/Aston_Martin_Valour/
+    - assets/macchine_per_brand/Aston_Martin/Aston_Martin_Vanquish_Zagato/
+    - assets/macchine_per_brand/Aston_Martin/Aston_Martin_Vantage/
+
+    # Cartelle macchine per Bentley
+    - assets/macchine_per_brand/Bentley/Bentley_Bentayga_Mansory/
+    - assets/macchine_per_brand/Bentley/Bentley_Continental_GT/
+    - assets/macchine_per_brand/Bentley/Bentley_Continental_GT_Mulliner_W12/
+
+    # Cartelle macchine per Bugatti
+    - assets/macchine_per_brand/Bugatti/Bugatti_Solitaire/
+    - assets/macchine_per_brand/Bugatti/Bugatti_Divo/
+    - assets/macchine_per_brand/Bugatti/Bugatti_Veyron/
+    - assets/macchine_per_brand/Bugatti/Bugatti_Chiron/
+
+    # Cartelle macchine per Ferrari
+    - assets/macchine_per_brand/Ferrari/Ferrari_269_GTB/
+    - assets/macchine_per_brand/Ferrari/Ferrari_F40/
+    - assets/macchine_per_brand/Ferrari/Ferrari_Portofino/
+    - assets/macchine_per_brand/Ferrari/Ferrari_Purosangue/
+    - assets/macchine_per_brand/Ferrari/Ferrari_SF90_Stradale/
+    - assets/macchine_per_brand/Ferrari/Ferrari_Testarossa/
+
+    # Cartelle macchine per Koenigsegg
+    - assets/macchine_per_brand/Koenigsegg/Koenigsegg_jesko/
+    - assets/macchine_per_brand/Koenigsegg/Koenigsegg_Regera/
+
+    # Cartelle macchine per Lamborghini
+    - assets/macchine_per_brand/Lamborghini/Lamborghini_Aventador_SVJ/
+    - assets/macchine_per_brand/Lamborghini/Lamborghini_Essenza/
+    - assets/macchine_per_brand/Lamborghini/Lamborghini_Revuelto/
+    - assets/macchine_per_brand/Lamborghini/Lamborghini_Urus_performance/
+    - assets/macchine_per_brand/Lamborghini/Lamborghini_Veneno/
+
+    # Cartelle macchine per Lotus
+    - assets/macchine_per_brand/Lotus/Lotus_Emira/
+    - assets/macchine_per_brand/Lotus/Lotus_Evija/
+    - assets/macchine_per_brand/Lotus/Lotus_Evora_GT/
+
+    # Cartelle macchine per McLaren
+    - assets/macchine_per_brand/McLaren/McLaren_765LT_Spider/
+    - assets/macchine_per_brand/McLaren/McLaren_Elva/
+    - assets/macchine_per_brand/McLaren/McLaren_P1/
+    - assets/macchine_per_brand/McLaren/McLaren_Senna/
+    - assets/macchine_per_brand/McLaren/McLaren_Solus_GT/
+
+    # Cartelle macchine per Pagani
+    - assets/macchine_per_brand/Pagani/Pagani_Huayra/
+    - assets/macchine_per_brand/Pagani/Pagani_Utopia/
+
+    # Cartelle macchine per Porsche
+    - assets/macchine_per_brand/Porsche/Porsche_911_GT2_RS/
+    - assets/macchine_per_brand/Porsche/Porsche_911_GT3_RS/
+    - assets/macchine_per_brand/Porsche/Porsche_918_Spyder/
+    - assets/macchine_per_brand/Porsche/Porsche_Carrera_GT/
+
+    # Cartelle macchine per Rolls-Royce
+    - assets/macchine_per_brand/Rolls-Royce/Rolls-Royce_Cullinan/
+    - assets/macchine_per_brand/Rolls-Royce/Rolls-Royce_Ghost/
+    - assets/macchine_per_brand/Rolls-Royce/Rolls-Royce_Phantom/
+    - assets/macchine_per_brand/Rolls-Royce/Rolls-Royce_Spectre/
+
+

@@ -17,7 +17,7 @@ class Car {
   final String? description;
   final int? year;
   final bool incoming;
-  final List<String> availableAt;
+  final List<String> availableDealerIds; // rinominato
 
   Car({
     required this.id,
@@ -36,7 +36,7 @@ class Car {
     this.description,
     this.year,
     this.incoming = false,
-    this.availableAt = const [],
+    this.availableDealerIds = const [],
   });
 
   factory Car.fromJson(Map<String, dynamic> j) => Car(
@@ -56,7 +56,7 @@ class Car {
         description: j['description'] as String?,
         year: (j['year'] as num?)?.toInt(),
         incoming: j['incoming'] as bool? ?? false,
-        availableAt: (j['availableAt'] as List?)?.cast<String>() ?? const [],
+        availableDealerIds: (j['availableDealerIds'] as List?)?.cast<String>() ?? const [],
       );
 
   Map<String, dynamic> toJson() => {
@@ -76,6 +76,6 @@ class Car {
         if (description != null) 'description': description,
         if (year != null) 'year': year,
         if (incoming) 'incoming': incoming,
-        'availableAt': availableAt,
+        'availableDealerIds': availableDealerIds, // rinominato
       };
 }

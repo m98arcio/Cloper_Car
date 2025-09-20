@@ -69,13 +69,12 @@ class _CarDetailPageState extends State<CarDetailPage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder:
-            (_) => ProfilePage(
-              initialCurrency: widget.preferredCurrency,
-              onChanged: (_) {},
-              cars: widget.cars,
-              rates: widget.rates,
-            ),
+        builder: (_) => ProfilePage(
+          initialCurrency: widget.preferredCurrency,
+          onChanged: (_) {},
+          cars: widget.cars,
+          rates: widget.rates,
+        ),
       ),
     );
   }
@@ -165,12 +164,9 @@ class _CarDetailPageState extends State<CarDetailPage> {
                 const SizedBox(height: 14),
                 AnimatedSwitcher(
                   duration: const Duration(milliseconds: 180),
-                  child:
-                      _tab == 0
-                          ? _DescriptionCard(
-                            text: c.description ?? _defaultDesc(c),
-                          )
-                          : _SpecsCard(car: c),
+                  child: _tab == 0
+                      ? _DescriptionCard(text: c.description ?? _defaultDesc(c))
+                      : _SpecsCard(car: c),
                 ),
                 const SizedBox(height: 16),
                 _PriceCard(
@@ -183,10 +179,10 @@ class _CarDetailPageState extends State<CarDetailPage> {
                 const _SectionTitle('Concessionari vicini'),
                 const SizedBox(height: 8),
                 _MapCard(
-                  car: c, // <-- passiamo l’auto
-                  pos: _pos, // posizione utente (può essere null)
-                  error: _locError, // eventuale errore
-                  onRetry: _getPositionSafe, // per riprovare i permessi
+                  car: c,
+                  pos: _pos,
+                  error: _locError,
+                  onRetry: _getPositionSafe,
                 ),
               ],
             ),
@@ -227,10 +223,9 @@ class _HeroGalleryState extends State<_HeroGallery> {
 
   @override
   Widget build(BuildContext context) {
-    final imgs =
-        widget.images.isNotEmpty
-            ? widget.images
-            : const ['assets/macchine/supercar.jpg'];
+    final imgs = widget.images.isNotEmpty
+        ? widget.images
+        : const ['assets/macchine/supercar.jpg'];
 
     return Column(
       children: [
@@ -257,6 +252,7 @@ class _HeroGalleryState extends State<_HeroGallery> {
   }
 }
 
+// ================= SEGMENTED PILL =================
 class _SegmentedPill extends StatelessWidget {
   final int index;
   final ValueChanged<int> onChanged;
@@ -281,8 +277,7 @@ class _SegmentedPill extends StatelessWidget {
         children: [
           AnimatedAlign(
             duration: const Duration(milliseconds: 180),
-            alignment:
-                index == 0 ? Alignment.centerLeft : Alignment.centerRight,
+            alignment: index == 0 ? Alignment.centerLeft : Alignment.centerRight,
             child: Padding(
               padding: const EdgeInsets.all(4),
               child: Container(
@@ -318,20 +313,22 @@ class _SegmentedPill extends StatelessWidget {
   }
 }
 
+// ================= SECTION TITLE =================
 class _SectionTitle extends StatelessWidget {
   final String text;
   const _SectionTitle(this.text);
 
   @override
   Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.only(left: 4),
-    child: Text(
-      text,
-      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
-    ),
-  );
+        padding: const EdgeInsets.only(left: 4),
+        child: Text(
+          text,
+          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
+        ),
+      );
 }
 
+// ================= CARD BASE =================
 class _Card extends StatelessWidget {
   final Widget child;
   const _Card({required this.child});
@@ -350,6 +347,7 @@ class _Card extends StatelessWidget {
   }
 }
 
+// ================= DESCRIPTION CARD =================
 class _DescriptionCard extends StatelessWidget {
   final String text;
   const _DescriptionCard({required this.text});
@@ -372,6 +370,7 @@ class _DescriptionCard extends StatelessWidget {
   }
 }
 
+// ================= SPECS CARD =================
 class _SpecsCard extends StatelessWidget {
   final Car car;
   const _SpecsCard({required this.car});
@@ -379,11 +378,7 @@ class _SpecsCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     String fmtCm(double? v) =>
-        v == null
-            ? '—'
-            : (v % 1 == 0
-                ? '${v.toStringAsFixed(0)} cm'
-                : '${v.toStringAsFixed(1)} cm');
+        v == null ? '—' : (v % 1 == 0 ? '${v.toStringAsFixed(0)} cm' : '${v.toStringAsFixed(1)} cm');
 
     MapEntry<String, String> _kv(String k, String v) => MapEntry(k, v);
 
@@ -431,15 +426,12 @@ class _SpecsCard extends StatelessWidget {
   }
 }
 
+// ================= SPEC GROUP =================
 class _SpecGroup extends StatelessWidget {
   final String title;
   final IconData icon;
   final List<MapEntry<String, String>> rows;
-  const _SpecGroup({
-    required this.title,
-    required this.icon,
-    required this.rows,
-  });
+  const _SpecGroup({required this.title, required this.icon, required this.rows});
 
   @override
   Widget build(BuildContext context) {
@@ -450,10 +442,7 @@ class _SpecGroup extends StatelessWidget {
           children: [
             Icon(icon, size: 18),
             const SizedBox(width: 8),
-            Text(
-              title,
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
-            ),
+            Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),
           ],
         ),
         const SizedBox(height: 8),
@@ -463,18 +452,11 @@ class _SpecGroup extends StatelessWidget {
             child: Row(
               children: [
                 Expanded(
-                  child: Text(
-                    '${e.key}:',
-                    style: const TextStyle(fontWeight: FontWeight.w700),
-                  ),
+                  child: Text('${e.key}:', style: const TextStyle(fontWeight: FontWeight.w700)),
                 ),
                 const SizedBox(width: 6),
                 Expanded(
-                  child: Text(
-                    e.value,
-                    textAlign: TextAlign.right,
-                    style: const TextStyle(color: Colors.white70),
-                  ),
+                  child: Text(e.value, textAlign: TextAlign.right, style: const TextStyle(color: Colors.white70)),
                 ),
               ],
             ),
@@ -485,6 +467,7 @@ class _SpecGroup extends StatelessWidget {
   }
 }
 
+// ================= PRICE CARD =================
 class _PriceCard extends StatelessWidget {
   final String mainText;
   final bool open;
@@ -518,10 +501,7 @@ class _PriceCard extends StatelessWidget {
               children: [
                 const Icon(Icons.sell_outlined),
                 const SizedBox(width: 8),
-                const Text(
-                  'Prezzo',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
-                ),
+                const Text('Prezzo', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
                 const Spacer(),
                 AnimatedRotation(
                   duration: const Duration(milliseconds: 200),
@@ -537,13 +517,7 @@ class _PriceCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      mainText,
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w900,
-                      ),
-                    ),
+                    Text(mainText, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w900)),
                     for (final line in extras) ...[
                       const SizedBox(height: 6),
                       Text(line),
@@ -551,8 +525,7 @@ class _PriceCard extends StatelessWidget {
                   ],
                 ),
               ),
-              crossFadeState:
-                  open ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+              crossFadeState: open ? CrossFadeState.showSecond : CrossFadeState.showFirst,
               duration: const Duration(milliseconds: 200),
             ),
           ],
@@ -562,9 +535,7 @@ class _PriceCard extends StatelessWidget {
   }
 }
 
-/* =================== MAP =================== */
-/* =================== MAP =================== */
-
+// ================= MAP CARD =================
 class _MapCard extends StatefulWidget {
   final Car car;
   final Position? pos;
@@ -591,24 +562,20 @@ class _MapCardState extends State<_MapCard> {
   @override
   void didUpdateWidget(covariant _MapCard oldWidget) {
     super.didUpdateWidget(oldWidget);
-    // Quando arriva la posizione o cambia l'auto, prepara la mappa
     if (oldWidget.pos != widget.pos || oldWidget.car != widget.car || oldWidget.error != widget.error) {
       _prepare();
     }
   }
 
   Future<void> _prepare() async {
-    // Se c'è un errore permessi → box errore (gestito in build), azzera stato interno
     if (widget.error != null) {
       setState(() {
         _markers = const <Marker>{};
-        _initial = null;           // niente camera finché non si risolve
+        _initial = null;
         _centeredDealerId = null;
       });
       return;
     }
-
-    // Finché NON ho la posizione, non calcolo nulla: mostro solo lo spinner
     if (widget.pos == null) {
       setState(() {
         _markers = const <Marker>{};
@@ -618,20 +585,13 @@ class _MapCardState extends State<_MapCard> {
       return;
     }
 
-    // --- Da qui in poi POSIZIONE PRESENTE ---
     final all = await DealersRepo.load();
     final Map<String, DealerPoint> byId = {for (final d in all) d.id: d};
-
-    final allowedIds = widget.car.availableAt ?? const <String>[];
+    final allowedIds = widget.car.availableDealerIds;
     List<DealerPoint> visible;
 
     if (allowedIds.isNotEmpty) {
-      // usa SOLO i dealer dichiarati nell’auto (ordine preservato)
-      visible = [
-        for (final id in allowedIds)
-          if (byId.containsKey(id)) byId[id]!,
-      ];
-      // Se per errore non ne trova nessuno, fallback: nessun marker (così è evidente il problema dati)
+      visible = [for (final id in allowedIds) if (byId.containsKey(id)) byId[id]!];
       if (visible.isEmpty) {
         setState(() {
           _markers = const <Marker>{};
@@ -641,18 +601,15 @@ class _MapCardState extends State<_MapCard> {
         return;
       }
     } else {
-      // auto senza availableAt: usa tutti
       visible = all;
     }
 
-    // Calcola il dealer più vicino tra i VISIBILI
     final user = LatLng(widget.pos!.latitude, widget.pos!.longitude);
     final nearest = await DealersRepo.nearestTo(
       user,
       allowedDealerIds: visible.map((d) => d.id).toList(),
     );
 
-    // Marker dealer visibili
     final markers = <Marker>{
       for (final d in visible)
         Marker(
@@ -671,7 +628,6 @@ class _MapCardState extends State<_MapCard> {
             },
           ),
         ),
-      // Marker dell’utente
       Marker(
         markerId: const MarkerId('me'),
         position: user,
@@ -682,8 +638,7 @@ class _MapCardState extends State<_MapCard> {
 
     if (!mounted) return;
 
-    final shouldAnimate =
-        _controller != null && _centeredDealerId != nearest.id;
+    final shouldAnimate = _controller != null && _centeredDealerId != nearest.id;
 
     setState(() {
       _markers = markers;
@@ -692,20 +647,16 @@ class _MapCardState extends State<_MapCard> {
     });
 
     if (shouldAnimate) {
-      await _controller!.animateCamera(
-        CameraUpdate.newLatLngZoom(nearest.latLng, 11.5),
-      );
+      await _controller!.animateCamera(CameraUpdate.newLatLngZoom(nearest.latLng, 11.5));
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    // Box errore permessi/GPS
     if (widget.error != null) {
       return _errorBox(widget.error!, widget.onRetry);
     }
 
-    // Finché non ho la posizione → spinner (niente centering provvisorio)
     if (widget.pos == null || _initial == null) {
       return Container(
         height: 220,
@@ -731,7 +682,6 @@ class _MapCardState extends State<_MapCard> {
         markers: _markers,
         onMapCreated: (c) {
           _controller = c;
-          // dopo la creazione, se serviva, centriamo (la prima volta _prepare lo ha già fatto)
         },
       ),
     );

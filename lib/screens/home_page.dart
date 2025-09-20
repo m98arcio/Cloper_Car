@@ -163,24 +163,14 @@ class _HomePageState extends State<HomePage> {
 
     final brandLogos = {
       'Ferrari': 'assets/loghi/ferrari_logo.png',
-      'Lamborghini': 'assets/loghi/lamborghini_logo.png',
-      'Porsche': 'assets/loghi/porsche_logo.png',
       'Lotus': 'assets/loghi/lotus_logo.png',
-      'Rolls Royce': 'assets/loghi/rolls_royce_logo.png',
-      'Aston Martin': 'assets/loghi/aston_martin_logo.png',
-      'Bentley': 'assets/loghi/bentley_logo.png',
-      'Koenigsegg': 'assets/loghi/koenigsegg_logo.png',
-      'Pagani': 'assets/loghi/pagani_logo.png',
+      'Lamborghini': 'assets/loghi/lamborghini_logo.png',
     };
 
-    final brands = <String>[];
-    for (var b in allBrands) {
-      if (b.toLowerCase() == 'bugatti' || b.toLowerCase() == 'mclaren') {
-        continue;
-      }
-      brands.add(b);
-    }
-    brands.insertAll(0, ['Porsche', 'Lotus']);
+    // Ordine fisso dei primi 4 brand
+    final fixedBrands = ['Ferrari', 'Lotus', 'Lamborghini', 'Porsche'];
+    final displayedBrands =
+        fixedBrands.where((b) => allBrands.contains(b)).toList();
 
     return ListView(
       padding: const EdgeInsets.only(bottom: 16),
@@ -200,12 +190,11 @@ class _HomePageState extends State<HomePage> {
                     fit: BoxFit.cover,
                   ),
                 ),
-                // Testo effetto incavato
                 Stack(
                   children: [
                     AspectRatio(
                       aspectRatio: 16 / 9,
-                      child: Image.asset(
+                      child: Image.asset(                    
                         'assets/macchine/supercar.jpg',
                         fit: BoxFit.cover,
                       ),
@@ -272,11 +261,11 @@ class _HomePageState extends State<HomePage> {
           child: ListView.separated(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             scrollDirection: Axis.horizontal,
-            itemCount: brands.length + 1,
+            itemCount: displayedBrands.length + 1, // 4 brand + SeeAll
             separatorBuilder: (_, __) => const SizedBox(width: 12),
             itemBuilder: (_, i) {
-              if (i < brands.length) {
-                final b = brands[i];
+              if (i < displayedBrands.length) {
+                final b = displayedBrands[i];
                 final logo = brandLogos[b] ?? '';
                 return _BrandChip(
                   brand: b,

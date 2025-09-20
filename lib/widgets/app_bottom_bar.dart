@@ -25,7 +25,7 @@ class AppBottomBar extends StatelessWidget {
       currentIndex: currentIndex,
       selectedItemColor: Colors.redAccent,
       unselectedItemColor: Colors.grey.shade400,
-      backgroundColor: Colors.black.withOpacity(0.15),
+      backgroundColor: Colors.black.withOpacity(1),
       type: BottomNavigationBarType.fixed,
       onTap: (i) {
         if (i == 0) {

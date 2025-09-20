@@ -7,10 +7,10 @@
         "priceEur": 88149,
         "powerHp": 615,
         "images": [
-            "assets/macchine/Aston Martin/Aston Martin Valkyrie/Aston Martin Valkyrie 2.jpeg",
-            "assets/macchine/Aston Martin/Aston Martin Valkyrie/Aston Martin Valkyrie 3.jpeg",
-            "assets/macchine/Aston Martin/Aston Martin Valkyrie/Aston Martin Valkyrie 4.jpeg",
-            "assets/macchine/Aston Martin/Aston Martin Valkyrie/Aston Martin Valkyrie.jpeg"
+            "assets/macchine_per_brand/Aston_Martin/Aston_Martin_Valkyrie/1.jpeg",
+            "assets/macchine_per_brand/Aston_Martin/Aston_Martin_Valkyrie/2.jpeg",
+            "assets/macchine_per_brand/Aston_Martin/Aston_Martin_Valkyrie/3.jpeg",
+            "assets/macchine_per_brand/Aston_Martin/Aston_Martin_Valkyrie/4.jpeg"
         ],
         "description": "Aston Martin Valkyrie di Aston Martin: stile distintivo, materiali di pregio e prestazioni avanzate.",
         "zeroTo100": "2.8 s",
@@ -35,9 +35,9 @@
         "priceEur": 162095,
         "powerHp": 934,
         "images": [
-            "assets/macchine/Aston Martin/Aston Martin Valour/Aston Martin Valour 2.jpeg",
-            "assets/macchine/Aston Martin/Aston Martin Valour/Aston Martin Valour 3.jpeg",
-            "assets/macchine/Aston Martin/Aston Martin Valour/Aston Martin Valour.jpeg"
+            "assets/macchine_per_brand/Aston_Martin/Aston_Martin_Valour/1.jpeg",
+            "assets/macchine_per_brand/Aston_Martin/Aston_Martin_Valour/2.jpeg",
+            "assets/macchine_per_brand/Aston_Martin/Aston_Martin_Valour/3.jpeg"
         ],
         "description": "Aston Martin Valour di Aston Martin: stile distintivo, materiali di pregio e prestazioni avanzate.",
         "zeroTo100": "5.2 s",
@@ -62,12 +62,12 @@
         "priceEur": 573052,
         "powerHp": 554,
         "images": [
-            "assets/macchine/Aston Martin/Aston Martin Vanquish Zagato/Aston Martin Vanquish Zagato 2.jpg",
-            "assets/macchine/Aston Martin/Aston Martin Vanquish Zagato/Aston Martin Vanquish Zagato 3.jpg",
-            "assets/macchine/Aston Martin/Aston Martin Vanquish Zagato/Aston Martin Vanquish Zagato 4.jpg",
-            "assets/macchine/Aston Martin/Aston Martin Vanquish Zagato/Aston Martin Vanquish Zagato 5.jpg",
-            "assets/macchine/Aston Martin/Aston Martin Vanquish Zagato/Aston Martin Vanquish Zagato 6.jpg",
-            "assets/macchine/Aston Martin/Aston Martin Vanquish Zagato/Aston Martin Vanquish Zagato.jpg"
+            "assets/macchine_per_brand/Aston_Martin/Aston_Martin_Vanquish_Zagato/1.jpg",
+            "assets/macchine_per_brand/Aston_Martin/Aston_Martin_Vanquish_Zagato/2.jpg",
+            "assets/macchine_per_brand/Aston_Martin/Aston_Martin_Vanquish_Zagato/3.jpg",
+            "assets/macchine_per_brand/Aston_Martin/Aston_Martin_Vanquish_Zagato/4.jpg",
+            "assets/macchine_per_brand/Aston_Martin/Aston_Martin_Vanquish_Zagato/5.jpg",
+            "assets/macchine_per_brand/Aston_Martin/Aston_Martin_Vanquish_Zagato/6.jpg"
         ],
         "description": "Aston Martin Vanquish Zagato di Aston Martin: stile distintivo, materiali di pregio e prestazioni avanzate.",
         "zeroTo100": "4.3 s",
@@ -92,11 +92,11 @@
         "priceEur": 401035,
         "powerHp": 355,
         "images": [
-            "assets/macchine/Aston Martin/Aston Martin Vantage/Aston Martin Vantage 2.jpg",
-            "assets/macchine/Aston Martin/Aston Martin Vantage/Aston Martin Vantage 3.jpg",
-            "assets/macchine/Aston Martin/Aston Martin Vantage/Aston Martin Vantage 4.jpg",
-            "assets/macchine/Aston Martin/Aston Martin Vantage/Aston Martin Vantage 5.jpg",
-            "assets/macchine/Aston Martin/Aston Martin Vantage/Aston Martin Vantage.jpg"
+            "assets/macchine_per_brand/Aston_Martin/Aston_Martin_Vantage/1.jpg",
+            "assets/macchine_per_brand/Aston_Martin/Aston_Martin_Vantage/2.jpg",
+            "assets/macchine_per_brand/Aston_Martin/Aston_Martin_Vantage/3.jpg",
+            "assets/macchine_per_brand/Aston_Martin/Aston_Martin_Vantage/4.jpg",
+            "assets/macchine_per_brand/Aston_Martin/Aston_Martin_Vantage/5.jpg"
         ],
         "description": "Aston Martin Vantage di Aston Martin: stile distintivo, materiali di pregio e prestazioni avanzate.",
         "zeroTo100": "2.9 s",
@@ -121,11 +121,11 @@
         "priceEur": 504914,
         "powerHp": 320,
         "images": [
-            "assets/macchine/Bentley/Bentley Bentayga Mansory/Bentley Bentayga Mansory 2.jpeg",
-            "assets/macchine/Bentley/Bentley Bentayga Mansory/Bentley Bentayga Mansory 3.jpeg",
-            "assets/macchine/Bentley/Bentley Bentayga Mansory/Bentley Bentayga Mansory 5.jpeg",
-            "assets/macchine/Bentley/Bentley Bentayga Mansory/Bentley Bentayga Mansory 6.jpeg",
-            "assets/macchine/Bentley/Bentley Bentayga Mansory/Bentley Bentayga Mansory.png"
+            "assets/macchine_per_brand/Bentley/Bentley_Bentayga_Mansory/1.jpeg",
+            "assets/macchine_per_brand/Bentley/Bentley_Bentayga_Mansory/2.jpeg",
+            "assets/macchine_per_brand/Bentley/Bentley_Bentayga_Mansory/3.jpeg",
+            "assets/macchine_per_brand/Bentley/Bentley_Bentayga_Mansory/4.jpeg",
+            "assets/macchine_per_brand/Bentley/Bentley_Bentayga_Mansory/5.png"
         ],
         "description": "Bentley Bentayga Mansory di Bentley: stile distintivo, materiali di pregio e prestazioni avanzate.",
         "zeroTo100": "2.9 s",
@@ -150,11 +150,11 @@
         "priceEur": 571208,
         "powerHp": 596,
         "images": [
-            "assets/macchine/Bentley/Bentley Continental GT/Bentley Continental GT 2.jpeg",
-            "assets/macchine/Bentley/Bentley Continental GT/Bentley Continental GT 3.jpeg",
-            "assets/macchine/Bentley/Bentley Continental GT/Bentley Continental GT 4.jpeg",
-            "assets/macchine/Bentley/Bentley Continental GT/Bentley Continental GT 5.jpeg",
-            "assets/macchine/Bentley/Bentley Continental GT/Bentley Continental GT.jpeg"
+            "assets/macchine_per_brand/Bentley/Bentley_Continental_GT/1.jpeg",
+            "assets/macchine_per_brand/Bentley/Bentley_Continental_GT/2.jpeg",
+            "assets/macchine_per_brand/Bentley/Bentley_Continental_GT/3.jpeg",
+            "assets/macchine_per_brand/Bentley/Bentley_Continental_GT/4.jpeg",
+            "assets/macchine_per_brand/Bentley/Bentley_Continental_GT/5.jpeg"
         ],
         "description": "Bentley Continental Gt di Bentley: stile distintivo, materiali di pregio e prestazioni avanzate.",
         "zeroTo100": "4.7 s",
@@ -179,11 +179,11 @@
         "priceEur": 494142,
         "powerHp": 719,
         "images": [
-            "assets/macchine/Bentley/Bentley Continental GT Mulliner W12/Bentley Continental GT Mulliner W12 2.jpeg",
-            "assets/macchine/Bentley/Bentley Continental GT Mulliner W12/Bentley Continental GT Mulliner W12 3.jpeg",
-            "assets/macchine/Bentley/Bentley Continental GT Mulliner W12/Bentley Continental GT Mulliner W12 4.jpeg",
-            "assets/macchine/Bentley/Bentley Continental GT Mulliner W12/Bentley Continental GT Mulliner W12 5.jpeg",
-            "assets/macchine/Bentley/Bentley Continental GT Mulliner W12/Bentley Continental GT Mulliner W12.jpeg"
+            "assets/macchine_per_brand/Bentley/Bentley_Continental_GT_Mulliner_W12/1.jpeg",
+            "assets/macchine_per_brand/Bentley/Bentley_Continental_GT_Mulliner_W12/2.jpeg",
+            "assets/macchine_per_brand/Bentley/Bentley_Continental_GT_Mulliner_W12/3.jpeg",
+            "assets/macchine_per_brand/Bentley/Bentley_Continental_GT_Mulliner_W12/4.jpeg",
+            "assets/macchine_per_brand/Bentley/Bentley_Continental_GT_Mulliner_W12/5.jpeg"
         ],
         "description": "Bentley Continental Gt Mulliner W12 di Bentley: stile distintivo, materiali di pregio e prestazioni avanzate.",
         "zeroTo100": "4.1 s",
@@ -208,12 +208,12 @@
         "priceEur": 86420,
         "powerHp": 466,
         "images": [
-            "assets/macchine/Bugatti/Bugatti Solitaire/Bugatti Solitaire.png",
-            "assets/macchine/Bugatti/Bugatti Solitaire/Bugatti Solitaire2.png",
-            "assets/macchine/Bugatti/Bugatti Solitaire/Bugatti Solitaire3.png",
-            "assets/macchine/Bugatti/Bugatti Solitaire/Bugatti Solitaire4.png",
-            "assets/macchine/Bugatti/Bugatti Solitaire/Bugatti Solitaire5.png",
-            "assets/macchine/Bugatti/Bugatti Solitaire/Bugatti Solitaire6.png"
+            "assets/macchine_per_brand/Bugatti/Bugatti_Solitaire/1.png",
+            "assets/macchine_per_brand/Bugatti/Bugatti_Solitaire/2.png",
+            "assets/macchine_per_brand/Bugatti/Bugatti_Solitaire/3.png",
+            "assets/macchine_per_brand/Bugatti/Bugatti_Solitaire/4.png",
+            "assets/macchine_per_brand/Bugatti/Bugatti_Solitaire/5.png",
+            "assets/macchine_per_brand/Bugatti/Bugatti_Solitaire/6.png"
         ],
         "description": "Bugatti Solitaire di Bugatti: stile distintivo, materiali di pregio e prestazioni avanzate.",
         "zeroTo100": "4.0 s",
@@ -238,10 +238,10 @@
         "priceEur": 134309,
         "powerHp": 298,
         "images": [
-            "assets/macchine/Bugatti/Bugatti Veyron/Bugatti Veyron 2.webp",
-            "assets/macchine/Bugatti/Bugatti Veyron/Bugatti Veyron 4.webp",
-            "assets/macchine/Bugatti/Bugatti Veyron/Bugatti Veyron 5.webp",
-            "assets/macchine/Bugatti/Bugatti Veyron/Bugatti Veyron.webp"
+            "assets/macchine_per_brand/Bugatti/Bugatti_Veyron/1.png",
+            "assets/macchine_per_brand/Bugatti/Bugatti_Veyron/2.png",
+            "assets/macchine_per_brand/Bugatti/Bugatti_Veyron/3.png",
+            "assets/macchine_per_brand/Bugatti/Bugatti_Veyron/4.png"
         ],
         "description": "Bugatti Veyron di Bugatti: stile distintivo, materiali di pregio e prestazioni avanzate.",
         "zeroTo100": "2.5 s",
@@ -266,12 +266,12 @@
         "priceEur": 594277,
         "powerHp": 911,
         "images": [
-            "assets/macchine/Bugatti/Bugatti_Chiron/Bugatti Chiron 3.webp",
-            "assets/macchine/Bugatti/Bugatti_Chiron/Bugatti Chiron 4.webp",
-            "assets/macchine/Bugatti/Bugatti_Chiron/Bugatti Chiron 7.webp",
-            "assets/macchine/Bugatti/Bugatti_Chiron/Bugatti Chiron5.webp",
-            "assets/macchine/Bugatti/Bugatti_Chiron/Bugatti chiron 2.webp",
-            "assets/macchine/Bugatti/Bugatti_Chiron/bugatti Chiron.webp"
+            "assets/macchine_per_brand/Bugatti/Bugatti_Chiron/1.png",
+            "assets/macchine_per_brand/Bugatti/Bugatti_Chiron/2.png",
+            "assets/macchine_per_brand/Bugatti/Bugatti_Chiron/3.png",
+            "assets/macchine_per_brand/Bugatti/Bugatti_Chiron/4.png",
+            "assets/macchine_per_brand/Bugatti/Bugatti_Chiron/5.png",
+            "assets/macchine_per_brand/Bugatti/Bugatti_Chiron/6.png"
         ],
         "description": "Bugatti Chiron di Bugatti: stile distintivo, materiali di pregio e prestazioni avanzate.",
         "zeroTo100": "3.9 s",
@@ -296,11 +296,11 @@
         "priceEur": 207755,
         "powerHp": 600,
         "images": [
-            "assets/macchine/Bugatti/Bugatti_Divo/Bugatti Divo 2.webp",
-            "assets/macchine/Bugatti/Bugatti_Divo/Bugatti Divo 3.webp",
-            "assets/macchine/Bugatti/Bugatti_Divo/Bugatti Divo 4.webp",
-            "assets/macchine/Bugatti/Bugatti_Divo/Bugatti Divo 5.webp",
-            "assets/macchine/Bugatti/Bugatti_Divo/Bugatti Divo.webp"
+            "assets/macchine_per_brand/Bugatti/Bugatti_Divo/1.png",
+            "assets/macchine_per_brand/Bugatti/Bugatti_Divo/2.png",
+            "assets/macchine_per_brand/Bugatti/Bugatti_Divo/3.png",
+            "assets/macchine_per_brand/Bugatti/Bugatti_Divo/4.png", 
+            "assets/macchine_per_brand/Bugatti/Bugatti_Divo/5.png"                                           
         ],
         "description": "Bugatti Divo di Bugatti: stile distintivo, materiali di pregio e prestazioni avanzate.",
         "zeroTo100": "5.1 s",
@@ -318,37 +318,6 @@
         ]
     },
     {
-        "id": "bugatti-bugatti-eb-110",
-        "brand": "Bugatti",
-        "model": "Bugatti Eb 110",
-        "year": 2023,
-        "priceEur": 106425,
-        "powerHp": 861,
-        "images": [
-            "assets/macchine/Bugatti/Bugatti_EB_110/Bugatti EB 112 2.jpg",
-            "assets/macchine/Bugatti/Bugatti_EB_110/Bugatti EB 112 2.webp",
-            "assets/macchine/Bugatti/Bugatti_EB_110/Bugatti EB 112 3.webp",
-            "assets/macchine/Bugatti/Bugatti_EB_110/Bugatti EB 2.webp",
-            "assets/macchine/Bugatti/Bugatti_EB_110/Bugatti EB.jpg",
-            "assets/macchine/Bugatti/Bugatti_EB_110/Bugatti EB3.webp",
-            "assets/macchine/Bugatti/Bugatti_EB_110/Bugatti EB4.webp"
-        ],
-        "description": "Bugatti Eb 110 di Bugatti: stile distintivo, materiali di pregio e prestazioni avanzate.",
-        "zeroTo100": "2.9 s",
-        "topSpeed": "297 km/h",
-        "engine": "Specifiche motore da definire",
-        "gearbox": "Cambio automatico",
-        "lengthCm": 441.8,
-        "widthCm": 196.4,
-        "wheelbaseCm": 255.5,
-        "incoming": true,
-        "incomingAt": "2025-10-15",
-        "availableDealerIds": [
-            "campobasso",
-            "roma"
-        ]
-    },
-    {
         "id": "ferrari-ferrari-269-gtb",
         "brand": "Ferrari",
         "model": "Ferrari 269 Gtb",
@@ -356,11 +325,11 @@
         "priceEur": 340452,
         "powerHp": 504,
         "images": [
-            "assets/macchine/Ferrari/Ferrari 269 GTB/Ferrari 269 GTB 2.webp",
-            "assets/macchine/Ferrari/Ferrari 269 GTB/Ferrari 269 GTB 3.webp",
-            "assets/macchine/Ferrari/Ferrari 269 GTB/Ferrari 269 GTB 4.webp",
-            "assets/macchine/Ferrari/Ferrari 269 GTB/Ferrari 269 GTB 5.webp",
-            "assets/macchine/Ferrari/Ferrari 269 GTB/Ferrari 269 GTB.webp"
+            "assets/macchine_per_brand/Ferrari/Ferrari_269_GTB/1.webp",
+            "assets/macchine_per_brand/Ferrari/Ferrari_269_GTB/2.webp",
+            "assets/macchine_per_brand/Ferrari/Ferrari_269_GTB/3.webp",
+            "assets/macchine_per_brand/Ferrari/Ferrari_269_GTB/4.webp",
+            "assets/macchine_per_brand/Ferrari/Ferrari_269_GTB/5.webp"
         ],
         "description": "Ferrari 269 Gtb di Ferrari: stile distintivo, materiali di pregio e prestazioni avanzate.",
         "zeroTo100": "3.8 s",
@@ -385,11 +354,11 @@
         "priceEur": 599718,
         "powerHp": 629,
         "images": [
-            "assets/macchine/Ferrari/Ferrari F40/Ferrari F40 2.webp",
-            "assets/macchine/Ferrari/Ferrari F40/Ferrari F40 3.webp",
-            "assets/macchine/Ferrari/Ferrari F40/Ferrari F40 5.webp",
-            "assets/macchine/Ferrari/Ferrari F40/Ferrari F40.webp",
-            "assets/macchine/Ferrari/Ferrari F40/Ferrari F404.webp"
+            "assets/macchine_per_brand/Ferrari/Ferrari_F40/1.webp",
+            "assets/macchine_per_brand/Ferrari/Ferrari_F40/2.webp",
+            "assets/macchine_per_brand/Ferrari/Ferrari_F40/3.webp",
+            "assets/macchine_per_brand/Ferrari/Ferrari_F40/4.webp",
+            "assets/macchine_per_brand/Ferrari/Ferrari_F40/5.webp"
         ],
         "description": "Ferrari F40 di Ferrari: stile distintivo, materiali di pregio e prestazioni avanzate.",
         "zeroTo100": "2.8 s",
@@ -414,10 +383,10 @@
         "priceEur": 432499,
         "powerHp": 637,
         "images": [
-            "assets/macchine/Ferrari/Ferrari Portofino/Ferrari Portofino 2.webp",
-            "assets/macchine/Ferrari/Ferrari Portofino/Ferrari Portofino 3.webp",
-            "assets/macchine/Ferrari/Ferrari Portofino/Ferrari Portofino 5.webp",
-            "assets/macchine/Ferrari/Ferrari Portofino/Ferrari Portofino.webp"
+            "assets/macchine_per_brand/Ferrari/Ferrari_Portofino/1.webp",
+            "assets/macchine_per_brand/Ferrari/Ferrari_Portofino/2.webp",
+            "assets/macchine_per_brand/Ferrari/Ferrari_Portofino/3.webp",
+            "assets/macchine_per_brand/Ferrari/Ferrari_Portofino/4.webp"
         ],
         "description": "Ferrari Portofino di Ferrari: stile distintivo, materiali di pregio e prestazioni avanzate.",
         "zeroTo100": "4.7 s",
@@ -442,11 +411,11 @@
         "priceEur": 319076,
         "powerHp": 523,
         "images": [
-            "assets/macchine/Ferrari/Ferrari_Purosangue/Ferrari Purosangue 2.webp",
-            "assets/macchine/Ferrari/Ferrari_Purosangue/Ferrari Purosangue 3.webp",
-            "assets/macchine/Ferrari/Ferrari_Purosangue/Ferrari Purosangue 4.webp",
-            "assets/macchine/Ferrari/Ferrari_Purosangue/Ferrari Purosangue 5.webp",
-            "assets/macchine/Ferrari/Ferrari_Purosangue/Ferrari Purosangue.webp"
+            "assets/macchine_per_brand/Ferrari/Ferrari_Purosangue/1.webp",
+            "assets/macchine_per_brand/Ferrari/Ferrari_Purosangue/2.webp",
+            "assets/macchine_per_brand/Ferrari/Ferrari_Purosangue/3.webp",
+            "assets/macchine_per_brand/Ferrari/Ferrari_Purosangue/4.webp",
+            "assets/macchine_per_brand/Ferrari/Ferrari_Purosangue/5.webp"
         ],
         "description": "Ferrari Purosangue di Ferrari: stile distintivo, materiali di pregio e prestazioni avanzate.",
         "zeroTo100": "2.8 s",
@@ -471,11 +440,11 @@
         "priceEur": 421838,
         "powerHp": 560,
         "images": [
-            "assets/macchine/Ferrari/Ferrari_SF90_Stradale/Ferrari SF90 2.webp",
-            "assets/macchine/Ferrari/Ferrari_SF90_Stradale/Ferrari SF90 3.webp",
-            "assets/macchine/Ferrari/Ferrari_SF90_Stradale/Ferrari SF90 5.webp",
-            "assets/macchine/Ferrari/Ferrari_SF90_Stradale/Ferrari SF90.webp",
-            "assets/macchine/Ferrari/Ferrari_SF90_Stradale/Ferrari SF904.webp"
+            "assets/macchine_per_brand/Ferrari/Ferrari_SF90_Stradale/1.webp",
+            "assets/macchine_per_brand/Ferrari/Ferrari_SF90_Stradale/2.webp",
+            "assets/macchine_per_brand/Ferrari/Ferrari_SF90_Stradale/3.webp",
+            "assets/macchine_per_brand/Ferrari/Ferrari_SF90_Stradale/4.webp",
+            "assets/macchine_per_brand/Ferrari/Ferrari_SF90_Stradale/5.webp"
         ],
         "description": "Ferrari Sf90 Stradale di Ferrari: stile distintivo, materiali di pregio e prestazioni avanzate.",
         "zeroTo100": "4.8 s",
@@ -500,10 +469,10 @@
         "priceEur": 522054,
         "powerHp": 410,
         "images": [
-            "assets/macchine/Ferrari/Ferrari_Testarossa/Ferrari Testarossa 2.webp",
-            "assets/macchine/Ferrari/Ferrari_Testarossa/Ferrari Testarossa 4.webp",
-            "assets/macchine/Ferrari/Ferrari_Testarossa/Ferrari Testarossa3.webp",
-            "assets/macchine/Ferrari/Ferrari_Testarossa/Ferrari testarossa 1.webp"
+            "assets/macchine_per_brand/Ferrari/Ferrari_Testarossa/1.webp",
+            "assets/macchine_per_brand/Ferrari/Ferrari_Testarossa/2.webp",
+            "assets/macchine_per_brand/Ferrari/Ferrari_Testarossa/3.webp",
+            "assets/macchine_per_brand/Ferrari/Ferrari_Testarossa/4.webp"
         ],
         "description": "Ferrari Testarossa di Ferrari: stile distintivo, materiali di pregio e prestazioni avanzate.",
         "zeroTo100": "2.7 s",
@@ -528,10 +497,10 @@
         "priceEur": 588484,
         "powerHp": 373,
         "images": [
-            "assets/macchine/Koenigsegg/Koenigsegg Regera/Koenigsegg Regera 2.jpeg",
-            "assets/macchine/Koenigsegg/Koenigsegg Regera/Koenigsegg Regera 3.jpeg",
-            "assets/macchine/Koenigsegg/Koenigsegg Regera/Koenigsegg Regera 4.jpeg",
-            "assets/macchine/Koenigsegg/Koenigsegg Regera/Koenigsegg Regera.jpeg"
+            "assets/macchine_per_brand/Koenigsegg/Koenigsegg_Regera/1.jpeg",
+            "assets/macchine_per_brand/Koenigsegg/Koenigsegg_Regera/2.jpeg",
+            "assets/macchine_per_brand/Koenigsegg/Koenigsegg_Regera/3.jpeg",
+            "assets/macchine_per_brand/Koenigsegg/Koenigsegg_Regera/4.jpeg"
         ],
         "description": "Koenigsegg Regera di Koenigsegg: stile distintivo, materiali di pregio e prestazioni avanzate.",
         "zeroTo100": "3.8 s",
@@ -556,12 +525,12 @@
         "priceEur": 186952,
         "powerHp": 300,
         "images": [
-            "assets/macchine/Koenigsegg/Koenigsegg jesko/Koenigsegg jesko 2.jpeg",
-            "assets/macchine/Koenigsegg/Koenigsegg jesko/Koenigsegg jesko 3.jpeg",
-            "assets/macchine/Koenigsegg/Koenigsegg jesko/Koenigsegg jesko 4.jpeg",
-            "assets/macchine/Koenigsegg/Koenigsegg jesko/Koenigsegg jesko 5.jpeg",
-            "assets/macchine/Koenigsegg/Koenigsegg jesko/Koenigsegg jesko 6.jpeg",
-            "assets/macchine/Koenigsegg/Koenigsegg jesko/Koenigsegg jesko.jpeg"
+            "assets/macchine_per_brand/Koenigsegg/Koenigsegg_jesko/1.jpeg",
+            "assets/macchine_per_brand/Koenigsegg/Koenigsegg_jesko/2.jpeg",
+            "assets/macchine_per_brand/Koenigsegg/Koenigsegg_jesko/3.jpeg",
+            "assets/macchine_per_brand/Koenigsegg/Koenigsegg_jesko/4.jpeg",
+            "assets/macchine_per_brand/Koenigsegg/Koenigsegg_jesko/5.jpeg",
+            "assets/macchine_per_brand/Koenigsegg/Koenigsegg_jesko/6.jpeg"
         ],
         "description": "Koenigsegg Jesko di Koenigsegg: stile distintivo, materiali di pregio e prestazioni avanzate.",
         "zeroTo100": "3.5 s",
@@ -586,11 +555,11 @@
         "priceEur": 588729,
         "powerHp": 965,
         "images": [
-            "assets/macchine/Lamborghini/Lamborghini Aventador SVJ/Lamborghini Aventador SVJ 2.jpg",
-            "assets/macchine/Lamborghini/Lamborghini Aventador SVJ/Lamborghini Aventador SVJ 3.jpg",
-            "assets/macchine/Lamborghini/Lamborghini Aventador SVJ/Lamborghini Aventador SVJ 4.jpg",
-            "assets/macchine/Lamborghini/Lamborghini Aventador SVJ/Lamborghini Aventador SVJ 5.jpg",
-            "assets/macchine/Lamborghini/Lamborghini Aventador SVJ/Lamborghini Aventador SVJ.jpg"
+            "assets/macchine_per_brand/Lamborghini/Lamborghini_Aventador_SVJ/1.jpg",
+            "assets/macchine_per_brand/Lamborghini/Lamborghini_Aventador_SVJ/2.jpg",
+            "assets/macchine_per_brand/Lamborghini/Lamborghini_Aventador_SVJ/3.jpg",
+            "assets/macchine_per_brand/Lamborghini/Lamborghini_Aventador_SVJ/4.jpg",
+            "assets/macchine_per_brand/Lamborghini/Lamborghini_Aventador_SVJ/5.jpg"
         ],
         "description": "Lamborghini Aventador Svj di Lamborghini: stile distintivo, materiali di pregio e prestazioni avanzate.",
         "zeroTo100": "4.3 s",
@@ -615,10 +584,10 @@
         "priceEur": 196323,
         "powerHp": 889,
         "images": [
-            "assets/macchine/Lamborghini/Lamborghini Essenza/Lamborghini Essenza 2.jpg",
-            "assets/macchine/Lamborghini/Lamborghini Essenza/Lamborghini Essenza 3.jpg",
-            "assets/macchine/Lamborghini/Lamborghini Essenza/Lamborghini Essenza 4.jpg",
-            "assets/macchine/Lamborghini/Lamborghini Essenza/Lamborghini Essenza.jpg"
+            "assets/macchine_per_brand/Lamborghini/Lamborghini_Essenza/1.jpg",
+            "assets/macchine_per_brand/Lamborghini/Lamborghini_Essenza/2.jpg",
+            "assets/macchine_per_brand/Lamborghini/Lamborghini_Essenza/3.jpg",
+            "assets/macchine_per_brand/Lamborghini/Lamborghini_Essenza/4.jpg"
         ],
         "description": "Lamborghini Essenza di Lamborghini: stile distintivo, materiali di pregio e prestazioni avanzate.",
         "zeroTo100": "5.1 s",
@@ -643,11 +612,11 @@
         "priceEur": 108704,
         "powerHp": 954,
         "images": [
-            "assets/macchine/Lamborghini/Lamborghini Revuelto/Lamborghini Revuelto 2.jpg",
-            "assets/macchine/Lamborghini/Lamborghini Revuelto/Lamborghini Revuelto 3.jpg",
-            "assets/macchine/Lamborghini/Lamborghini Revuelto/Lamborghini Revuelto 4.jpg",
-            "assets/macchine/Lamborghini/Lamborghini Revuelto/Lamborghini Revuelto 5.jpg",
-            "assets/macchine/Lamborghini/Lamborghini Revuelto/Lamborghini Revuelto.jpg"
+            "assets/macchine_per_brand/Lamborghini/Lamborghini_Revuelto/1.jpg",
+            "assets/macchine_per_brand/Lamborghini/Lamborghini_Revuelto/2.jpg",
+            "assets/macchine_per_brand/Lamborghini/Lamborghini_Revuelto/3.jpg",
+            "assets/macchine_per_brand/Lamborghini/Lamborghini_Revuelto/4.jpg",
+            "assets/macchine_per_brand/Lamborghini/Lamborghini_Revuelto/5.jpg"
         ],
         "description": "Lamborghini Revuelto di Lamborghini: stile distintivo, materiali di pregio e prestazioni avanzate.",
         "zeroTo100": "2.9 s",
@@ -672,9 +641,9 @@
         "priceEur": 162357,
         "powerHp": 895,
         "images": [
-            "assets/macchine/Lamborghini/Lamborghini Urus performance/Lamborghini Urus.jpeg",
-            "assets/macchine/Lamborghini/Lamborghini Urus performance/Lamborgini Urus 2.jpeg",
-            "assets/macchine/Lamborghini/Lamborghini Urus performance/Lamborgini Urus 3.jpeg"
+            "assets/macchine_per_brand/Lamborghini/Lamborghini_Urus_performance/1.jpeg",
+            "assets/macchine_per_brand/Lamborghini/Lamborghini_Urus_performance/2.jpeg",
+            "assets/macchine_per_brand/Lamborghini/Lamborghini_Urus_performance/3.jpeg"
         ],
         "description": "Lamborghini Urus Performance di Lamborghini: stile distintivo, materiali di pregio e prestazioni avanzate.",
         "zeroTo100": "4.7 s",
@@ -699,10 +668,10 @@
         "priceEur": 188690,
         "powerHp": 468,
         "images": [
-            "assets/macchine/Lamborghini/Lamborghini Veneno/Lamborghini Veneno 2.jpg",
-            "assets/macchine/Lamborghini/Lamborghini Veneno/Lamborghini Veneno 3.jpg",
-            "assets/macchine/Lamborghini/Lamborghini Veneno/Lamborghini Veneno 4.jpg",
-            "assets/macchine/Lamborghini/Lamborghini Veneno/Lamborghini Veneno 5.jpg"
+            "assets/macchine_per_brand/Lamborghini/Lamborghini_Veneno/1.jpg",
+            "assets/macchine_per_brand/Lamborghini/Lamborghini_Veneno/2.jpg",
+            "assets/macchine_per_brand/Lamborghini/Lamborghini_Veneno/3.jpg",
+            "assets/macchine_per_brand/Lamborghini/Lamborghini_Veneno/4.jpg"
         ],
         "description": "Lamborghini Veneno di Lamborghini: stile distintivo, materiali di pregio e prestazioni avanzate.",
         "zeroTo100": "2.8 s",
@@ -727,10 +696,10 @@
         "priceEur": 510567,
         "powerHp": 447,
         "images": [
-            "assets/macchine/Lotus/Lotus Emira/Lotus Emira 1.jpeg",
-            "assets/macchine/Lotus/Lotus Emira/Lotus Emira 3.jpeg",
-            "assets/macchine/Lotus/Lotus Emira/Lotus Emira 4.jpeg",
-            "assets/macchine/Lotus/Lotus Emira/Lotus Emira.jpeg"
+            "assets/macchine_per_brand/Lotus/Lotus_Emira/1.jpeg",
+            "assets/macchine_per_brand/Lotus/Lotus_Emira/2.jpeg",
+            "assets/macchine_per_brand/Lotus/Lotus_Emira/3.jpeg",
+            "assets/macchine_per_brand/Lotus/Lotus_Emira/4.jpeg"
         ],
         "description": "Lotus Emira di Lotus: stile distintivo, materiali di pregio e prestazioni avanzate.",
         "zeroTo100": "3.6 s",
@@ -755,10 +724,10 @@
         "priceEur": 299753,
         "powerHp": 575,
         "images": [
-            "assets/macchine/Lotus/Lotus Evija/Lotus Evija 2.jpeg",
-            "assets/macchine/Lotus/Lotus Evija/Lotus Evija 3.webp",
-            "assets/macchine/Lotus/Lotus Evija/Lotus Evija 4.jpeg",
-            "assets/macchine/Lotus/Lotus Evija/Lotus Evija.jpeg"
+            "assets/macchine_per_brand/Lotus/Lotus_Evija/1.jpeg",
+            "assets/macchine_per_brand/Lotus/Lotus_Evija/2.webp",
+            "assets/macchine_per_brand/Lotus/Lotus_Evija/3.jpeg",
+            "assets/macchine_per_brand/Lotus/Lotus_Evija/4.jpeg"
         ],
         "description": "Lotus Evija di Lotus: stile distintivo, materiali di pregio e prestazioni avanzate.",
         "zeroTo100": "2.8 s",
@@ -783,10 +752,10 @@
         "priceEur": 516013,
         "powerHp": 899,
         "images": [
-            "assets/macchine/Lotus/Lotus Evora GT/Lotus Evora GT .jpg",
-            "assets/macchine/Lotus/Lotus Evora GT/Lotus Evora GT 2.jpg",
-            "assets/macchine/Lotus/Lotus Evora GT/Lotus Evora GT 3.jpg",
-            "assets/macchine/Lotus/Lotus Evora GT/Lotus Evora GT 4.jpg"
+            "assets/macchine_per_brand/Lotus/Lotus_Evora_GT/1.jpg",
+            "assets/macchine_per_brand/Lotus/Lotus_Evora_GT/2.jpg",
+            "assets/macchine_per_brand/Lotus/Lotus_Evora_GT/3.jpg",
+            "assets/macchine_per_brand/Lotus/Lotus_Evora_GT/4.jpg"
         ],
         "description": "Lotus Evora Gt di Lotus: stile distintivo, materiali di pregio e prestazioni avanzate.",
         "zeroTo100": "4.6 s",
@@ -811,10 +780,10 @@
         "priceEur": 477801,
         "powerHp": 809,
         "images": [
-            "assets/macchine/McLaren/McLaren 765LT Spider/McLaren 765LT Spider 2.jpeg",
-            "assets/macchine/McLaren/McLaren 765LT Spider/McLaren 765LT Spider 3.jpeg",
-            "assets/macchine/McLaren/McLaren 765LT Spider/McLaren 765LT Spider 4.jpeg",
-            "assets/macchine/McLaren/McLaren 765LT Spider/McLaren 765LT Spider.jpeg"
+            "assets/macchine_per_brand/McLaren/McLaren_765LT_Spider/1.jpeg",
+            "assets/macchine_per_brand/McLaren/McLaren_765LT_Spider/2.jpeg",
+            "assets/macchine_per_brand/McLaren/McLaren_765LT_Spider/3.jpeg",
+            "assets/macchine_per_brand/McLaren/McLaren_765LT_Spider/4.jpeg"
         ],
         "description": "Mclaren 765Lt Spider di McLaren: stile distintivo, materiali di pregio e prestazioni avanzate.",
         "zeroTo100": "5.0 s",
@@ -839,11 +808,11 @@
         "priceEur": 293345,
         "powerHp": 910,
         "images": [
-            "assets/macchine/McLaren/McLaren Elva/McLaren Elva 2.jpg",
-            "assets/macchine/McLaren/McLaren Elva/McLaren Elva 3.jpg",
-            "assets/macchine/McLaren/McLaren Elva/McLaren Elva 4.jpg",
-            "assets/macchine/McLaren/McLaren Elva/McLaren Elva 5.jpg",
-            "assets/macchine/McLaren/McLaren Elva/McLaren Elva.jpg"
+            "assets/macchine_per_brand/McLaren/McLaren_Elva/1.jpg",
+            "assets/macchine_per_brand/McLaren/McLaren_Elva/2.jpg",
+            "assets/macchine_per_brand/McLaren/McLaren_Elva/3.jpg",
+            "assets/macchine_per_brand/McLaren/McLaren_Elva/4.jpg",
+            "assets/macchine_per_brand/McLaren/McLaren_Elva/5.jpg"
         ],
         "description": "Mclaren Elva di McLaren: stile distintivo, materiali di pregio e prestazioni avanzate.",
         "zeroTo100": "3.1 s",
@@ -868,10 +837,10 @@
         "priceEur": 593019,
         "powerHp": 745,
         "images": [
-            "assets/macchine/McLaren/McLaren P1/McLaren P1 2.jpeg",
-            "assets/macchine/McLaren/McLaren P1/McLaren P1 3.jpeg",
-            "assets/macchine/McLaren/McLaren P1/McLaren P1 4.jpeg",
-            "assets/macchine/McLaren/McLaren P1/McLaren P1.jpeg"
+            "assets/macchine_per_brand/McLaren/McLaren_P1/1.jpeg",
+            "assets/macchine_per_brand/McLaren/McLaren_P1/2.jpeg",
+            "assets/macchine_per_brand/McLaren/McLaren_P1/3.jpeg",
+            "assets/macchine_per_brand/McLaren/McLaren_P1/4.jpeg"
         ],
         "description": "Mclaren P1 di McLaren: stile distintivo, materiali di pregio e prestazioni avanzate.",
         "zeroTo100": "3.7 s",
@@ -896,11 +865,11 @@
         "priceEur": 175814,
         "powerHp": 320,
         "images": [
-            "assets/macchine/McLaren/McLaren Senna/McLaren Senna 2.jpg",
-            "assets/macchine/McLaren/McLaren Senna/McLaren Senna 3.jpg",
-            "assets/macchine/McLaren/McLaren Senna/McLaren Senna 4.jpg",
-            "assets/macchine/McLaren/McLaren Senna/McLaren Senna 6.jpg",
-            "assets/macchine/McLaren/McLaren Senna/McLaren Senna.jpg"
+            "assets/macchine_per_brand/McLaren/McLaren_Senna/1.jpg",
+            "assets/macchine_per_brand/McLaren/McLaren_Senna/2.jpg",
+            "assets/macchine_per_brand/McLaren/McLaren_Senna/3.jpg",
+            "assets/macchine_per_brand/McLaren/McLaren_Senna/4.jpg",
+            "assets/macchine_per_brand/McLaren/McLaren_Senna/5.jpg"
         ],
         "description": "Mclaren Senna di McLaren: stile distintivo, materiali di pregio e prestazioni avanzate.",
         "zeroTo100": "3.8 s",
@@ -925,10 +894,10 @@
         "priceEur": 561618,
         "powerHp": 278,
         "images": [
-            "assets/macchine/McLaren/McLaren Solus GT/McLaren Solus GT 2.jpg",
-            "assets/macchine/McLaren/McLaren Solus GT/McLaren Solus GT 3.jpg",
-            "assets/macchine/McLaren/McLaren Solus GT/McLaren Solus GT 4.jpeg",
-            "assets/macchine/McLaren/McLaren Solus GT/McLaren Solus GT.jpg"
+            "assets/macchine_per_brand/McLaren/McLaren_Solus_GT/1.jpg",
+            "assets/macchine_per_brand/McLaren/McLaren_Solus_GT/2.jpg",
+            "assets/macchine_per_brand/McLaren/McLaren_Solus_GT/3.jpeg",
+            "assets/macchine_per_brand/McLaren/McLaren_Solus_GT/4.jpg"
         ],
         "description": "Mclaren Solus Gt di McLaren: stile distintivo, materiali di pregio e prestazioni avanzate.",
         "zeroTo100": "3.8 s",
@@ -953,11 +922,11 @@
         "priceEur": 543747,
         "powerHp": 960,
         "images": [
-            "assets/macchine/Pagani/Pagani Huayra/Pagani Huayra 2.jpeg",
-            "assets/macchine/Pagani/Pagani Huayra/Pagani Huayra 3.jpeg",
-            "assets/macchine/Pagani/Pagani Huayra/Pagani Huayra 4.jpeg",
-            "assets/macchine/Pagani/Pagani Huayra/Pagani Huayra 5.jpeg",
-            "assets/macchine/Pagani/Pagani Huayra/Pagani Huayra.jpeg"
+            "assets/macchine_per_brand/Pagani/Pagani_Huayra/1.jpeg",
+            "assets/macchine_per_brand/Pagani/Pagani_Huayra/2.jpeg",
+            "assets/macchine_per_brand/Pagani/Pagani_Huayra/3.jpeg",
+            "assets/macchine_per_brand/Pagani/Pagani_Huayra/4.jpeg",
+            "assets/macchine_per_brand/Pagani/Pagani_Huayra/5.jpeg"
         ],
         "description": "Pagani Huayra di Pagani: stile distintivo, materiali di pregio e prestazioni avanzate.",
         "zeroTo100": "4.2 s",
@@ -982,11 +951,11 @@
         "priceEur": 522320,
         "powerHp": 934,
         "images": [
-            "assets/macchine/Pagani/Pagani Utopia/Pagani Utopia .jpeg",
-            "assets/macchine/Pagani/Pagani Utopia/Pagani Utopia 2.jpeg",
-            "assets/macchine/Pagani/Pagani Utopia/Pagani Utopia 3.jpeg",
-            "assets/macchine/Pagani/Pagani Utopia/Pagani Utopia 4.jpeg",
-            "assets/macchine/Pagani/Pagani Utopia/Pagani Utopia 5.jpeg"
+            "assets/macchine_per_brand/Pagani/Pagani_Utopia/1.jpeg",
+            "assets/macchine_per_brand/Pagani/Pagani_Utopia/2.jpeg",
+            "assets/macchine_per_brand/Pagani/Pagani_Utopia/3.jpeg",
+            "assets/macchine_per_brand/Pagani/Pagani_Utopia/4.jpeg",
+            "assets/macchine_per_brand/Pagani/Pagani_Utopia/5.jpeg"
         ],
         "description": "Pagani Utopia di Pagani: stile distintivo, materiali di pregio e prestazioni avanzate.",
         "zeroTo100": "3.3 s",
@@ -1011,10 +980,10 @@
         "priceEur": 106687,
         "powerHp": 790,
         "images": [
-            "assets/macchine/Porche/Porsche 911 GT2 RS/Porsche 911 GT2 RS 2.jpeg",
-            "assets/macchine/Porche/Porsche 911 GT2 RS/Porsche 911 GT2 RS 3.jpeg",
-            "assets/macchine/Porche/Porsche 911 GT2 RS/Porsche 911 GT2 RS 4.jpeg",
-            "assets/macchine/Porche/Porsche 911 GT2 RS/Porsche 911 GT2 RS.jpeg"
+            "assets/macchine_per_brand/Porche/Porsche_911_GT2_RS/1.jpeg",
+            "assets/macchine_per_brand/Porche/Porsche_911_GT2_RS/2.jpeg",
+            "assets/macchine_per_brand/Porche/Porsche_911_GT2_RS/3.jpeg",
+            "assets/macchine_per_brand/Porche/Porsche_911_GT2_RS/4.jpeg"
         ],
         "description": "Porsche 911 Gt2 Rs di Porche: stile distintivo, materiali di pregio e prestazioni avanzate.",
         "zeroTo100": "3.8 s",
@@ -1039,11 +1008,11 @@
         "priceEur": 505410,
         "powerHp": 888,
         "images": [
-            "assets/macchine/Porche/Porsche 911 GT3 RS/Porsche 911 GT3 RS 2.jpg",
-            "assets/macchine/Porche/Porsche 911 GT3 RS/Porsche 911 GT3 RS 3.jpg",
-            "assets/macchine/Porche/Porsche 911 GT3 RS/Porsche 911 GT3 RS 4.jpg",
-            "assets/macchine/Porche/Porsche 911 GT3 RS/Porsche 911 GT3 RS 5.jpg",
-            "assets/macchine/Porche/Porsche 911 GT3 RS/Porsche 911 GT3 RS.jpg"
+            "assets/macchine_per_brand/Porche/Porsche_911_GT3_RS/1.jpg",
+            "assets/macchine_per_brand/Porche/Porsche_911_GT3_RS/2.jpg",
+            "assets/macchine_per_brand/Porche/Porsche_911_GT3_RS/3.jpg",
+            "assets/macchine_per_brand/Porche/Porsche_911_GT3_RS/4.jpg",
+            "assets/macchine_per_brand/Porche/Porsche_911_GT3_RS/5.jpg"
         ],
         "description": "Porsche 911 Gt3 Rs di Porche: stile distintivo, materiali di pregio e prestazioni avanzate.",
         "zeroTo100": "4.9 s",
@@ -1068,11 +1037,11 @@
         "priceEur": 460171,
         "powerHp": 640,
         "images": [
-            "assets/macchine/Porche/Porsche 918 Spyder/Porsche 918 Spyder 2.jpeg",
-            "assets/macchine/Porche/Porsche 918 Spyder/Porsche 918 Spyder 3.jpeg",
-            "assets/macchine/Porche/Porsche 918 Spyder/Porsche 918 Spyder 4.jpeg",
-            "assets/macchine/Porche/Porsche 918 Spyder/Porsche 918 Spyder 5.jpeg",
-            "assets/macchine/Porche/Porsche 918 Spyder/Porsche 918 Spyder.jpeg"
+            "assets/macchine_per_brand/Porche/Porsche_918_Spyder/1.jpeg",
+            "assets/macchine_per_brand/Porche/Porsche_918_Spyder/2.jpeg",
+            "assets/macchine_per_brand/Porche/Porsche_918_Spyder/3.jpeg",
+            "assets/macchine_per_brand/Porche/Porsche_918_Spyder/4.jpeg",
+            "assets/macchine_per_brand/Porche/Porsche_918_Spyder/5.jpeg"
         ],
         "description": "Porsche 918 Spyder di Porche: stile distintivo, materiali di pregio e prestazioni avanzate.",
         "zeroTo100": "3.0 s",
@@ -1097,9 +1066,9 @@
         "priceEur": 546456,
         "powerHp": 518,
         "images": [
-            "assets/macchine/Porche/Porsche Carrera GT/Porsche Carrera GT 2.jpg",
-            "assets/macchine/Porche/Porsche Carrera GT/Porsche Carrera GT 3.jpg",
-            "assets/macchine/Porche/Porsche Carrera GT/Porsche Carrera GT.jpg"
+            "assets/macchine_per_brand/Porche/Porsche_Carrera_GT/1.jpg",
+            "assets/macchine_per_brand/Porche/Porsche_Carrera_GT/2.jpg",
+            "assets/macchine_per_brand/Porche/Porsche_Carrera_GT/3.jpg"
         ],
         "description": "Porsche Carrera Gt di Porche: stile distintivo, materiali di pregio e prestazioni avanzate.",
         "zeroTo100": "4.4 s",
@@ -1124,11 +1093,11 @@
         "priceEur": 342262,
         "powerHp": 314,
         "images": [
-            "assets/macchine/Rolls-Royce/Rolls-Royce Cullinan/Rolls-Royce Cullinan 2.jpeg",
-            "assets/macchine/Rolls-Royce/Rolls-Royce Cullinan/Rolls-Royce Cullinan 3.jpeg",
-            "assets/macchine/Rolls-Royce/Rolls-Royce Cullinan/Rolls-Royce Cullinan 4.jpeg",
-            "assets/macchine/Rolls-Royce/Rolls-Royce Cullinan/Rolls-Royce Cullinan 5.jpeg",
-            "assets/macchine/Rolls-Royce/Rolls-Royce Cullinan/Rolls-Royce Cullinan.jpeg"
+            "assets/macchine_per_brand/Rolls-Royce/Rolls-Royce_Cullinan/1.jpeg",
+            "assets/macchine_per_brand/Rolls-Royce/Rolls-Royce_Cullinan/2.jpeg",
+            "assets/macchine_per_brand/Rolls-Royce/Rolls-Royce_Cullinan/3.jpeg",
+            "assets/macchine_per_brand/Rolls-Royce/Rolls-Royce_Cullinan/4.jpeg",
+            "assets/macchine_per_brand/Rolls-Royce/Rolls-Royce_Cullinan/5.jpeg"
         ],
         "description": "Rolls Royce Cullinan di Rolls-Royce: stile distintivo, materiali di pregio e prestazioni avanzate.",
         "zeroTo100": "4.4 s",
@@ -1153,12 +1122,12 @@
         "priceEur": 294142,
         "powerHp": 723,
         "images": [
-            "assets/macchine/Rolls-Royce/Rolls-Royce Ghost/Rolls-Royce Ghost 2.jpeg",
-            "assets/macchine/Rolls-Royce/Rolls-Royce Ghost/Rolls-Royce Ghost 3.jpeg",
-            "assets/macchine/Rolls-Royce/Rolls-Royce Ghost/Rolls-Royce Ghost 4.jpeg",
-            "assets/macchine/Rolls-Royce/Rolls-Royce Ghost/Rolls-Royce Ghost 5.jpeg",
-            "assets/macchine/Rolls-Royce/Rolls-Royce Ghost/Rolls-Royce Ghost 6.jpeg",
-            "assets/macchine/Rolls-Royce/Rolls-Royce Ghost/Rolls-Royce Ghost.jpeg"
+            "assets/macchine_per_brand/Rolls-Royce/Rolls-Royce_Ghost/1.jpeg",
+            "assets/macchine_per_brand/Rolls-Royce/Rolls-Royce_Ghost/2.jpeg",
+            "assets/macchine_per_brand/Rolls-Royce/Rolls-Royce_Ghost/3.jpeg",
+            "assets/macchine_per_brand/Rolls-Royce/Rolls-Royce_Ghost/4.jpeg",
+            "assets/macchine_per_brand/Rolls-Royce/Rolls-Royce_Ghost/5.jpeg",
+            "assets/macchine_per_brand/Rolls-Royce/Rolls-Royce_Ghost/6.jpeg"
         ],
         "description": "Rolls Royce Ghost di Rolls-Royce: stile distintivo, materiali di pregio e prestazioni avanzate.",
         "zeroTo100": "3.0 s",
@@ -1183,11 +1152,11 @@
         "priceEur": 133419,
         "powerHp": 571,
         "images": [
-            "assets/macchine/Rolls-Royce/Rolls-Royce Phantom/Rolls-Royce Phantom 2.jpeg",
-            "assets/macchine/Rolls-Royce/Rolls-Royce Phantom/Rolls-Royce Phantom 3.jpeg",
-            "assets/macchine/Rolls-Royce/Rolls-Royce Phantom/Rolls-Royce Phantom 5.jpeg",
-            "assets/macchine/Rolls-Royce/Rolls-Royce Phantom/Rolls-Royce Phantom.jpeg",
-            "assets/macchine/Rolls-Royce/Rolls-Royce Phantom/Rolls-Royce Phantom4.jpeg"
+            "assets/macchine_per_brand/Rolls-Royce/Rolls-Royce_Phantom/1.jpeg",
+            "assets/macchine_per_brand/Rolls-Royce/Rolls-Royce_Phantom/2.jpeg",
+            "assets/macchine_per_brand/Rolls-Royce/Rolls-Royce_Phantom/3.jpeg",
+            "assets/macchine_per_brand/Rolls-Royce/Rolls-Royce_Phantom/4.jpeg",
+            "assets/macchine_per_brand/Rolls-Royce/Rolls-Royce_Phantom/5.jpeg"
         ],
         "description": "Rolls Royce Phantom di Rolls-Royce: stile distintivo, materiali di pregio e prestazioni avanzate.",
         "zeroTo100": "2.6 s",
@@ -1212,12 +1181,12 @@
         "priceEur": 165450,
         "powerHp": 490,
         "images": [
-            "assets/macchine/Rolls-Royce/Rolls-Royce Spectre/Rolls-Royce Spectre 2.jpg",
-            "assets/macchine/Rolls-Royce/Rolls-Royce Spectre/Rolls-Royce Spectre 3.jpg",
-            "assets/macchine/Rolls-Royce/Rolls-Royce Spectre/Rolls-Royce Spectre 4.jpg",
-            "assets/macchine/Rolls-Royce/Rolls-Royce Spectre/Rolls-Royce Spectre 5.jpg",
-            "assets/macchine/Rolls-Royce/Rolls-Royce Spectre/Rolls-Royce Spectre 6.jpg",
-            "assets/macchine/Rolls-Royce/Rolls-Royce Spectre/Rolls-Royce Spectre.jpg"
+            "assets/macchine_per_brand/Rolls-Royce/Rolls-Royce_Spectre/1.jpg",
+            "assets/macchine_per_brand/Rolls-Royce/Rolls-Royce_Spectre/2.jpg",
+            "assets/macchine_per_brand/Rolls-Royce/Rolls-Royce_Spectre/3.jpg",
+            "assets/macchine_per_brand/Rolls-Royce/Rolls-Royce_Spectre/4.jpg",
+            "assets/macchine_per_brand/Rolls-Royce/Rolls-Royce_Spectre/5.jpg",
+            "assets/macchine_per_brand/Rolls-Royce/Rolls-Royce_Spectre/6.jpg"
         ],
         "description": "Rolls Royce Spectre di Rolls-Royce: stile distintivo, materiali di pregio e prestazioni avanzate.",
         "zeroTo100": "2.6 s",
