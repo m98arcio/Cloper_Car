@@ -1,3 +1,4 @@
+// lib/screens/brand_catalog_page.dart
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -88,23 +89,26 @@ class _BrandCatalogPageState extends State<BrandCatalogPage> {
     return Scaffold(
       backgroundColor: Colors.transparent,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: const Color(0xFF0E0E0F), // barra nera fissa
         elevation: 0,
-        title: const Text(
+        centerTitle: true,
+        toolbarHeight: 72,
+        title: const _GradientText(
           'Catalogo',
           style: TextStyle(
             fontWeight: FontWeight.w900,
-            fontSize: 26,
-            color: Colors.white,
-            fontFamily: 'Cinzel',
-            shadows: [Shadow(blurRadius: 6, color: Colors.black54)],
+            fontSize: 28,
+            letterSpacing: 1.1,
+            color: Colors.white, // verrà mascherato dallo shader
           ),
+          colors: [Colors.orangeAccent, Colors.deepOrange],
         ),
       ),
       body: Stack(
         children: [
           const DarkLiveBackground(),
           SafeArea(
+            top: false,
             child: ListView.separated(
               padding: const EdgeInsets.all(12),
               itemCount: brands.length,
@@ -120,8 +124,7 @@ class _BrandCatalogPageState extends State<BrandCatalogPage> {
                   onTapUp: (_) {
                     setState(() => _pressed[brand] = false);
                     final filtered = widget.cars
-                        .where((c) =>
-                            c.brand.toLowerCase() == brand.toLowerCase())
+                        .where((c) => c.brand.toLowerCase() == brand.toLowerCase())
                         .toList();
                     Navigator.push(
                       context,
@@ -139,8 +142,7 @@ class _BrandCatalogPageState extends State<BrandCatalogPage> {
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 150),
                     curve: Curves.easeOut,
-                    transform: Matrix4.identity()
-                      ..scale(isPressed ? 0.97 : 1.0),
+                    transform: Matrix4.identity()..scale(isPressed ? 0.97 : 1.0),
                     decoration: BoxDecoration(
                       color: Colors.grey.withOpacity(0.15),
                       borderRadius: BorderRadius.circular(16),
@@ -151,12 +153,7 @@ class _BrandCatalogPageState extends State<BrandCatalogPage> {
                       children: [
                         Row(
                           children: [
-                            Image.asset(
-                              logo,
-                              height: 60,
-                              width: 60,
-                              fit: BoxFit.contain,
-                            ),
+                            Image.asset(logo, height: 60, width: 60, fit: BoxFit.contain),
                             const SizedBox(width: 16),
                             Expanded(
                               child: Center(
@@ -168,11 +165,7 @@ class _BrandCatalogPageState extends State<BrandCatalogPage> {
                                       fontWeight: FontWeight.w700,
                                       color: Colors.white,
                                       letterSpacing: 1.2,
-                                      shadows: [
-                                        Shadow(
-                                            blurRadius: 6,
-                                            color: Colors.black87)
-                                      ],
+                                      shadows: [Shadow(blurRadius: 6, color: Colors.black87)],
                                     ),
                                   ),
                                 ),
@@ -221,7 +214,7 @@ class _BrandCatalogPageState extends State<BrandCatalogPage> {
     );
   }
 
-  // ------ helpers di pagina (aggiornati) ------
+  // ------ helpers di pagina ------
   List<String> _luxuryBrands() => [
         'Bugatti',
         'Ferrari',
@@ -263,4 +256,29 @@ class _BrandCatalogPageState extends State<BrandCatalogPage> {
         'Pagani': 'assets/loghi/pagani_logo.png',
         'Lotus': 'assets/loghi/lotus_logo.png',
       };
+}
+
+/* ------- titolo con gradiente (come in Home) ------- */
+class _GradientText extends StatelessWidget {
+  final String text;
+  final TextStyle style;
+  final List<Color> colors;
+
+  const _GradientText(
+    this.text, {
+    required this.style,
+    required this.colors,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ShaderMask(
+      shaderCallback: (bounds) => LinearGradient(
+        colors: colors,
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+      ).createShader(Rect.fromLTWH(0, 0, bounds.width, bounds.height)),
+      child: Text(text, style: style),
+    );
+  }
 }

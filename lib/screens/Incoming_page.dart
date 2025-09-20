@@ -31,7 +31,7 @@ class _IncomingPageState extends State<IncomingPage>
   // -------- sensori / animazioni --------
   StreamSubscription? _accSub, _gyroSub;
   double _roll = 0, _pitch = 0, _accRoll = 0, _accPitch = 0;
-  double? _baseRoll, _basePitch; // baseline per partire dritti
+  double? _baseRoll, _basePitch;
   DateTime? _lastGyroTime;
   static const _alpha = 0.92;
   static const _clamp = 0.30;
@@ -60,9 +60,7 @@ class _IncomingPageState extends State<IncomingPage>
 
   Future<void> _initData() async {
     try {
-      // Carica tutti i dealer dagli assets tramite repo
       final dealers = await DealersRepo.load();
-      // Tenta di ottenere la posizione (se permessa)
       final pos = await _getPosition();
       if (!mounted) return;
       setState(() {
@@ -133,10 +131,12 @@ class _IncomingPageState extends State<IncomingPage>
 
     if (cars.isEmpty) {
       return const Scaffold(
+        appBar: _IncomingAppBar(),
         body: Stack(
           children: [
             DarkLiveBackground(),
             SafeArea(
+              top: false,
               child: Center(child: Text('Nessuna auto in arrivo.')),
             ),
           ],
@@ -146,23 +146,25 @@ class _IncomingPageState extends State<IncomingPage>
 
     if (_loadError != null) {
       return Scaffold(
+        appBar: const _IncomingAppBar(),
         body: Stack(
           children: [
             const DarkLiveBackground(),
-            SafeArea(child: Center(child: Text(_loadError!))),
+            SafeArea(top: false, child: Center(child: Text(_loadError!))),
           ],
         ),
       );
     }
 
     return Scaffold(
+      appBar: const _IncomingAppBar(), // 👈 titolo fisso
       body: Stack(
         children: [
           const DarkLiveBackground(),
           SafeArea(
+            top: false,
             child: Column(
               children: [
-                const _TopBar(),
                 const SizedBox(height: 8),
                 Expanded(
                   child: PageView.builder(
@@ -190,7 +192,7 @@ class _IncomingPageState extends State<IncomingPage>
                           child: FlipIncomingCard(
                             car: car,
                             eta: eta,
-                            dealer: dealer, // DealerPoint? → gestito dalla card
+                            dealer: dealer,
                             glow: _glow,
                             userPos: _pos,
                           ),
@@ -199,7 +201,6 @@ class _IncomingPageState extends State<IncomingPage>
                     },
                   ),
                 ),
-                // Banner in basso (testuale)
                 Padding(
                   padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
                   child: _AvailabilityBanner(
@@ -216,9 +217,8 @@ class _IncomingPageState extends State<IncomingPage>
           ),
         ],
       ),
-      // -------------------- BOTTOM BAR --------------------
       bottomNavigationBar: AppBottomBar(
-        currentIndex: 2, // sezione "In arrivo"
+        currentIndex: 2,
         cars: widget.cars,
         rates: null,
         preferredCurrency: 'EUR',
@@ -239,13 +239,9 @@ class _IncomingPageState extends State<IncomingPage>
     );
   }
 
-  /// Dealer più vicino per una data auto.
-  /// Se `car.availableAt` è valorizzato, limita la ricerca a quegli ID,
-  /// altrimenti usa tutti i dealer caricati.
   DealerPoint? _nearestDealerFor(Car car) {
     if (_dealers.isEmpty) return null;
 
-    // Filtro per availableAt (se presente)
     final List<DealerPoint> candidates;
     if (car.availableAt.isNotEmpty) {
       final byId = {for (final d in _dealers) d.id: d};
@@ -258,7 +254,6 @@ class _IncomingPageState extends State<IncomingPage>
       candidates = _dealers;
     }
 
-    // Se non ho la posizione → ritorno il primo candidato (UX neutra)
     if (_pos == null) return candidates.first;
 
     final user = LatLng(_pos!.latitude, _pos!.longitude);
@@ -278,7 +273,6 @@ class _IncomingPageState extends State<IncomingPage>
     return best;
   }
 
-  // Haversine (metri)
   double _haversine(
       double lat1, double lon1, double lat2, double lon2) {
     const R = 6371000.0;
@@ -303,24 +297,57 @@ class _IncomingPageState extends State<IncomingPage>
   }
 }
 
-/* ------------------------------ Top bar ------------------------------ */
+/* ---------------- AppBar con titolo a gradiente ---------------- */
 
-class _TopBar extends StatelessWidget {
-  const _TopBar();
+class _IncomingAppBar extends StatelessWidget implements PreferredSizeWidget {
+  const _IncomingAppBar();
+
+  @override
+  Size get preferredSize => const Size.fromHeight(72);
 
   @override
   Widget build(BuildContext context) {
-    return const Padding(
-      padding: EdgeInsets.fromLTRB(16, 12, 16, 8),
-      child: SizedBox(
-        height: 44,
-        child: Center(
-          child: Text(
-            'In arrivo',
-            style: TextStyle(fontSize: 22, fontWeight: FontWeight.w700),
-          ),
+    return AppBar(
+      backgroundColor: const Color(0xFF0E0E0F),
+      elevation: 0,
+      centerTitle: true,
+      toolbarHeight: preferredSize.height,
+      title: const _GradientText(
+        'In Arrivo',
+        style: TextStyle(
+          fontSize: 28,
+          fontWeight: FontWeight.w900,
+          letterSpacing: 1.1,
+          color: Colors.white, // verrà mascherato dallo shader
         ),
+        colors: [Colors.orangeAccent, Colors.deepOrange],
       ),
+    );
+    }
+}
+
+/* ---------------- GradientText riutilizzabile (privato) ---------------- */
+
+class _GradientText extends StatelessWidget {
+  final String text;
+  final TextStyle style;
+  final List<Color> colors;
+
+  const _GradientText(
+    this.text, {
+    required this.style,
+    required this.colors,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ShaderMask(
+      shaderCallback: (bounds) => LinearGradient(
+        colors: colors,
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+      ).createShader(Rect.fromLTWH(0, 0, bounds.width, bounds.height)),
+      child: Text(text, style: style),
     );
   }
 }

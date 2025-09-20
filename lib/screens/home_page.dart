@@ -127,22 +127,20 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       backgroundColor: Colors.transparent,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: const Color(0xFF0E0E0F), // nero fisso
         elevation: 0,
         centerTitle: true,
-        title: const Text(
-          'CloperCar',
-          style: TextStyle(
-            fontSize: 26,
-            fontWeight: FontWeight.w900,
-            letterSpacing: 1.2,
-          ),
-        ),
+        toolbarHeight: 72, // leggermente più alta del default
+        title: const _AppBarBrandTitle(),
       ),
+
       body: Stack(
         children: [
           const DarkLiveBackground(),
-          SafeArea(child: _buildBody()),
+          SafeArea(
+            top: false, // evitiamo doppio padding sotto l’AppBar
+            child: _buildBody(),
+          ),
         ],
       ),
       bottomNavigationBar: AppBottomBar(
@@ -185,9 +183,9 @@ class _HomePageState extends State<HomePage> {
     return ListView(
       padding: const EdgeInsets.only(bottom: 16),
       children: [
-        // Immagine con titolo incavato
+        // Hero con titolo incavato
         Padding(
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+          padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(22),
             child: Stack(
@@ -210,7 +208,7 @@ class _HomePageState extends State<HomePage> {
                         fit: BoxFit.cover,
                       ),
                     ),
-                    Positioned(
+                    const Positioned(
                       top: 20,
                       left: 0,
                       right: 0,
@@ -224,7 +222,7 @@ class _HomePageState extends State<HomePage> {
                           color: Colors.white,
                           shadows: [
                             Shadow(
-                              offset: const Offset(2, 2),
+                              offset: Offset(2, 2),
                               blurRadius: 6,
                               color: Colors.black45,
                             ),
@@ -238,6 +236,8 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
         ),
+
+        // Catalogo
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 18, 16, 10),
           child: Row(
@@ -317,6 +317,8 @@ class _HomePageState extends State<HomePage> {
             },
           ),
         ),
+
+        // Notizie
         const Padding(
           padding: EdgeInsets.fromLTRB(16, 22, 16, 10),
           child: Text(
@@ -346,15 +348,18 @@ class _HomePageState extends State<HomePage> {
           )
         else
           NewsStrip(items: _news, onRefresh: _loadNews),
+
         const SizedBox(height: 100),
+
+        // Footer
         Container(
           width: double.infinity,
           color: const Color(0xFF212121),
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 40),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
+            children: const [
+              Text(
                 'Informazioni',
                 style: TextStyle(
                   fontSize: 18,
@@ -362,14 +367,14 @@ class _HomePageState extends State<HomePage> {
                   color: Colors.white,
                 ),
               ),
-              const SizedBox(height: 10),
-              const Text(
+              SizedBox(height: 10),
+              Text(
                 'CloperCar è un progetto fittizio dedicato agli appassionati di auto di lusso. '
                 'Tutti i contenuti, prezzi e marchi presenti sono simulati a scopo dimostrativo.',
                 style: TextStyle(color: Colors.white70),
               ),
-              const SizedBox(height: 30),
-              const Text(
+              SizedBox(height: 30),
+              Text(
                 'Contatti',
                 style: TextStyle(
                   fontSize: 18,
@@ -377,10 +382,12 @@ class _HomePageState extends State<HomePage> {
                   color: Colors.white,
                 ),
               ),
-              const SizedBox(height: 10),
-              const Text('Email: info@clopercar.fake', style: TextStyle(color: Colors.white70)),
-              const Text('Telefono: +39 012 345 6789', style: TextStyle(color: Colors.white70)),
-              const SizedBox(height: 20),
+              SizedBox(height: 10),
+              Text('Email: info@clopercar.fake',
+                  style: TextStyle(color: Colors.white70)),
+              Text('Telefono: +39 012 345 6789',
+                  style: TextStyle(color: Colors.white70)),
+              SizedBox(height: 20),
             ],
           ),
         ),
@@ -398,7 +405,51 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-// ----------- Widget con tap e long press animato e ripple -----------
+/* ---------- Titolo AppBar con gradiente ---------- */
+
+class _AppBarBrandTitle extends StatelessWidget {
+  const _AppBarBrandTitle();
+
+  @override
+  Widget build(BuildContext context) {
+    return const _GradientText(
+      'CloperCar',
+      style: TextStyle(
+        fontSize: 28,
+        fontWeight: FontWeight.w900,
+        letterSpacing: 1.1,
+        color: Colors.white, // sostituito dal gradient
+      ),
+      colors: [Colors.orangeAccent, Colors.deepOrange],
+    );
+  }
+}
+
+class _GradientText extends StatelessWidget {
+  final String text;
+  final TextStyle style;
+  final List<Color> colors;
+
+  const _GradientText(
+    this.text, {
+    required this.style,
+    required this.colors,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ShaderMask(
+      shaderCallback: (bounds) => LinearGradient(
+        colors: colors,
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+      ).createShader(Rect.fromLTWH(0, 0, bounds.width, bounds.height)),
+      child: Text(text, style: style),
+    );
+  }
+}
+
+// ----------- Chip brand (invariato) -----------
 
 class _BrandChip extends StatefulWidget {
   final String brand;
@@ -535,7 +586,7 @@ class _SeeAllChipState extends State<_SeeAllChip> {
                   Colors.grey.withOpacity(0.125),
                   Colors.transparent,
                 ],
-                stops: [0.0, 0.5, 0.75, 1.0],
+                stops: const [0.0, 0.5, 0.75, 1.0],
               ),
             ),
             child: const Center(
