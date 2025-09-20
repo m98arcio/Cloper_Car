@@ -17,7 +17,9 @@ class Car {
   final String? description;
   final int? year;
   final bool incoming;
-  final List<String> availableDealerIds; // rinominato
+
+  /// Elenco ID dei dealer dove l’auto è disponibile
+  final List<String> availableAt;
 
   Car({
     required this.id,
@@ -56,7 +58,9 @@ class Car {
         description: j['description'] as String?,
         year: (j['year'] as num?)?.toInt(),
         incoming: j['incoming'] as bool? ?? false,
-        availableDealerIds: (j['availableDealerIds'] as List?)?.cast<String>() ?? const [],
+        availableAt: ((j['availableDealerIds'] ?? j['availableAt']) as List?)
+                ?.cast<String>() ??
+            const [],
       );
 
   Map<String, dynamic> toJson() => {
@@ -76,6 +80,6 @@ class Car {
         if (description != null) 'description': description,
         if (year != null) 'year': year,
         if (incoming) 'incoming': incoming,
-        'availableDealerIds': availableDealerIds, // rinominato
+        'availableDealerIds': availableAt,
       };
 }

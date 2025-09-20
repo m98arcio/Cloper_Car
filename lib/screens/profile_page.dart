@@ -1,3 +1,4 @@
+// lib/screens/profile_page.dart
 import 'package:flutter/material.dart';
 import '../widgets/app_bottom_bar.dart';
 import '../widgets/dark_live_background.dart';
@@ -6,7 +7,7 @@ import '../models/car.dart';
 class ProfilePage extends StatefulWidget {
   final String initialCurrency; // 'EUR' | 'USD' | 'GBP'
   final ValueChanged<String> onChanged;
-  final List<Car> cars; // ← lista completa di auto
+  final List<Car> cars; // lista completa di auto
   final Map<String, double>? rates;
 
   const ProfilePage({
@@ -37,22 +38,20 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Future<void> _openProfile() async {
-    // già siamo nella pagina profilo → niente da fare
+    // già siamo nella pagina profilo
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF1B171A),
-      appBar: AppBar(
-        title: const Text('Profilo'),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-      ),
+      backgroundColor: Colors.transparent,
+      // AppBar nera fissa con titolo grande a gradiente (niente sottotitolo)
+      appBar: const _ProfileAppBar(),
       body: Stack(
         children: [
           const DarkLiveBackground(),
           SafeArea(
+            top: false,
             child: ListView(
               children: [
                 const SizedBox(height: 8),
@@ -94,7 +93,7 @@ class _ProfilePageState extends State<ProfilePage> {
       ),
       bottomNavigationBar: AppBottomBar(
         currentIndex: 3, // Profilo
-        cars: widget.cars, // ← passiamo la lista completa di auto
+        cars: widget.cars,
         rates: widget.rates,
         preferredCurrency: _currency,
         onProfileTap: _openProfile,
@@ -124,5 +123,60 @@ class _ProfilePageState extends State<ProfilePage> {
       default:
         return 'Euro';
     }
+  }
+}
+
+/* ---------------- AppBar con titolo a gradiente ---------------- */
+
+class _ProfileAppBar extends StatelessWidget implements PreferredSizeWidget {
+  const _ProfileAppBar();
+
+  @override
+  Size get preferredSize => const Size.fromHeight(72);
+
+  @override
+  Widget build(BuildContext context) {
+    return AppBar(
+      backgroundColor: const Color(0xFF0E0E0F),
+      elevation: 0,
+      centerTitle: true,
+      toolbarHeight: preferredSize.height,
+      title: const _GradientText(
+        'Profilo',
+        style: TextStyle(
+          fontSize: 28,
+          fontWeight: FontWeight.w900,
+          letterSpacing: 1.1,
+          color: Colors.white, // sostituito dallo shader
+        ),
+        colors: [Colors.orangeAccent, Colors.deepOrange],
+      ),
+    );
+  }
+}
+
+/* ---------------- GradientText riutilizzabile (privato) ---------------- */
+
+class _GradientText extends StatelessWidget {
+  final String text;
+  final TextStyle style;
+  final List<Color> colors;
+
+  const _GradientText(
+    this.text, {
+    required this.style,
+    required this.colors,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ShaderMask(
+      shaderCallback: (bounds) => LinearGradient(
+        colors: colors,
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+      ).createShader(Rect.fromLTWH(0, 0, bounds.width, bounds.height)),
+      child: Text(text, style: style),
+    );
   }
 }

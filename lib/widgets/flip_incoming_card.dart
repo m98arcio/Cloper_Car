@@ -1,24 +1,27 @@
+// lib/widgets/flip_incoming_card.dart
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:url_launcher/url_launcher.dart';
+
 import '../models/car.dart';
-import '../screens/Incoming_page.dart'; // per la classe Dealer
+import '../models/dealer_point.dart';
 
 class FlipIncomingCard extends StatefulWidget {
   final Car car;
   final DateTime eta;
-  final Dealer? dealer;
+  final DealerPoint? dealer;   // <-- usa DealerPoint
   final AnimationController glow;
   final Position? userPos;
 
   const FlipIncomingCard({
+    super.key,
     required this.car,
     required this.eta,
     required this.dealer,
     required this.glow,
     required this.userPos,
-    super.key,
   });
 
   @override
@@ -27,7 +30,7 @@ class FlipIncomingCard extends StatefulWidget {
 
 class _FlipIncomingCardState extends State<FlipIncomingCard>
     with SingleTickerProviderStateMixin {
-  late final AnimationController _flip;
+  late final AnimationController _flip; // 0 -> front, 1 -> back
   bool get _isBack => _flip.value >= 0.5;
 
   @override
@@ -60,7 +63,7 @@ class _FlipIncomingCardState extends State<FlipIncomingCard>
       child: AnimatedBuilder(
         animation: _flip,
         builder: (context, _) {
-          final angle = _flip.value * math.pi;
+          final angle = _flip.value * math.pi; // 0..pi
           final showBack = angle > math.pi / 2;
           final transform = Matrix4.identity()
             ..setEntry(3, 2, 0.0012)
@@ -73,6 +76,7 @@ class _FlipIncomingCardState extends State<FlipIncomingCard>
               borderRadius: BorderRadius.circular(24),
               child: Stack(
                 children: [
+                  // FRONT
                   Opacity(
                     opacity: showBack ? 0.0 : 1.0,
                     child: IgnorePointer(
@@ -84,6 +88,7 @@ class _FlipIncomingCardState extends State<FlipIncomingCard>
                       ),
                     ),
                   ),
+                  // BACK
                   Transform(
                     alignment: Alignment.center,
                     transform: Matrix4.identity()..rotateY(math.pi),
@@ -126,7 +131,9 @@ class _FrontFace extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    String img = car.images.isNotEmpty ? car.images.first : 'assets/macchine/supercar.jpg';
+    final img = car.images.isNotEmpty
+        ? car.images.first
+        : 'assets/macchine/supercar.jpg';
 
     return Container(
       decoration: BoxDecoration(
@@ -134,7 +141,8 @@ class _FrontFace extends StatelessWidget {
         border: Border.all(color: cs.primary.withOpacity(0.35)),
         boxShadow: [
           BoxShadow(
-            color: cs.primary.withOpacity(0.3 * (0.6 + 0.4 * math.sin(glow.value * math.pi))),
+            color: cs.primary
+                .withOpacity(0.3 * (0.6 + 0.4 * math.sin(glow.value * math.pi))),
             blurRadius: 24,
             spreadRadius: 1,
           ),
@@ -151,8 +159,10 @@ class _FrontFace extends StatelessWidget {
             child: Image.asset(
               img,
               fit: BoxFit.cover,
-              errorBuilder: (_, __, ___) =>
-                  Image.asset('assets/macchine/supercar.jpg', fit: BoxFit.cover),
+              errorBuilder: (_, __, ___) => Image.asset(
+                'assets/macchine/supercar.jpg',
+                fit: BoxFit.cover,
+              ),
             ),
           ),
           Positioned.fill(
@@ -166,11 +176,13 @@ class _FrontFace extends StatelessWidget {
               ),
             ),
           ),
+          // Pill "Arrivo"
           Positioned(
             right: 16,
             top: 16,
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
               decoration: BoxDecoration(
                 color: Colors.white.withOpacity(0.12),
                 borderRadius: BorderRadius.circular(12),
@@ -180,12 +192,16 @@ class _FrontFace extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Text('Arrivo', style: TextStyle(fontSize: 12, color: Colors.white70)),
-                  Text(_fmtDate(eta), style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+                  const Text('Arrivo',
+                      style: TextStyle(fontSize: 12, color: Colors.white70)),
+                  Text(_fmtDate(eta),
+                      style: const TextStyle(
+                          fontSize: 16, fontWeight: FontWeight.w700)),
                 ],
               ),
             ),
           ),
+          // Titolo + hint
           Positioned(
             left: 16,
             right: 16,
@@ -196,10 +212,12 @@ class _FrontFace extends StatelessWidget {
                 Text('${car.brand} ${car.model}',
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w700)),
+                    style: const TextStyle(
+                        fontSize: 22, fontWeight: FontWeight.w700)),
                 const SizedBox(height: 6),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   decoration: BoxDecoration(
                     color: Colors.white.withOpacity(0.12),
                     borderRadius: BorderRadius.circular(10),
@@ -207,7 +225,8 @@ class _FrontFace extends StatelessWidget {
                   ),
                   child: const Text(
                     'Tocca la card per saperne di più',
-                    style: TextStyle(fontSize: 13, color: Colors.white70),
+                    style:
+                        TextStyle(fontSize: 13, color: Colors.white70),
                   ),
                 ),
               ],
@@ -227,7 +246,7 @@ class _FrontFace extends StatelessWidget {
 class _BackFace extends StatelessWidget {
   final Car car;
   final DateTime eta;
-  final Dealer? dealer;
+  final DealerPoint? dealer;
   final Position? userPos;
 
   const _BackFace({
@@ -249,9 +268,8 @@ class _BackFace extends StatelessWidget {
       if (car.gearbox != null) 'Cambio: ${car.gearbox}',
     ];
 
-    final latLng = dealer != null
-        ? LatLng(dealer!.lat, dealer!.lng)
-        : const LatLng(41.9028, 12.4964);
+    final hasDealer = dealer != null;
+    final LatLng? latLng = hasDealer ? dealer!.latLng : null;
 
     return Container(
       decoration: BoxDecoration(
@@ -265,9 +283,137 @@ class _BackFace extends StatelessWidget {
       ),
       child: Column(
         children: [
-          // header, specs e mappa simili alla versione originale
+          // Header titolo + data
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 6),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    '${car.brand} ${car.model}',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                        fontSize: 20, fontWeight: FontWeight.w800),
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 12, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.12),
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: Colors.white24),
+                  ),
+                  child: Text(
+                    _fmtDate(eta),
+                    style: const TextStyle(
+                        fontSize: 14, fontWeight: FontWeight.w700),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          // Specs
+          Padding(
+            padding:
+                const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Wrap(
+                spacing: 10,
+                runSpacing: 6,
+                children: specs
+                    .map(
+                      (s) => Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.08),
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: Colors.white24),
+                        ),
+                        child: Text(s,
+                            style: const TextStyle(fontSize: 13)),
+                      ),
+                    )
+                    .toList(),
+              ),
+            ),
+          ),
+          const SizedBox(height: 8),
+
+          // Mappa SOLO se esiste un dealer
+          if (hasDealer)
+            Expanded(
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(16),
+                child: GoogleMap(
+                  initialCameraPosition:
+                      CameraPosition(target: latLng!, zoom: 12.5),
+                  markers: {
+                    Marker(
+                      markerId: const MarkerId('dealer'),
+                      position: latLng,
+                      infoWindow: InfoWindow(
+                        title: dealer!.name,
+                        snippet: dealer!.city,
+                        onTap: () => _openExternalMaps(
+                          dealer!.lat,
+                          dealer!.lng,
+                        ),
+                      ),
+                    ),
+                    if (userPos != null)
+                      Marker(
+                        markerId: const MarkerId('me'),
+                        position: LatLng(
+                            userPos!.latitude, userPos!.longitude),
+                        icon: BitmapDescriptor.defaultMarkerWithHue(
+                            BitmapDescriptor.hueAzure),
+                        infoWindow: const InfoWindow(title: 'Tu sei qui'),
+                      ),
+                  },
+                  myLocationEnabled: userPos != null,
+                  myLocationButtonEnabled: false,
+                  zoomControlsEnabled: false,
+                  compassEnabled: false,
+                  tiltGesturesEnabled: false,
+                  buildingsEnabled: false,
+                ),
+              ),
+            ),
+
+          const SizedBox(height: 10),
+
+          // Footer (se non c'è dealer → messaggio richiesto)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                hasDealer
+                    ? 'Concessionario più vicino: ${dealer!.name} — ${dealer!.city}'
+                    : "L'auto non è disponibile",
+                style: const TextStyle(
+                    fontSize: 14.5, fontWeight: FontWeight.w600),
+              ),
+            ),
+          ),
         ],
       ),
     );
   }
+
+  Future<void> _openExternalMaps(double lat, double lng) async {
+    final uri = Uri.parse(
+        'https://www.google.com/maps/dir/?api=1&destination=$lat,$lng');
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    }
+  }
+
+  String _fmtDate(DateTime d) =>
+      '${d.day.toString().padLeft(2, '0')}/${d.month.toString().padLeft(2, '0')}/${d.year}';
 }

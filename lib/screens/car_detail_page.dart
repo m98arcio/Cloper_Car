@@ -7,7 +7,11 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../models/car.dart';
 import '../widgets/dark_live_background.dart';
-import '../services/dealer_service.dart';
+
+// ✅ usa i nuovi file creati
+import '../data/dealers_repo.dart';
+import '../models/dealer_point.dart';
+
 import 'profile_page.dart';
 
 class CarDetailPage extends StatefulWidget {
@@ -56,7 +60,7 @@ class _CarDetailPageState extends State<CarDetailPage> {
       if (perm == LocationPermission.deniedForever) {
         throw Exception('Permesso negato in modo permanente.');
       }
-      final p = await Geolocator.getCurrentPosition();
+      final p = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
       if (!mounted) return;
       setState(() => _pos = p);
     } catch (e) {
@@ -535,7 +539,8 @@ class _PriceCard extends StatelessWidget {
   }
 }
 
-// ================= MAP CARD =================
+/* =================== MAP =================== */
+
 class _MapCard extends StatefulWidget {
   final Car car;
   final Position? pos;
@@ -562,7 +567,10 @@ class _MapCardState extends State<_MapCard> {
   @override
   void didUpdateWidget(covariant _MapCard oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.pos != widget.pos || oldWidget.car != widget.car || oldWidget.error != widget.error) {
+    // Quando arriva la posizione o cambia l'auto, prepara la mappa
+    if (oldWidget.pos != widget.pos ||
+        oldWidget.car != widget.car ||
+        oldWidget.error != widget.error) {
       _prepare();
     }
   }
@@ -571,7 +579,7 @@ class _MapCardState extends State<_MapCard> {
     if (widget.error != null) {
       setState(() {
         _markers = const <Marker>{};
-        _initial = null;
+        _initial = null; // niente camera finché non si risolve
         _centeredDealerId = null;
       });
       return;
@@ -587,11 +595,18 @@ class _MapCardState extends State<_MapCard> {
 
     final all = await DealersRepo.load();
     final Map<String, DealerPoint> byId = {for (final d in all) d.id: d};
-    final allowedIds = widget.car.availableDealerIds;
+
+    // ✅ usa il campo corretto (lista non-null)
+    final allowedIds = widget.car.availableAt;
     List<DealerPoint> visible;
 
     if (allowedIds.isNotEmpty) {
-      visible = [for (final id in allowedIds) if (byId.containsKey(id)) byId[id]!];
+      // usa SOLO i dealer dichiarati nell’auto (ordine preservato)
+      visible = [
+        for (final id in allowedIds)
+          if (byId.containsKey(id)) byId[id]!,
+      ];
+      // Se per errore non ne trova nessuno, fallback: nessun marker (evidenzia dati mancanti)
       if (visible.isEmpty) {
         setState(() {
           _markers = const <Marker>{};
