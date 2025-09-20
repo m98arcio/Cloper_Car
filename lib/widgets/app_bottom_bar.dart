@@ -36,11 +36,12 @@ class AppBottomBar extends StatelessWidget {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (_) => BrandCatalogPage(
-                cars: cars,
-                rates: rates,
-                preferredCurrency: preferredCurrency,
-              ),
+              builder:
+                  (_) => BrandCatalogPage(
+                    cars: cars,
+                    rates: rates,
+                    preferredCurrency: preferredCurrency,
+                  ),
             ),
           );
         } else if (i == 2) {
@@ -54,9 +55,7 @@ class AppBottomBar extends StatelessWidget {
           }
           Navigator.push(
             context,
-            MaterialPageRoute(
-              builder: (_) => IncomingPage(cars: cars, onProfileTap: () {  },),
-            ),
+            MaterialPageRoute(builder: (_) => IncomingPage(cars: cars)),
           );
         } else if (i == 3) {
           // Profilo
@@ -65,8 +64,14 @@ class AppBottomBar extends StatelessWidget {
       },
       items: const [
         BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-        BottomNavigationBarItem(icon: Icon(Icons.directions_car), label: 'Catalogo'),
-        BottomNavigationBarItem(icon: Icon(Icons.local_shipping), label: 'In arrivo'),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.directions_car),
+          label: 'Catalogo',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.local_shipping),
+          label: 'In arrivo',
+        ),
         BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profilo'),
       ],
     );
