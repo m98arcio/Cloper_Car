@@ -1,4 +1,5 @@
 // lib/screens/car_list_page.dart
+import 'dart:ui' show ImageFilter;
 import 'package:concessionario_supercar/screens/car_detail_page.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
@@ -109,16 +110,19 @@ class _CarListPageState extends State<CarListPage> {
       backgroundColor: Colors.transparent,
       extendBody: true,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: const Color(0xFF0E0E0F),
         elevation: 0,
         centerTitle: true,
-        title: Text(
+        toolbarHeight: 72,
+        title: _GradientText(
           brand,
           style: const TextStyle(
-            fontSize: 26,
+            fontSize: 28,
             fontWeight: FontWeight.w900,
-            letterSpacing: 1.2,
+            letterSpacing: 1.1,
+            color: Colors.white,
           ),
+          colors: const [Colors.orangeAccent, Colors.deepOrange],
         ),
       ),
       body: Stack(
@@ -203,7 +207,7 @@ class _CarListPageState extends State<CarListPage> {
                           child: Transform.scale(
                             scale: scale,
                             child: Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+                              padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 24),
                               child: child,
                             ),
                           ),
@@ -244,7 +248,7 @@ class _CarListPageState extends State<CarListPage> {
   }
 }
 
-/// Card singola con effetto tap/hold, testo sotto l’immagine e trasparente
+/// Card singola con overlay compatto (frosted) dentro l’immagine
 class _CarCard extends StatefulWidget {
   final Car car;
   final VoidCallback onTap;
@@ -271,6 +275,10 @@ class _CarCardState extends State<_CarCard> {
 
   @override
   Widget build(BuildContext context) {
+    final img = widget.car.images.isNotEmpty
+        ? widget.car.images.first
+        : 'assets/macchine/supercar.jpg';
+
     return AnimatedScale(
       scale: _scale,
       duration: const Duration(milliseconds: 100),
@@ -280,7 +288,7 @@ class _CarCardState extends State<_CarCard> {
         borderRadius: BorderRadius.circular(24),
         child: Ink(
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.05), // trasparente come home
+            color: Colors.white.withOpacity(0.05),
             borderRadius: BorderRadius.circular(24),
             boxShadow: [
               BoxShadow(
@@ -300,55 +308,134 @@ class _CarCardState extends State<_CarCard> {
             onLongPress: _onLongPress,
             splashColor: Colors.white24,
             highlightColor: Colors.white10,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                // IMMAGINE
-                ClipRRect(
-                  borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-                  child: SizedBox(
-                    height: 200,
-                    child: widget.car.images.isNotEmpty
-                        ? Image.asset(
-                            widget.car.images.first,
-                            fit: BoxFit.cover,
-                            width: double.infinity,
-                            errorBuilder: (context, error, stackTrace) {
-                              return Container(
-                                color: Colors.grey[800],
-                                alignment: Alignment.center,
-                                child: const Icon(Icons.broken_image, size: 40, color: Colors.white54),
-                              );
-                            },
-                          )
-                        : Container(
-                            color: Colors.grey[800],
-                            alignment: Alignment.center,
-                            child: const Icon(Icons.car_rental, size: 40, color: Colors.white54),
-                          ),
-                  ),
-                ),
-                // TESTO SOTTO L’IMMAGINE
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 28), // più spazio sotto immagine
-                  child: Text(
-                    widget.car.model,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w900,
-                      fontSize: 28, // font più grande
-                      color: Colors.white,
-                      shadows: [Shadow(blurRadius: 4, color: Colors.black26)],
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(24),
+              child: Stack(
+                children: [
+                  // IMMAGINE
+                  SizedBox(
+                    height: 200, 
+                    width: double.infinity,
+                    child: Image.asset(
+                      img,
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, __, ___) => Container(
+                        color: Colors.grey[800],
+                        alignment: Alignment.center,
+                        child: const Icon(Icons.broken_image, size: 40, color: Colors.white54),
+                      ),
                     ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    textAlign: TextAlign.center,
                   ),
-                ),
-              ],
+
+                  // SCRIM in basso
+                  Positioned.fill(
+                    child: IgnorePointer(
+                      child: DecoratedBox(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.bottomCenter,
+                            end: Alignment.topCenter,
+                            colors: [
+                              Colors.black.withOpacity(0.55),
+                              Colors.transparent,
+                            ],
+                            stops: const [0.0, 0.6],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  // PILL CON NOME
+                  Positioned(
+                    left: 16,
+                    right: 16,
+                    bottom: 25,
+                    child: _Frosted(
+                      borderRadius: 14,
+                      blur: 12,
+                      opacity: 0.18,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                        child: Text(
+                          widget.car.model,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w800,
+                            fontSize: 24,
+                            color: Colors.white,
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
       ),
+    );
+  }
+}
+
+/* ---------- frosted glass helper ---------- */
+class _Frosted extends StatelessWidget {
+  final Widget child;
+  final double borderRadius;
+  final double blur;
+  final double opacity;
+
+  const _Frosted({
+    required this.child,
+    this.borderRadius = 12,
+    this.blur = 10,
+    this.opacity = 0.15,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(borderRadius),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: blur, sigmaY: blur),
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.black.withOpacity(opacity),
+            border: Border.all(color: Colors.white.withOpacity(0.12)),
+            borderRadius: BorderRadius.circular(borderRadius),
+          ),
+          child: child,
+        ),
+      ),
+    );
+  }
+}
+
+/* ---------- GradientText per AppBar ---------- */
+class _GradientText extends StatelessWidget {
+  final String text;
+  final TextStyle style;
+  final List<Color> colors;
+
+  const _GradientText(
+    this.text, {
+    required this.style,
+    required this.colors,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ShaderMask(
+      shaderCallback: (bounds) => LinearGradient(
+        colors: colors,
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+      ).createShader(Rect.fromLTWH(0, 0, bounds.width, bounds.height)),
+      child: Text(text, style: style),
     );
   }
 }
