@@ -70,6 +70,7 @@ flutter:
     - assets/macchine_per_brand/Ferrari/Ferrari_Purosangue/
     - assets/macchine_per_brand/Ferrari/Ferrari_SF90_Stradale/
     - assets/macchine_per_brand/Ferrari/Ferrari_Testarossa/
+    - assets/macchine_per_brand/Ferrari/Ferrari_812_Superfast/
 
     # Cartelle macchine per Koenigsegg
     - assets/macchine_per_brand/Koenigsegg/Koenigsegg_jesko/
@@ -81,6 +82,8 @@ flutter:
     - assets/macchine_per_brand/Lamborghini/Lamborghini_Revuelto/
     - assets/macchine_per_brand/Lamborghini/Lamborghini_Urus_performance/
     - assets/macchine_per_brand/Lamborghini/Lamborghini_Veneno/
+    - assets/macchine_per_brand/Lamborghini/Lamborghini_Countach/
+
 
     # Cartelle macchine per Lotus
     - assets/macchine_per_brand/Lotus/Lotus_Emira/
@@ -103,6 +106,7 @@ flutter:
     - assets/macchine_per_brand/Porsche/Porsche_911_GT3_RS/
     - assets/macchine_per_brand/Porsche/Porsche_918_Spyder/
     - assets/macchine_per_brand/Porsche/Porsche_Carrera_GT/
+    - assets/macchine_per_brand/Porsche/Porsche_GT4/
 
     # Cartelle macchine per Rolls-Royce
     - assets/macchine_per_brand/Rolls-Royce/Rolls-Royce_Cullinan/
