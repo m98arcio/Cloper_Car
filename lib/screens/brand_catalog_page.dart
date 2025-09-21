@@ -27,7 +27,6 @@ class BrandCatalogPage extends StatefulWidget {
 }
 
 class _BrandCatalogPageState extends State<BrandCatalogPage> {
-  final Map<String, bool> _pressed = {};
   String _preferredCurrency = 'EUR';
   Map<String, double>? _rates;
 
@@ -89,7 +88,7 @@ class _BrandCatalogPageState extends State<BrandCatalogPage> {
     return Scaffold(
       backgroundColor: Colors.transparent,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF0E0E0F), // barra nera fissa
+        backgroundColor: const Color(0xFF0E0E0F),
         elevation: 0,
         centerTitle: true,
         toolbarHeight: 72,
@@ -99,7 +98,7 @@ class _BrandCatalogPageState extends State<BrandCatalogPage> {
             fontWeight: FontWeight.w900,
             fontSize: 28,
             letterSpacing: 1.1,
-            color: Colors.white, // verrà mascherato dallo shader
+            color: Colors.white,
           ),
           colors: [Colors.orangeAccent, Colors.deepOrange],
         ),
@@ -117,12 +116,12 @@ class _BrandCatalogPageState extends State<BrandCatalogPage> {
                 final brand = brands[i];
                 final cover = thumbs[brand] ?? 'assets/macchine/mclaren.jpg';
                 final logo = logos[brand] ?? 'assets/macchine/mclaren_logo.png';
-                final isPressed = _pressed[brand] ?? false;
 
-                return GestureDetector(
-                  onTapDown: (_) => setState(() => _pressed[brand] = true),
-                  onTapUp: (_) {
-                    setState(() => _pressed[brand] = false);
+                return _BrandCard(
+                  brand: brand,
+                  cover: cover,
+                  logo: logo,
+                  onTap: () {
                     final filtered = widget.cars
                         .where((c) => c.brand.toLowerCase() == brand.toLowerCase())
                         .toList();
@@ -138,54 +137,6 @@ class _BrandCatalogPageState extends State<BrandCatalogPage> {
                       ),
                     );
                   },
-                  onTapCancel: () => setState(() => _pressed[brand] = false),
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 150),
-                    curve: Curves.easeOut,
-                    transform: Matrix4.identity()..scale(isPressed ? 0.97 : 1.0),
-                    decoration: BoxDecoration(
-                      color: Colors.grey.withOpacity(0.15),
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    padding: const EdgeInsets.all(12),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Image.asset(logo, height: 60, width: 60, fit: BoxFit.contain),
-                            const SizedBox(width: 16),
-                            Expanded(
-                              child: Center(
-                                child: Text(
-                                  brand,
-                                  style: GoogleFonts.cinzelDecorative(
-                                    textStyle: const TextStyle(
-                                      fontSize: 22,
-                                      fontWeight: FontWeight.w700,
-                                      color: Colors.white,
-                                      letterSpacing: 1.2,
-                                      shadows: [Shadow(blurRadius: 6, color: Colors.black87)],
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 8),
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(16),
-                          child: Image.asset(
-                            cover,
-                            width: double.infinity,
-                            height: 100,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
                 );
               },
             ),
@@ -193,7 +144,7 @@ class _BrandCatalogPageState extends State<BrandCatalogPage> {
         ],
       ),
       bottomNavigationBar: AppBottomBar(
-        currentIndex: 1, // Catalogo
+        currentIndex: 1,
         cars: widget.cars,
         rates: widget.rates,
         preferredCurrency: widget.preferredCurrency,
@@ -214,7 +165,6 @@ class _BrandCatalogPageState extends State<BrandCatalogPage> {
     );
   }
 
-  // ------ helpers di pagina ------
   List<String> _luxuryBrands() => [
         'Bugatti',
         'Ferrari',
@@ -256,6 +206,107 @@ class _BrandCatalogPageState extends State<BrandCatalogPage> {
         'Pagani': 'assets/loghi/pagani_logo.png',
         'Lotus': 'assets/loghi/lotus_logo.png',
       };
+}
+
+/* ------- Brand card con effetto tap/hold (come HomePage) ------- */
+class _BrandCard extends StatefulWidget {
+  final String brand;
+  final String cover;
+  final String logo;
+  final VoidCallback onTap;
+
+  const _BrandCard({
+    required this.brand,
+    required this.cover,
+    required this.logo,
+    required this.onTap,
+  });
+
+  @override
+  State<_BrandCard> createState() => _BrandCardState();
+}
+
+class _BrandCardState extends State<_BrandCard> {
+  double _scale = 1.0;
+
+  void _onTapDown(TapDownDetails details) => setState(() => _scale = 0.95);
+  void _onTapUp(TapUpDetails details) => setState(() => _scale = 1.0);
+  void _onTapCancel() => setState(() => _scale = 1.0);
+
+  void _onLongPress() {
+    setState(() => _scale = 0.9);
+    Future.delayed(const Duration(milliseconds: 200), () {
+      if (mounted) setState(() => _scale = 1.0);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedScale(
+      scale: _scale,
+      duration: const Duration(milliseconds: 100),
+      curve: Curves.easeOut,
+      child: Material(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(16),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(16),
+          onTap: widget.onTap,
+          onLongPress: _onLongPress,
+          onTapDown: _onTapDown,
+          onTapUp: _onTapUp,
+          onTapCancel: _onTapCancel,
+          splashColor: Colors.white24,
+          highlightColor: Colors.white10,
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.grey.withOpacity(0.15),
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: const [BoxShadow(blurRadius: 8, color: Colors.black26)],
+            ),
+            padding: const EdgeInsets.all(12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Image.asset(widget.logo, height: 60, width: 60, fit: BoxFit.contain),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Center(
+                        child: Text(
+                          widget.brand,
+                          style: GoogleFonts.cinzelDecorative(
+                            textStyle: const TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.white,
+                              letterSpacing: 1.2,
+                              shadows: [Shadow(blurRadius: 6, color: Colors.black87)],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(16),
+                  child: Image.asset(
+                    widget.cover,
+                    width: double.infinity,
+                    height: 100,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 /* ------- titolo con gradiente (come in Home) ------- */

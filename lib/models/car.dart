@@ -38,7 +38,7 @@ class Car {
     this.description,
     this.year,
     this.incoming = false,
-    this.availableDealerIds = const [],
+    this.availableAt = const [],
   });
 
   factory Car.fromJson(Map<String, dynamic> j) => Car(

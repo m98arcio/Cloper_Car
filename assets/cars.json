@@ -121,11 +121,11 @@
         "priceEur": 504914,
         "powerHp": 320,
         "images": [
-            "assets/macchine_per_brand/Bentley/Bentley_Bentayga_Mansory/1.jpeg",
+            "assets/macchine_per_brand/Bentley/Bentley_Bentayga_Mansory/1.png",
             "assets/macchine_per_brand/Bentley/Bentley_Bentayga_Mansory/2.jpeg",
             "assets/macchine_per_brand/Bentley/Bentley_Bentayga_Mansory/3.jpeg",
             "assets/macchine_per_brand/Bentley/Bentley_Bentayga_Mansory/4.jpeg",
-            "assets/macchine_per_brand/Bentley/Bentley_Bentayga_Mansory/5.png"
+            "assets/macchine_per_brand/Bentley/Bentley_Bentayga_Mansory/5.jpeg"
         ],
         "description": "Bentley Bentayga Mansory di Bentley: stile distintivo, materiali di pregio e prestazioni avanzate.",
         "zeroTo100": "2.9 s",
@@ -973,19 +973,19 @@
         ]
     },
     {
-        "id": "porche-porsche-911-gt2-rs",
-        "brand": "Porche",
+        "id": "porsche-porsche-911-gt2-rs",
+        "brand": "Porsche",
         "model": "Porsche 911 Gt2 Rs",
         "year": 2023,
         "priceEur": 106687,
         "powerHp": 790,
         "images": [
-            "assets/macchine_per_brand/Porche/Porsche_911_GT2_RS/1.jpeg",
-            "assets/macchine_per_brand/Porche/Porsche_911_GT2_RS/2.jpeg",
-            "assets/macchine_per_brand/Porche/Porsche_911_GT2_RS/3.jpeg",
-            "assets/macchine_per_brand/Porche/Porsche_911_GT2_RS/4.jpeg"
+            "assets/macchine_per_brand/Porsche/Porsche_911_GT2_RS/1.jpeg",
+            "assets/macchine_per_brand/Porsche/Porsche_911_GT2_RS/2.jpeg",
+            "assets/macchine_per_brand/Porsche/Porsche_911_GT2_RS/3.jpeg",
+            "assets/macchine_per_brand/Porsche/Porsche_911_GT2_RS/4.jpeg"
         ],
-        "description": "Porsche 911 Gt2 Rs di Porche: stile distintivo, materiali di pregio e prestazioni avanzate.",
+        "description": "Porsche 911 Gt2 Rs di Porsche: stile distintivo, materiali di pregio e prestazioni avanzate.",
         "zeroTo100": "3.8 s",
         "topSpeed": "310 km/h",
         "engine": "Specifiche motore da definire",
@@ -1001,20 +1001,20 @@
         ]
     },
     {
-        "id": "porche-porsche-911-gt3-rs",
-        "brand": "Porche",
+        "id": "porsche-porsche-911-gt3-rs",
+        "brand": "Porsche",
         "model": "Porsche 911 Gt3 Rs",
         "year": 2023,
         "priceEur": 505410,
         "powerHp": 888,
         "images": [
-            "assets/macchine_per_brand/Porche/Porsche_911_GT3_RS/1.jpg",
-            "assets/macchine_per_brand/Porche/Porsche_911_GT3_RS/2.jpg",
-            "assets/macchine_per_brand/Porche/Porsche_911_GT3_RS/3.jpg",
-            "assets/macchine_per_brand/Porche/Porsche_911_GT3_RS/4.jpg",
-            "assets/macchine_per_brand/Porche/Porsche_911_GT3_RS/5.jpg"
+            "assets/macchine_per_brand/Porsche/Porsche_911_GT3_RS/1.jpg",
+            "assets/macchine_per_brand/Porsche/Porsche_911_GT3_RS/2.jpg",
+            "assets/macchine_per_brand/Porsche/Porsche_911_GT3_RS/3.jpg",
+            "assets/macchine_per_brand/Porsche/Porsche_911_GT3_RS/4.jpg",
+            "assets/macchine_per_brand/Porsche/Porsche_911_GT3_RS/5.jpg"
         ],
-        "description": "Porsche 911 Gt3 Rs di Porche: stile distintivo, materiali di pregio e prestazioni avanzate.",
+        "description": "Porsche 911 Gt3 Rs di Porsche: stile distintivo, materiali di pregio e prestazioni avanzate.",
         "zeroTo100": "4.9 s",
         "topSpeed": "291 km/h",
         "engine": "Specifiche motore da definire",
@@ -1030,20 +1030,20 @@
         ]
     },
     {
-        "id": "porche-porsche-918-spyder",
-        "brand": "Porche",
+        "id": "porsche-porsche-918-spyder",
+        "brand": "Porsche",
         "model": "Porsche 918 Spyder",
         "year": 2023,
         "priceEur": 460171,
         "powerHp": 640,
         "images": [
-            "assets/macchine_per_brand/Porche/Porsche_918_Spyder/1.jpeg",
-            "assets/macchine_per_brand/Porche/Porsche_918_Spyder/2.jpeg",
-            "assets/macchine_per_brand/Porche/Porsche_918_Spyder/3.jpeg",
-            "assets/macchine_per_brand/Porche/Porsche_918_Spyder/4.jpeg",
-            "assets/macchine_per_brand/Porche/Porsche_918_Spyder/5.jpeg"
+            "assets/macchine_per_brand/Porsche/Porsche_918_Spyder/1.jpeg",
+            "assets/macchine_per_brand/Porsche/Porsche_918_Spyder/2.jpeg",
+            "assets/macchine_per_brand/Porsche/Porsche_918_Spyder/3.jpeg",
+            "assets/macchine_per_brand/Porsche/Porsche_918_Spyder/4.jpeg",
+            "assets/macchine_per_brand/Porsche/Porsche_918_Spyder/5.jpeg"
         ],
-        "description": "Porsche 918 Spyder di Porche: stile distintivo, materiali di pregio e prestazioni avanzate.",
+        "description": "Porsche 918 Spyder di Porsche: stile distintivo, materiali di pregio e prestazioni avanzate.",
         "zeroTo100": "3.0 s",
         "topSpeed": "308 km/h",
         "engine": "Specifiche motore da definire",
@@ -1059,18 +1059,18 @@
         ]
     },
     {
-        "id": "porche-porsche-carrera-gt",
+        "id": "porsche-porsche-carrera-gt",
         "brand": "Porche",
         "model": "Porsche Carrera Gt",
         "year": 2023,
         "priceEur": 546456,
         "powerHp": 518,
         "images": [
-            "assets/macchine_per_brand/Porche/Porsche_Carrera_GT/1.jpg",
-            "assets/macchine_per_brand/Porche/Porsche_Carrera_GT/2.jpg",
-            "assets/macchine_per_brand/Porche/Porsche_Carrera_GT/3.jpg"
+            "assets/macchine_per_brand/Porsche/Porsche_Carrera_GT/1.jpg",
+            "assets/macchine_per_brand/Porsche/Porsche_Carrera_GT/2.jpg",
+            "assets/macchine_per_brand/Porsche/Porsche_Carrera_GT/3.jpg"
         ],
-        "description": "Porsche Carrera Gt di Porche: stile distintivo, materiali di pregio e prestazioni avanzate.",
+        "description": "Porsche Carrera Gt di Porsche: stile distintivo, materiali di pregio e prestazioni avanzate.",
         "zeroTo100": "4.4 s",
         "topSpeed": "306 km/h",
         "engine": "Specifiche motore da definire",

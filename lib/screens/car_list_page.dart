@@ -1,3 +1,4 @@
+// lib/screens/car_list_page.dart
 import 'package:concessionario_supercar/screens/car_detail_page.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
@@ -56,7 +57,7 @@ class _CarListPageState extends State<CarListPage> {
     if (b.contains('ferrari')) return 'assets/video/ferrari.mp4';
     if (b.contains('lamborghini')) return 'assets/video/Lamborghini.mp4';
     if (b.contains('bugatti')) return 'assets/video/Bugatti.mp4';
-    if (b.contains('mclaren')) return 'assets/video/McLaren.mp4';
+    if (b.contains('mclaren')) return 'assets/video/Mclaren.mp4';
     if (b.contains('porsche')) return 'assets/video/porsche.mp4';
     if (b.contains('aston')) return 'assets/video/Aston_Martin.mp4';
     if (b.contains('bentley')) return 'assets/video/Bentley.mp4';
@@ -201,11 +202,15 @@ class _CarListPageState extends State<CarListPage> {
                           offset: Offset(0, verticalOffset),
                           child: Transform.scale(
                             scale: scale,
-                            child: child,
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+                              child: child,
+                            ),
                           ),
                         );
                       },
-                      child: GestureDetector(
+                      child: _CarCard(
+                        car: car,
                         onTap: () {
                           Navigator.push(
                             context,
@@ -219,75 +224,6 @@ class _CarListPageState extends State<CarListPage> {
                             ),
                           );
                         },
-                        child: Container(
-                          margin: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(24),
-                            gradient: const LinearGradient(
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                              colors: [
-                                Color.fromARGB(0, 0, 0, 0),
-                                Color.fromARGB(255, 0, 0, 0),
-                              ],
-                            ),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.35),
-                                blurRadius: 20,
-                                offset: const Offset(0, 10),
-                              ),
-                            ],
-                            border: Border.all(color: Colors.white24, width: 2),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              // MOSTRA SOLO PRIMA IMMAGINE DAL JSON
-                              ClipRRect(
-                                borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-                                child: SizedBox(
-                                  height: 200,
-                                  child: car.images.isNotEmpty
-                                      ? Image.asset(
-                                          car.images.first,
-                                          fit: BoxFit.cover,
-                                          width: double.infinity,
-                                          errorBuilder: (context, error, stackTrace) {
-                                            return Container(
-                                              color: Colors.grey[800],
-                                              alignment: Alignment.center,
-                                              child: const Icon(
-                                                Icons.broken_image,
-                                                size: 40,
-                                                color: Colors.white54,
-                                              ),
-                                            );
-                                          },
-                                        )
-                                      : Container(
-                                          color: Colors.grey[800],
-                                          alignment: Alignment.center,
-                                          child: const Icon(Icons.car_rental, size: 40, color: Colors.white54),
-                                        ),
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(12.0),
-                                child: Text(
-                                  car.model,
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: 18,
-                                    color: Colors.white,
-                                  ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
                       ),
                     );
                   },
@@ -303,6 +239,115 @@ class _CarListPageState extends State<CarListPage> {
         rates: widget.rates,
         preferredCurrency: widget.preferredCurrency,
         onProfileTap: _openProfile,
+      ),
+    );
+  }
+}
+
+/// Card singola con effetto tap/hold, testo sotto l’immagine e trasparente
+class _CarCard extends StatefulWidget {
+  final Car car;
+  final VoidCallback onTap;
+
+  const _CarCard({required this.car, required this.onTap});
+
+  @override
+  State<_CarCard> createState() => _CarCardState();
+}
+
+class _CarCardState extends State<_CarCard> {
+  double _scale = 1.0;
+
+  void _onTapDown(TapDownDetails details) => setState(() => _scale = 0.95);
+  void _onTapUp(TapUpDetails details) => setState(() => _scale = 1.0);
+  void _onTapCancel() => setState(() => _scale = 1.0);
+
+  void _onLongPress() {
+    setState(() => _scale = 0.9);
+    Future.delayed(const Duration(milliseconds: 200), () {
+      if (mounted) setState(() => _scale = 1.0);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedScale(
+      scale: _scale,
+      duration: const Duration(milliseconds: 100),
+      curve: Curves.easeOut,
+      child: Material(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(24),
+        child: Ink(
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.05), // trasparente come home
+            borderRadius: BorderRadius.circular(24),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.35),
+                blurRadius: 20,
+                offset: const Offset(0, 10),
+              ),
+            ],
+            border: Border.all(color: Colors.white24, width: 2),
+          ),
+          child: InkWell(
+            borderRadius: BorderRadius.circular(24),
+            onTap: widget.onTap,
+            onTapDown: _onTapDown,
+            onTapUp: _onTapUp,
+            onTapCancel: _onTapCancel,
+            onLongPress: _onLongPress,
+            splashColor: Colors.white24,
+            highlightColor: Colors.white10,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                // IMMAGINE
+                ClipRRect(
+                  borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+                  child: SizedBox(
+                    height: 200,
+                    child: widget.car.images.isNotEmpty
+                        ? Image.asset(
+                            widget.car.images.first,
+                            fit: BoxFit.cover,
+                            width: double.infinity,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Container(
+                                color: Colors.grey[800],
+                                alignment: Alignment.center,
+                                child: const Icon(Icons.broken_image, size: 40, color: Colors.white54),
+                              );
+                            },
+                          )
+                        : Container(
+                            color: Colors.grey[800],
+                            alignment: Alignment.center,
+                            child: const Icon(Icons.car_rental, size: 40, color: Colors.white54),
+                          ),
+                  ),
+                ),
+                // TESTO SOTTO L’IMMAGINE
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 28), // più spazio sotto immagine
+                  child: Text(
+                    widget.car.model,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w900,
+                      fontSize: 28, // font più grande
+                      color: Colors.white,
+                      shadows: [Shadow(blurRadius: 4, color: Colors.black26)],
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }

@@ -1,4 +1,5 @@
 // lib/screens/car_detail_page.dart
+import 'dart:async';
 import 'package:concessionario_supercar/widgets/app_bottom_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -7,11 +8,8 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../models/car.dart';
 import '../widgets/dark_live_background.dart';
-
-// ✅ usa i nuovi file creati
 import '../data/dealers_repo.dart';
 import '../models/dealer_point.dart';
-
 import 'profile_page.dart';
 
 class CarDetailPage extends StatefulWidget {
@@ -148,7 +146,7 @@ class _CarDetailPageState extends State<CarDetailPage> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        title: Text('${c.brand} ${c.model}'),
+        title: Text(c.model),
       ),
       body: Stack(
         children: [
@@ -157,7 +155,7 @@ class _CarDetailPageState extends State<CarDetailPage> {
             child: ListView(
               padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
               children: [
-                _HeroGallery(images: c.images, title: '${c.brand} ${c.model}'),
+                _HeroGallery(images: c.images, title: c.model),
                 const SizedBox(height: 12),
                 _SegmentedPill(
                   index: _tab,
@@ -204,7 +202,7 @@ class _CarDetailPageState extends State<CarDetailPage> {
   }
 }
 
-/* ======================  WIDGETS  ====================== */
+/* ====================== WIDGETS ====================== */
 
 class _HeroGallery extends StatefulWidget {
   final List<String> images;
@@ -216,21 +214,39 @@ class _HeroGallery extends StatefulWidget {
 }
 
 class _HeroGalleryState extends State<_HeroGallery> {
-  final _pc = PageController();
+  late final PageController _pc;
   int _i = 0;
+  Timer? _timer;
+
+  List<String> get imgs => widget.images.isNotEmpty ? widget.images : ['assets/macchine/supercar.jpg'];
+
+  @override
+  void initState() {
+    super.initState();
+    _pc = PageController(initialPage: 1000000 ~/ 2);
+    _i = _pc.initialPage % imgs.length;
+    _timer = Timer.periodic(const Duration(seconds: 6), (_) {
+      if (_pc.hasClients) {
+        _pc.nextPage(duration: const Duration(milliseconds: 400), curve: Curves.easeInOut);
+      }
+    });
+  }
 
   @override
   void dispose() {
     _pc.dispose();
+    _timer?.cancel();
     super.dispose();
+  }
+
+  void _onPageChanged(int index) {
+    setState(() {
+      _i = index % imgs.length;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    final imgs = widget.images.isNotEmpty
-        ? widget.images
-        : const ['assets/macchine/supercar.jpg'];
-
     return Column(
       children: [
         ClipRRect(
@@ -239,9 +255,12 @@ class _HeroGalleryState extends State<_HeroGallery> {
             aspectRatio: 16 / 9,
             child: PageView.builder(
               controller: _pc,
-              onPageChanged: (v) => setState(() => _i = v),
-              itemCount: imgs.length,
-              itemBuilder: (_, k) => Image.asset(imgs[k], fit: BoxFit.cover),
+              onPageChanged: _onPageChanged,
+              itemBuilder: (_, index) {
+                final idx = index % imgs.length;
+                return Image.asset(imgs[idx], fit: BoxFit.cover);
+              },
+              itemCount: 1000000,
             ),
           ),
         ),
@@ -250,6 +269,21 @@ class _HeroGalleryState extends State<_HeroGallery> {
           widget.title,
           textAlign: TextAlign.center,
           style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 8),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: List.generate(imgs.length, (index) {
+            return Container(
+              width: 8,
+              height: 8,
+              margin: const EdgeInsets.symmetric(horizontal: 4),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: _i == index ? Colors.white : Colors.white38,
+              ),
+            );
+          }),
         ),
       ],
     );
@@ -391,7 +425,7 @@ class _SpecsCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            '${car.brand.toUpperCase()} ${car.model.toUpperCase()}',
+            car.model.toUpperCase(),
             style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w900),
           ),
           const SizedBox(height: 6),
@@ -539,8 +573,7 @@ class _PriceCard extends StatelessWidget {
   }
 }
 
-/* =================== MAP =================== */
-
+// ================= MAP CARD =================
 class _MapCard extends StatefulWidget {
   final Car car;
   final Position? pos;
@@ -567,7 +600,6 @@ class _MapCardState extends State<_MapCard> {
   @override
   void didUpdateWidget(covariant _MapCard oldWidget) {
     super.didUpdateWidget(oldWidget);
-    // Quando arriva la posizione o cambia l'auto, prepara la mappa
     if (oldWidget.pos != widget.pos ||
         oldWidget.car != widget.car ||
         oldWidget.error != widget.error) {
@@ -576,15 +608,7 @@ class _MapCardState extends State<_MapCard> {
   }
 
   Future<void> _prepare() async {
-    if (widget.error != null) {
-      setState(() {
-        _markers = const <Marker>{};
-        _initial = null; // niente camera finché non si risolve
-        _centeredDealerId = null;
-      });
-      return;
-    }
-    if (widget.pos == null) {
+    if (widget.error != null || widget.pos == null) {
       setState(() {
         _markers = const <Marker>{};
         _initial = null;
@@ -596,17 +620,11 @@ class _MapCardState extends State<_MapCard> {
     final all = await DealersRepo.load();
     final Map<String, DealerPoint> byId = {for (final d in all) d.id: d};
 
-    // ✅ usa il campo corretto (lista non-null)
     final allowedIds = widget.car.availableAt;
     List<DealerPoint> visible;
 
     if (allowedIds.isNotEmpty) {
-      // usa SOLO i dealer dichiarati nell’auto (ordine preservato)
-      visible = [
-        for (final id in allowedIds)
-          if (byId.containsKey(id)) byId[id]!,
-      ];
-      // Se per errore non ne trova nessuno, fallback: nessun marker (evidenzia dati mancanti)
+      visible = [for (final id in allowedIds) if (byId.containsKey(id)) byId[id]!];
       if (visible.isEmpty) {
         setState(() {
           _markers = const <Marker>{};
@@ -668,10 +686,7 @@ class _MapCardState extends State<_MapCard> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.error != null) {
-      return _errorBox(widget.error!, widget.onRetry);
-    }
-
+    if (widget.error != null) return _errorBox(widget.error!, widget.onRetry);
     if (widget.pos == null || _initial == null) {
       return Container(
         height: 220,
@@ -695,9 +710,7 @@ class _MapCardState extends State<_MapCard> {
         myLocationEnabled: true,
         zoomControlsEnabled: false,
         markers: _markers,
-        onMapCreated: (c) {
-          _controller = c;
-        },
+        onMapCreated: (c) => _controller = c,
       ),
     );
   }
