@@ -1,4 +1,3 @@
-// lib/widgets/app_bottom_bar.dart
 import 'package:flutter/material.dart';
 import '../models/car.dart';
 import '../screens/brand_catalog_page.dart';
@@ -6,8 +5,8 @@ import '../screens/incoming_page.dart';
 
 class AppBottomBar extends StatelessWidget {
   final int currentIndex;
-  final List<Car> cars;              // lista corrente (può essere filtrata o una sola)
-  final List<Car>? allCars;          // se null, IncomingPage carica il catalogo completo
+  final List<Car> cars;
+  final List<Car>? allCars;
   final Map<String, double>? rates;
   final String preferredCurrency;
   final VoidCallback onProfileTap;
@@ -38,21 +37,19 @@ class AppBottomBar extends StatelessWidget {
             context,
             MaterialPageRoute(
               builder: (_) => BrandCatalogPage(
-                cars: allCars ?? cars, // se disponibile, usa la completa
+                cars: allCars ?? cars,
                 rates: rates,
                 preferredCurrency: preferredCurrency,
               ),
             ),
           );
         } else if (i == 2) {
-          // Mostra SEMPRE tutte le auto in arrivo:
-          // passa allCars: null per forzare il caricamento del catalogo completo in IncomingPage
           Navigator.push(
             context,
             MaterialPageRoute(
               builder: (_) => IncomingPage(
-                cars: allCars ?? cars, // lista d’appoggio per il primo render
-                allCars: null,         // forza load completo dentro IncomingPage
+                cars: allCars ?? cars,
+                allCars: null,
               ),
             ),
           );
