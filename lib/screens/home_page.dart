@@ -1,4 +1,3 @@
-// lib/screens/home_page.dart
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -128,10 +127,10 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       backgroundColor: Colors.transparent,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF0E0E0F), // nero fisso
+        backgroundColor: const Color(0xFF0E0E0F),
         elevation: 0,
         centerTitle: true,
-        toolbarHeight: 72, // leggermente più alta del default
+        toolbarHeight: 72, 
         title: const _AppBarBrandTitle(),
       ),
 

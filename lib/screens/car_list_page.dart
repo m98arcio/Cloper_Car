@@ -1,4 +1,3 @@
-// lib/screens/car_list_page.dart
 import 'dart:ui' show ImageFilter;
 import 'package:concessionario_supercar/screens/car_detail_page.dart';
 import 'package:flutter/material.dart';
@@ -8,13 +7,13 @@ import '../models/car.dart';
 import '../widgets/dark_live_background.dart';
 import '../widgets/app_bottom_bar.dart';
 import 'profile_page.dart';
-import '../services/currency_service.dart'; // 👈 aggiunto
+import '../services/currency_service.dart';
 
 class CarListPage extends StatefulWidget {
   final String brand;
   final List<Car> cars;
   final Map<String, double>? rates;
-  final String preferredCurrency; // resta, ma non viene più usato direttamente
+  final String preferredCurrency;
   final List<Car>? allCars;
 
   const CarListPage({
@@ -102,13 +101,13 @@ class _CarListPageState extends State<CarListPage> {
       context,
       MaterialPageRoute(
         builder: (_) => ProfilePage(
-          initialCurrency: CurrencyService.preferred, // 👈 valuta aggiornata
+          initialCurrency: CurrencyService.preferred,
           onChanged: (_) {},
           cars: widget.allCars ?? widget.cars,
           rates: widget.rates,
         ),
       ),
-    ).then((_) => setState(() {})); // 👈 forza refresh valuta al ritorno
+    ).then((_) => setState(() {}));
   }
 
   @override
@@ -116,7 +115,6 @@ class _CarListPageState extends State<CarListPage> {
     final brand = widget.brand;
     final availableCars = widget.cars.where((c) => !c.incoming).toList();
 
-    // 👇 usa sempre il valore aggiornato dal CurrencyService
     final currentCurrency = CurrencyService.preferred;
 
     return Scaffold(
@@ -235,7 +233,7 @@ class _CarListPageState extends State<CarListPage> {
                               builder: (_) => CarDetailPage(
                                 car: car,
                                 rates: widget.rates,
-                                preferredCurrency: currentCurrency, // 👈 valuta aggiornata
+                                preferredCurrency: currentCurrency,
                                 cars: availableCars,
                               ),
                             ),
@@ -255,7 +253,7 @@ class _CarListPageState extends State<CarListPage> {
         cars: availableCars,
         allCars: widget.allCars ?? widget.cars,
         rates: widget.rates,
-        preferredCurrency: currentCurrency, // 👈 valuta aggiornata
+        preferredCurrency: currentCurrency,
         onProfileTap: _openProfile,
       ),
     );

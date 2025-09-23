@@ -12,7 +12,7 @@ import '../services/currency_service.dart';
 class BrandCatalogPage extends StatefulWidget {
   final List<Car> cars;
   final Map<String, double>? rates;
-  final String preferredCurrency; // legacy, non usata direttamente
+  final String preferredCurrency;
 
   const BrandCatalogPage({
     super.key,

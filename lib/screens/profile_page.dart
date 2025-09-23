@@ -37,8 +37,8 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Future<void> _set(String code) async {
     setState(() => _currency = code);
-    await CurrencyService.save(code); // persiste la preferenza
-    widget.onChanged(code);           // notifica il chiamante (se vuole reagire)
+    await CurrencyService.save(code);
+    widget.onChanged(code); 
   }
 
   Future<void> _openProfile() async {
@@ -48,11 +48,10 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     final subtitle =
-        CurrencyService.labelFor(_currency); // es. "Euro (€)" / "Dollaro USA ($)"
+        CurrencyService.labelFor(_currency);
 
     return Scaffold(
       backgroundColor: Colors.transparent,
-      // AppBar nera fissa con titolo grande a gradiente (niente sottotitolo)
       appBar: const _ProfileAppBar(),
       body: Stack(
         children: [
@@ -76,7 +75,6 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
                 const Divider(height: 1, color: Colors.white12),
 
-                // 3 scelte (EUR, USD, GBP) con simboli e nomi presi dal service
                 for (final c in CurrencyService.currencies)
                   RadioListTile<String>(
                     value: c['code']!,
@@ -85,7 +83,6 @@ class _ProfilePageState extends State<ProfilePage> {
                     title: Row(
                       children: [
                         Text(
-                          // estrai il simbolo dalla label "Euro (€)" o "Dollaro USA ($)"
                           _symbolFromLabel(c['label']!),
                           style: const TextStyle(
                             fontWeight: FontWeight.w900,
@@ -103,13 +100,12 @@ class _ProfilePageState extends State<ProfilePage> {
         ],
       ),
 
-      // Passiamo la valuta corrente letta dal service per coerenza cross-pagina
       bottomNavigationBar: AppBottomBar(
-        currentIndex: 3,                // Profilo
+        currentIndex: 3,               
         cars: widget.cars,
         allCars: widget.cars,
         rates: widget.rates,
-        preferredCurrency: CurrencyService.preferred, // <- usa il service
+        preferredCurrency: CurrencyService.preferred,
         onProfileTap: _openProfile,
       ),
     );

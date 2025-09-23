@@ -1,4 +1,3 @@
-// lib/screens/car_detail_page.dart
 import 'dart:async';
 import 'package:concessionario_supercar/widgets/app_bottom_bar.dart';
 import 'package:flutter/material.dart';
@@ -11,12 +10,12 @@ import '../widgets/dark_live_background.dart';
 import '../data/dealers_repo.dart';
 import '../models/dealer_point.dart';
 import 'profile_page.dart';
-import '../services/currency_service.dart'; // 👈 aggiunto
+import '../services/currency_service.dart';
 
 class CarDetailPage extends StatefulWidget {
   final Car car;
   final Map<String, double>? rates;
-  final String preferredCurrency; // resta per compatibilità, ma non lo usiamo direttamente
+  final String preferredCurrency;
   final List<Car> cars;
 
   const CarDetailPage({
@@ -75,14 +74,14 @@ class _CarDetailPageState extends State<CarDetailPage> {
       context,
       MaterialPageRoute(
         builder: (_) => ProfilePage(
-          initialCurrency: CurrencyService.preferred, // 👈 valuta attuale
-          onChanged: (_) {},                          // non serve setState qui
+          initialCurrency: CurrencyService.preferred,
+          onChanged: (_) {},
           cars: widget.cars,
           rates: widget.rates,
         ),
       ),
     );
-    if (mounted) setState(() {}); // 👈 forza il rebuild per rileggere la valuta aggiornata
+    if (mounted) setState(() {});
   }
 
   String _defaultDesc(Car c) =>
@@ -134,7 +133,6 @@ class _CarDetailPageState extends State<CarDetailPage> {
   Widget build(BuildContext context) {
     final c = widget.car;
 
-    // 👇 valuta sempre aggiornata dal service
     final currentCurrency = CurrencyService.preferred;
 
     final mainPriceText = _formatPrice(
@@ -201,9 +199,9 @@ class _CarDetailPageState extends State<CarDetailPage> {
       bottomNavigationBar: AppBottomBar(
         currentIndex: 0,
         cars: widget.cars,
-        allCars: widget.cars,               // 👈 passa la lista completa se serve
+        allCars: widget.cars,
         rates: widget.rates,
-        preferredCurrency: currentCurrency, // 👈 valuta aggiornata
+        preferredCurrency: currentCurrency,
         onProfileTap: _openProfile,
       ),
     );
