@@ -1,7 +1,11 @@
+// lib/main.dart
 import 'package:flutter/material.dart';
 import 'screens/home_page.dart';
+import 'services/currency_service.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await CurrencyService.init();
   runApp(const MyApp());
 }
 

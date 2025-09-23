@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+
+import '../models/car.dart';
 import '../widgets/app_bottom_bar.dart';
 import '../widgets/dark_live_background.dart';
-import '../models/car.dart';
+import '../services/currency_service.dart';
 
 class ProfilePage extends StatefulWidget {
   final String initialCurrency; // 'EUR' | 'USD' | 'GBP'
@@ -27,21 +29,27 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   void initState() {
     super.initState();
-    _currency = widget.initialCurrency;
+    // usa la preferenza globale se già inizializzata, altrimenti il valore passato
+    _currency = CurrencyService.preferred.isNotEmpty
+        ? CurrencyService.preferred
+        : widget.initialCurrency;
   }
 
-  void _set(String c) {
-    setState(() => _currency = c);
-    widget.onChanged(c);
-    Navigator.pop(context, true); // segnala il cambiamento
+  Future<void> _set(String code) async {
+    setState(() => _currency = code);
+    await CurrencyService.save(code); // persiste la preferenza
+    widget.onChanged(code);           // notifica il chiamante (se vuole reagire)
   }
 
   Future<void> _openProfile() async {
-    // già siamo nella pagina profilo
+    // già nella pagina profilo
   }
 
   @override
   Widget build(BuildContext context) {
+    final subtitle =
+        CurrencyService.labelFor(_currency); // es. "Euro (€)" / "Dollaro USA ($)"
+
     return Scaffold(
       backgroundColor: Colors.transparent,
       // AppBar nera fissa con titolo grande a gradiente (niente sottotitolo)
@@ -63,43 +71,51 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
                 _tile(
                   title: 'Valuta preferita',
-                  subtitle: _currencyLabel(_currency),
+                  subtitle: subtitle,
                   icon: Icons.currency_exchange,
                 ),
                 const Divider(height: 1, color: Colors.white12),
-                RadioListTile<String>(
-                  value: 'EUR',
-                  groupValue: _currency,
-                  onChanged: (v) => _set(v!),
-                  title: const Text('Euro (€)'),
-                ),
-                RadioListTile<String>(
-                  value: 'USD',
-                  groupValue: _currency,
-                  onChanged: (v) => _set(v!),
-                  title: const Text('Dollaro USA (\$)'),
-                ),
-                RadioListTile<String>(
-                  value: 'GBP',
-                  groupValue: _currency,
-                  onChanged: (v) => _set(v!),
-                  title: const Text('Sterlina (£)'),
-                ),
+
+                // 3 scelte (EUR, USD, GBP) con simboli e nomi presi dal service
+                for (final c in CurrencyService.currencies)
+                  RadioListTile<String>(
+                    value: c['code']!,
+                    groupValue: _currency,
+                    onChanged: (v) => _set(v!),
+                    title: Row(
+                      children: [
+                        Text(
+                          // estrai il simbolo dalla label "Euro (€)" o "Dollaro USA ($)"
+                          _symbolFromLabel(c['label']!),
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w900,
+                            fontSize: 18,
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Text(_nameFromLabel(c['label']!)),
+                      ],
+                    ),
+                  ),
               ],
             ),
           ),
         ],
       ),
+
+      // Passiamo la valuta corrente letta dal service per coerenza cross-pagina
       bottomNavigationBar: AppBottomBar(
-        currentIndex: 3,
+        currentIndex: 3,                // Profilo
         cars: widget.cars,
         allCars: widget.cars,
         rates: widget.rates,
-        preferredCurrency: _currency,
+        preferredCurrency: CurrencyService.preferred, // <- usa il service
         onProfileTap: _openProfile,
       ),
     );
   }
+
+  // ----- helpers UI -----
 
   Widget _tile({
     required String title,
@@ -113,16 +129,21 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  String _currencyLabel(String c) {
-    switch (c) {
-      case 'USD':
-        return 'Dollaro USA';
-      case 'GBP':
-        return 'Sterlina';
-      case 'EUR':
-      default:
-        return 'Euro';
+  // Estrae il nome leggibile dalla label "Euro (€)" -> "Euro"
+  String _nameFromLabel(String label) {
+    final idx = label.indexOf('(');
+    return (idx > 0) ? label.substring(0, idx).trim() : label;
+  }
+
+  // Estrae il simbolo dalla label "Euro (€)" -> "€"
+  String _symbolFromLabel(String label) {
+    final start = label.indexOf('(');
+    final end = label.indexOf(')');
+    if (start != -1 && end != -1 && end > start) {
+      final inside = label.substring(start + 1, end).trim();
+      return inside;
     }
+    return '';
   }
 }
 
@@ -167,12 +188,11 @@ class _GradientText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ShaderMask(
-      shaderCallback:
-          (bounds) => LinearGradient(
-            colors: colors,
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ).createShader(Rect.fromLTWH(0, 0, bounds.width, bounds.height)),
+      shaderCallback: (bounds) => LinearGradient(
+        colors: colors,
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+      ).createShader(Rect.fromLTWH(0, 0, bounds.width, bounds.height)),
       child: Text(text, style: style),
     );
   }

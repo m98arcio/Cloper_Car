@@ -11,11 +11,12 @@ import '../widgets/dark_live_background.dart';
 import '../data/dealers_repo.dart';
 import '../models/dealer_point.dart';
 import 'profile_page.dart';
+import '../services/currency_service.dart'; // 👈 aggiunto
 
 class CarDetailPage extends StatefulWidget {
   final Car car;
   final Map<String, double>? rates;
-  final String preferredCurrency;
+  final String preferredCurrency; // resta per compatibilità, ma non lo usiamo direttamente
   final List<Car> cars;
 
   const CarDetailPage({
@@ -70,18 +71,18 @@ class _CarDetailPageState extends State<CarDetailPage> {
   }
 
   Future<void> _openProfile() async {
-    Navigator.push(
+    await Navigator.push(
       context,
       MaterialPageRoute(
-        builder:
-            (_) => ProfilePage(
-              initialCurrency: widget.preferredCurrency,
-              onChanged: (_) {},
-              cars: widget.cars,
-              rates: widget.rates,
-            ),
+        builder: (_) => ProfilePage(
+          initialCurrency: CurrencyService.preferred, // 👈 valuta attuale
+          onChanged: (_) {},                          // non serve setState qui
+          cars: widget.cars,
+          rates: widget.rates,
+        ),
       ),
     );
+    if (mounted) setState(() {}); // 👈 forza il rebuild per rileggere la valuta aggiornata
   }
 
   String _defaultDesc(Car c) =>
@@ -133,14 +134,17 @@ class _CarDetailPageState extends State<CarDetailPage> {
   Widget build(BuildContext context) {
     final c = widget.car;
 
+    // 👇 valuta sempre aggiornata dal service
+    final currentCurrency = CurrencyService.preferred;
+
     final mainPriceText = _formatPrice(
       eur: c.priceEur,
-      preferred: widget.preferredCurrency,
+      preferred: currentCurrency,
       rates: widget.rates,
     );
     final otherPrices = _otherPrices(
       eur: c.priceEur,
-      preferred: widget.preferredCurrency,
+      preferred: currentCurrency,
       rates: widget.rates,
     );
 
@@ -169,12 +173,9 @@ class _CarDetailPageState extends State<CarDetailPage> {
                 const SizedBox(height: 14),
                 AnimatedSwitcher(
                   duration: const Duration(milliseconds: 180),
-                  child:
-                      _tab == 0
-                          ? _DescriptionCard(
-                            text: c.description ?? _defaultDesc(c),
-                          )
-                          : _SpecsCard(car: c),
+                  child: _tab == 0
+                      ? _DescriptionCard(text: c.description ?? _defaultDesc(c))
+                      : _SpecsCard(car: c),
                 ),
                 const SizedBox(height: 16),
                 _PriceCard(
@@ -200,9 +201,9 @@ class _CarDetailPageState extends State<CarDetailPage> {
       bottomNavigationBar: AppBottomBar(
         currentIndex: 0,
         cars: widget.cars,
-        allCars: null, 
+        allCars: widget.cars,               // 👈 passa la lista completa se serve
         rates: widget.rates,
-        preferredCurrency: widget.preferredCurrency,
+        preferredCurrency: currentCurrency, // 👈 valuta aggiornata
         onProfileTap: _openProfile,
       ),
     );
@@ -226,9 +227,7 @@ class _HeroGalleryState extends State<_HeroGallery> {
   Timer? _timer;
 
   List<String> get imgs =>
-      widget.images.isNotEmpty
-          ? widget.images
-          : ['assets/macchine/supercar.jpg'];
+      widget.images.isNotEmpty ? widget.images : ['assets/macchine/supercar.jpg'];
 
   @override
   void initState() {
@@ -328,8 +327,7 @@ class _SegmentedPill extends StatelessWidget {
         children: [
           AnimatedAlign(
             duration: const Duration(milliseconds: 180),
-            alignment:
-                index == 0 ? Alignment.centerLeft : Alignment.centerRight,
+            alignment: index == 0 ? Alignment.centerLeft : Alignment.centerRight,
             child: Padding(
               padding: const EdgeInsets.all(4),
               child: Container(
@@ -372,12 +370,12 @@ class _SectionTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.only(left: 4),
-    child: Text(
-      text,
-      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
-    ),
-  );
+        padding: const EdgeInsets.only(left: 4),
+        child: Text(
+          text,
+          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
+        ),
+      );
 }
 
 // ================= CARD BASE =================
@@ -429,12 +427,9 @@ class _SpecsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String fmtCm(double? v) =>
-        v == null
-            ? '—'
-            : (v % 1 == 0
-                ? '${v.toStringAsFixed(0)} cm'
-                : '${v.toStringAsFixed(1)} cm');
+    String fmtCm(double? v) => v == null
+        ? '—'
+        : (v % 1 == 0 ? '${v.toStringAsFixed(0)} cm' : '${v.toStringAsFixed(1)} cm');
 
     MapEntry<String, String> _kv(String k, String v) => MapEntry(k, v);
 

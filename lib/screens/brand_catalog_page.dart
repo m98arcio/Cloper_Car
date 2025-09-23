@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/car.dart';
 import '../widgets/dark_live_background.dart';
@@ -8,11 +7,12 @@ import '../widgets/app_bottom_bar.dart';
 import '../screens/car_list_page.dart';
 import '../screens/profile_page.dart';
 import '../services/rates_api.dart';
+import '../services/currency_service.dart';
 
 class BrandCatalogPage extends StatefulWidget {
   final List<Car> cars;
   final Map<String, double>? rates;
-  final String preferredCurrency;
+  final String preferredCurrency; // legacy, non usata direttamente
 
   const BrandCatalogPage({
     super.key,
@@ -26,54 +26,43 @@ class BrandCatalogPage extends StatefulWidget {
 }
 
 class _BrandCatalogPageState extends State<BrandCatalogPage> {
-  String _preferredCurrency = 'EUR';
+  String _preferredCurrency = CurrencyService.preferred;
   Map<String, double>? _rates;
 
   @override
   void initState() {
     super.initState();
-    _preferredCurrency = widget.preferredCurrency;
+    _preferredCurrency = CurrencyService.preferred;
     _rates = widget.rates;
-    _bootstrapPreferences();
+    _bootstrapRatesIfNeeded();
   }
 
-  Future<void> _bootstrapPreferences() async {
+  Future<void> _bootstrapRatesIfNeeded() async {
+    if (_rates != null) return;
     try {
-      final prefs = await SharedPreferences.getInstance();
-      final preferred = prefs.getString('preferred_currency') ?? 'EUR';
-      setState(() => _preferredCurrency = preferred);
-
-      final ratesApi = RatesApi();
-      Map<String, double>? rates;
-      try {
-        rates = await ratesApi.fetchRates();
-      } catch (_) {
-        rates = null;
-      }
-      if (mounted) setState(() => _rates = rates);
-    } catch (_) {}
+      final r = await RatesApi().fetchRates();
+      if (!mounted) return;
+      setState(() => _rates = r);
+    } catch (_) {
+      // lascio _rates null: mostreremo solo EUR
+    }
   }
 
   Future<void> _openProfile() async {
-    final changed = await Navigator.push<bool>(
+    await Navigator.push(
       context,
       MaterialPageRoute(
         builder: (_) => ProfilePage(
-          initialCurrency: _preferredCurrency,
-          onChanged: (c) async {
-            final prefs = await SharedPreferences.getInstance();
-            await prefs.setString('preferred_currency', c);
-          },
+          initialCurrency: CurrencyService.preferred,
+          onChanged: (_) {}, // il CurrencyService notifica già chi osserva
           cars: widget.cars,
+          rates: _rates,
         ),
       ),
     );
-
-    if (changed == true) {
-      final prefs = await SharedPreferences.getInstance();
-      if (!mounted) return;
+    if (mounted) {
       setState(() {
-        _preferredCurrency = prefs.getString('preferred_currency') ?? 'EUR';
+        _preferredCurrency = CurrencyService.preferred; // refresh UI
       });
     }
   }
@@ -84,6 +73,7 @@ class _BrandCatalogPageState extends State<BrandCatalogPage> {
     final thumbs = _brandThumbnails();
     final logos = _brandLogos();
 
+    // Non mostrare le auto con incoming == true nel catalogo acquistabile
     final availableCars = widget.cars.where((c) => !c.incoming).toList();
 
     return Scaffold(
@@ -133,7 +123,7 @@ class _BrandCatalogPageState extends State<BrandCatalogPage> {
                           brand: brand,
                           cars: filtered,
                           rates: _rates,
-                          preferredCurrency: _preferredCurrency,
+                          preferredCurrency: _preferredCurrency, // valuta attuale
                           allCars: widget.cars,
                         ),
                       ),
@@ -149,25 +139,14 @@ class _BrandCatalogPageState extends State<BrandCatalogPage> {
         currentIndex: 1,
         cars: availableCars,
         allCars: widget.cars,
-        rates: widget.rates,
-        preferredCurrency: widget.preferredCurrency,
-        onProfileTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => ProfilePage(
-                initialCurrency: widget.preferredCurrency,
-                onChanged: (_) {},
-                cars: widget.cars,
-                rates: widget.rates,
-              ),
-            ),
-          );
-        },
+        rates: _rates,
+        preferredCurrency: CurrencyService.preferred, // sempre aggiornata
+        onProfileTap: _openProfile,
       ),
     );
   }
 
+  // ----- helpers -----
   List<String> _luxuryBrands() => [
         'Bugatti',
         'Ferrari',
@@ -265,9 +244,7 @@ class _BrandCardState extends State<_BrandCard> {
             decoration: BoxDecoration(
               color: Colors.grey.withOpacity(0.15),
               borderRadius: BorderRadius.circular(16),
-              boxShadow: const [
-                BoxShadow(blurRadius: 8, color: Colors.black26),
-              ],
+              boxShadow: const [BoxShadow(blurRadius: 8, color: Colors.black26)],
             ),
             padding: const EdgeInsets.all(12),
             child: Column(
@@ -275,12 +252,7 @@ class _BrandCardState extends State<_BrandCard> {
               children: [
                 Row(
                   children: [
-                    Image.asset(
-                      widget.logo,
-                      height: 60,
-                      width: 60,
-                      fit: BoxFit.contain,
-                    ),
+                    Image.asset(widget.logo, height: 60, width: 60, fit: BoxFit.contain),
                     const SizedBox(width: 16),
                     Expanded(
                       child: Center(
@@ -292,9 +264,7 @@ class _BrandCardState extends State<_BrandCard> {
                               fontWeight: FontWeight.w700,
                               color: Colors.white,
                               letterSpacing: 1.2,
-                              shadows: [
-                                Shadow(blurRadius: 6, color: Colors.black87),
-                              ],
+                              shadows: [Shadow(blurRadius: 6, color: Colors.black87)],
                             ),
                           ),
                         ),
