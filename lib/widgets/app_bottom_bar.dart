@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import '../models/car.dart';
 import '../screens/brand_catalog_page.dart';
-import '../screens/Incoming_page.dart';
+import '../screens/incoming_page.dart';
 
 class AppBottomBar extends StatelessWidget {
   final int currentIndex;
-  final List<Car> cars;
+  final List<Car> cars; 
+  final List<Car> allCars; 
   final Map<String, double>? rates;
   final String preferredCurrency;
   final VoidCallback onProfileTap;
@@ -14,6 +15,7 @@ class AppBottomBar extends StatelessWidget {
     super.key,
     required this.currentIndex,
     required this.cars,
+    required this.allCars,
     required this.rates,
     required this.preferredCurrency,
     required this.onProfileTap,
@@ -25,7 +27,7 @@ class AppBottomBar extends StatelessWidget {
       currentIndex: currentIndex,
       selectedItemColor: Colors.redAccent,
       unselectedItemColor: Colors.grey.shade400,
-      backgroundColor: Colors.black.withOpacity(1),
+      backgroundColor: Colors.black.withOpacity(0.95),
       type: BottomNavigationBarType.fixed,
       onTap: (i) {
         if (i == 0) {
@@ -36,26 +38,22 @@ class AppBottomBar extends StatelessWidget {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder:
-                  (_) => BrandCatalogPage(
-                    cars: cars,
-                    rates: rates,
-                    preferredCurrency: preferredCurrency,
-                  ),
+              builder: (_) => BrandCatalogPage(
+                cars: allCars,
+                rates: rates,
+                preferredCurrency: preferredCurrency,
+              ),
             ),
           );
         } else if (i == 2) {
-          // In arrivo (filtra incoming == true)
-          final incomingCars = cars.where((c) => c.incoming).toList();
-          if (incomingCars.isEmpty) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Nessuna auto in arrivo.')),
-            );
-            return;
-          }
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (_) => IncomingPage(cars: cars)),
+            MaterialPageRoute(
+              builder: (_) => IncomingPage(
+                cars: allCars,
+                allCars: allCars,
+              ),
+            ),
           );
         } else if (i == 3) {
           // Profilo
@@ -64,14 +62,8 @@ class AppBottomBar extends StatelessWidget {
       },
       items: const [
         BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.directions_car),
-          label: 'Catalogo',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.local_shipping),
-          label: 'In arrivo',
-        ),
+        BottomNavigationBarItem(icon: Icon(Icons.directions_car), label: 'Catalogo'),
+        BottomNavigationBarItem(icon: Icon(Icons.local_shipping), label: 'In arrivo'),
         BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profilo'),
       ],
     );

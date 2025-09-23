@@ -1,4 +1,3 @@
-// lib/screens/incoming_page.dart
 import 'dart:async';
 import 'dart:math' as math;
 import 'package:concessionario_supercar/screens/profile_page.dart';
@@ -13,14 +12,17 @@ import 'package:sensors_plus/sensors_plus.dart';
 import '../data/dealers_repo.dart';
 import '../models/car.dart';
 import '../models/dealer_point.dart';
+import '../services/local_catalog.dart';
 
 class IncomingPage extends StatefulWidget {
   const IncomingPage({
     super.key,
     required this.cars,
+    this.allCars,
   });
 
   final List<Car> cars;
+  final List<Car>? allCars;
 
   @override
   State<IncomingPage> createState() => _IncomingPageState();
@@ -45,17 +47,50 @@ class _IncomingPageState extends State<IncomingPage>
   Position? _pos;
   String? _loadError;
 
+  // -------- catalogo completo --------
+  List<Car>? _allCars;
+  bool _loadingCars = false;
+
   int _index = 0;
 
   @override
   void initState() {
     super.initState();
     _page = PageController(viewportFraction: 0.78);
-    _glow =
-        AnimationController(vsync: this, duration: const Duration(seconds: 4))
-          ..repeat(reverse: true);
-    _initData();
+    _glow = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 4),
+    )..repeat(reverse: true);
+    _bootstrap();
+  }
+
+  Future<void> _bootstrap() async {
+    await Future.wait([_initData(), _ensureAllCarsLoaded()]);
     _startSensors();
+  }
+
+  Future<void> _ensureAllCarsLoaded() async {
+
+    if (widget.allCars != null) {
+      setState(() => _allCars = widget.allCars);
+      return;
+    }
+    try {
+      setState(() => _loadingCars = true);
+      final all = await LocalCatalog.load();
+      if (!mounted) return;
+      setState(() {
+        _allCars = all;
+        _loadingCars = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      // Non blocchiamo la pagina: se fallisce useremo widget.cars come fallback
+      setState(() {
+        _allCars = null;
+        _loadingCars = false;
+      });
+    }
   }
 
   Future<void> _initData() async {
@@ -98,9 +133,10 @@ class _IncomingPageState extends State<IncomingPage>
     });
     _gyroSub = gyroscopeEventStream().listen((g) {
       final now = DateTime.now();
-      final dt = _lastGyroTime == null
-          ? 0.016
-          : (now.difference(_lastGyroTime!).inMicroseconds / 1e6);
+      final dt =
+          _lastGyroTime == null
+              ? 0.016
+              : (now.difference(_lastGyroTime!).inMicroseconds / 1e6);
       _lastGyroTime = now;
 
       _roll = (_alpha * (_roll + g.x * dt)) + ((1 - _alpha) * _accRoll);
@@ -127,7 +163,24 @@ class _IncomingPageState extends State<IncomingPage>
 
   @override
   Widget build(BuildContext context) {
-    final cars = widget.cars.where((c) => c.incoming).toList();
+    // Sorgente: preferisci SEMPRE il catalogo completo (_allCars or widget.allCars).
+    final source = _allCars ?? widget.allCars ?? widget.cars;
+    final cars = source.where((c) => c.incoming).toList();
+
+    if (_loadingCars) {
+      return const Scaffold(
+        appBar: _IncomingAppBar(),
+        body: Stack(
+          children: [
+            DarkLiveBackground(),
+            SafeArea(
+              top: false,
+              child: Center(child: CircularProgressIndicator()),
+            ),
+          ],
+        ),
+      );
+    }
 
     if (cars.isEmpty) {
       return const Scaffold(
@@ -150,14 +203,17 @@ class _IncomingPageState extends State<IncomingPage>
         body: Stack(
           children: [
             const DarkLiveBackground(),
-            SafeArea(top: false, child: Center(child: Text(_loadError!))),
+            SafeArea(
+              top: false,
+              child: Center(child: Text('Errore: caricamento dealer.')),
+            ),
           ],
         ),
       );
     }
 
     return Scaffold(
-      appBar: const _IncomingAppBar(), // 👈 titolo fisso
+      appBar: const _IncomingAppBar(),
       body: Stack(
         children: [
           const DarkLiveBackground(),
@@ -178,8 +234,7 @@ class _IncomingPageState extends State<IncomingPage>
                       );
                       final dealer = _nearestDealerFor(car);
 
-                      final rotY =
-                          _deadzone((_roll - (_baseRoll ?? 0))) * 0.45;
+                      final rotY = _deadzone((_roll - (_baseRoll ?? 0))) * 0.45;
                       final rotX =
                           _deadzone((_pitch - (_basePitch ?? 0))) * 0.35;
 
@@ -188,7 +243,9 @@ class _IncomingPageState extends State<IncomingPage>
                         transform: _perspective(rotX: rotX, rotY: rotY),
                         child: Padding(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 8, vertical: 12),
+                            horizontal: 8,
+                            vertical: 12,
+                          ),
                           child: FlipIncomingCard(
                             car: car,
                             eta: eta,
@@ -206,9 +263,7 @@ class _IncomingPageState extends State<IncomingPage>
                   child: _AvailabilityBanner(
                     city: _nearestDealerFor(cars[_index])?.city ?? '—',
                     eta: DateTime.now().add(
-                      Duration(
-                        days: (cars[_index].id.hashCode % 20).abs() + 3,
-                      ),
+                      Duration(days: (cars[_index].id.hashCode % 20).abs() + 3),
                     ),
                   ),
                 ),
@@ -219,19 +274,21 @@ class _IncomingPageState extends State<IncomingPage>
       ),
       bottomNavigationBar: AppBottomBar(
         currentIndex: 2,
-        cars: widget.cars,
+        cars: source,
+        allCars: _allCars ?? widget.allCars ?? source,
         rates: null,
         preferredCurrency: 'EUR',
         onProfileTap: () {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (_) => ProfilePage(
-                initialCurrency: 'EUR',
-                onChanged: (_) {},
-                cars: widget.cars,
-                rates: null,
-              ),
+              builder:
+                  (_) => ProfilePage(
+                    initialCurrency: 'EUR',
+                    onChanged: (_) {},
+                    cars: source,
+                    rates: null,
+                  ),
             ),
           );
         },
@@ -258,13 +315,16 @@ class _IncomingPageState extends State<IncomingPage>
 
     final user = LatLng(_pos!.latitude, _pos!.longitude);
     DealerPoint best = candidates.first;
-    double bestD =
-        _haversine(user.latitude, user.longitude, best.lat, best.lng);
+    double bestD = _haversine(
+      user.latitude,
+      user.longitude,
+      best.lat,
+      best.lng,
+    );
 
     for (int i = 1; i < candidates.length; i++) {
       final d = candidates[i];
-      final dist =
-          _haversine(user.latitude, user.longitude, d.lat, d.lng);
+      final dist = _haversine(user.latitude, user.longitude, d.lat, d.lng);
       if (dist < bestD) {
         bestD = dist;
         best = d;
@@ -273,12 +333,12 @@ class _IncomingPageState extends State<IncomingPage>
     return best;
   }
 
-  double _haversine(
-      double lat1, double lon1, double lat2, double lon2) {
+  double _haversine(double lat1, double lon1, double lat2, double lon2) {
     const R = 6371000.0;
     final dLat = _toRad(lat2 - lat1);
     final dLon = _toRad(lon2 - lon1);
-    final a = math.sin(dLat / 2) * math.sin(dLat / 2) +
+    final a =
+        math.sin(dLat / 2) * math.sin(dLat / 2) +
         math.cos(_toRad(lat1)) *
             math.cos(_toRad(lat2)) *
             math.sin(dLon / 2) *
@@ -318,12 +378,12 @@ class _IncomingAppBar extends StatelessWidget implements PreferredSizeWidget {
           fontSize: 28,
           fontWeight: FontWeight.w900,
           letterSpacing: 1.1,
-          color: Colors.white, // verrà mascherato dallo shader
+          color: Colors.white,
         ),
         colors: [Colors.orangeAccent, Colors.deepOrange],
       ),
     );
-    }
+  }
 }
 
 /* ---------------- GradientText riutilizzabile (privato) ---------------- */
@@ -333,20 +393,17 @@ class _GradientText extends StatelessWidget {
   final TextStyle style;
   final List<Color> colors;
 
-  const _GradientText(
-    this.text, {
-    required this.style,
-    required this.colors,
-  });
+  const _GradientText(this.text, {required this.style, required this.colors});
 
   @override
   Widget build(BuildContext context) {
     return ShaderMask(
-      shaderCallback: (bounds) => LinearGradient(
-        colors: colors,
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-      ).createShader(Rect.fromLTWH(0, 0, bounds.width, bounds.height)),
+      shaderCallback:
+          (bounds) => LinearGradient(
+            colors: colors,
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ).createShader(Rect.fromLTWH(0, 0, bounds.width, bounds.height)),
       child: Text(text, style: style),
     );
   }

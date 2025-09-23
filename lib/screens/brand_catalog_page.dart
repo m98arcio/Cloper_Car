@@ -58,14 +58,15 @@ class _BrandCatalogPageState extends State<BrandCatalogPage> {
     final changed = await Navigator.push<bool>(
       context,
       MaterialPageRoute(
-        builder: (_) => ProfilePage(
-          initialCurrency: _preferredCurrency,
-          onChanged: (c) async {
-            final prefs = await SharedPreferences.getInstance();
-            await prefs.setString('preferred_currency', c);
-          },
-          cars: [],
-        ),
+        builder:
+            (_) => ProfilePage(
+              initialCurrency: _preferredCurrency,
+              onChanged: (c) async {
+                final prefs = await SharedPreferences.getInstance();
+                await prefs.setString('preferred_currency', c);
+              },
+              cars: [],
+            ),
       ),
     );
 
@@ -121,18 +122,24 @@ class _BrandCatalogPageState extends State<BrandCatalogPage> {
                   cover: cover,
                   logo: logo,
                   onTap: () {
-                    final filtered = widget.cars
-                        .where((c) => c.brand.toLowerCase() == brand.toLowerCase())
-                        .toList();
+                    final filtered =
+                        widget.cars
+                            .where(
+                              (c) =>
+                                  c.brand.toLowerCase() == brand.toLowerCase(),
+                            )
+                            .toList();
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (_) => CarListPage(
-                          brand: brand,
-                          cars: filtered,
-                          rates: _rates,
-                          preferredCurrency: _preferredCurrency,
-                        ),
+                        builder:
+                            (_) => CarListPage(
+                              brand: brand,
+                              cars: filtered,
+                              rates: _rates,
+                              preferredCurrency: _preferredCurrency,
+                              allCars: widget.cars,
+                            ),
                       ),
                     );
                   },
@@ -145,18 +152,20 @@ class _BrandCatalogPageState extends State<BrandCatalogPage> {
       bottomNavigationBar: AppBottomBar(
         currentIndex: 1,
         cars: widget.cars,
+        allCars: widget.cars,
         rates: widget.rates,
         preferredCurrency: widget.preferredCurrency,
         onProfileTap: () {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (_) => ProfilePage(
-                initialCurrency: widget.preferredCurrency,
-                onChanged: (_) {},
-                cars: widget.cars,
-                rates: widget.rates,
-              ),
+              builder:
+                  (_) => ProfilePage(
+                    initialCurrency: widget.preferredCurrency,
+                    onChanged: (_) {},
+                    cars: widget.cars,
+                    rates: widget.rates,
+                  ),
             ),
           );
         },
@@ -165,46 +174,46 @@ class _BrandCatalogPageState extends State<BrandCatalogPage> {
   }
 
   List<String> _luxuryBrands() => [
-        'Bugatti',
-        'Ferrari',
-        'Lamborghini',
-        'McLaren',
-        'Porsche',
-        'Rolls-Royce',
-        'Aston Martin',
-        'Bentley',
-        'Koenigsegg',
-        'Pagani',
-        'Lotus',
-      ];
+    'Bugatti',
+    'Ferrari',
+    'Lamborghini',
+    'McLaren',
+    'Porsche',
+    'Rolls-Royce',
+    'Aston Martin',
+    'Bentley',
+    'Koenigsegg',
+    'Pagani',
+    'Lotus',
+  ];
 
   Map<String, String> _brandThumbnails() => {
-        'Bugatti': 'assets/macchine/bugatti.jpg',
-        'Ferrari': 'assets/macchine/ferrari.jpg',
-        'Lamborghini': 'assets/macchine/lamborghini.jpg',
-        'McLaren': 'assets/macchine/mclaren.jpg',
-        'Porsche': 'assets/macchine/porsche.jpg',
-        'Rolls-Royce': 'assets/macchine/rolls_royce.jpg',
-        'Aston Martin': 'assets/macchine/aston_martin.jpg',
-        'Bentley': 'assets/macchine/bentley.jpg',
-        'Koenigsegg': 'assets/macchine/koenigsegg.jpg',
-        'Pagani': 'assets/macchine/pagani.jpg',
-        'Lotus': 'assets/macchine/lotus.jpg',
-      };
+    'Bugatti': 'assets/macchine/bugatti.jpg',
+    'Ferrari': 'assets/macchine/ferrari.jpg',
+    'Lamborghini': 'assets/macchine/lamborghini.jpg',
+    'McLaren': 'assets/macchine/mclaren.jpg',
+    'Porsche': 'assets/macchine/porsche.jpg',
+    'Rolls-Royce': 'assets/macchine/rolls_royce.jpg',
+    'Aston Martin': 'assets/macchine/aston_martin.jpg',
+    'Bentley': 'assets/macchine/bentley.jpg',
+    'Koenigsegg': 'assets/macchine/koenigsegg.jpg',
+    'Pagani': 'assets/macchine/pagani.jpg',
+    'Lotus': 'assets/macchine/lotus.jpg',
+  };
 
   Map<String, String> _brandLogos() => {
-        'Bugatti': 'assets/loghi/bugatti_logo.png',
-        'Ferrari': 'assets/loghi/ferrari_logo.png',
-        'Lamborghini': 'assets/loghi/lamborghini_logo.png',
-        'McLaren': 'assets/loghi/mclaren_logo.png',
-        'Porsche': 'assets/loghi/porsche_logo.png',
-        'Rolls-Royce': 'assets/loghi/rolls_royce_logo.png',
-        'Aston Martin': 'assets/loghi/aston_martin_logo.png',
-        'Bentley': 'assets/loghi/bentley_logo.png',
-        'Koenigsegg': 'assets/loghi/koenigsegg_logo.png',
-        'Pagani': 'assets/loghi/pagani_logo.png',
-        'Lotus': 'assets/loghi/lotus_logo.png',
-      };
+    'Bugatti': 'assets/loghi/bugatti_logo.png',
+    'Ferrari': 'assets/loghi/ferrari_logo.png',
+    'Lamborghini': 'assets/loghi/lamborghini_logo.png',
+    'McLaren': 'assets/loghi/mclaren_logo.png',
+    'Porsche': 'assets/loghi/porsche_logo.png',
+    'Rolls-Royce': 'assets/loghi/rolls_royce_logo.png',
+    'Aston Martin': 'assets/loghi/aston_martin_logo.png',
+    'Bentley': 'assets/loghi/bentley_logo.png',
+    'Koenigsegg': 'assets/loghi/koenigsegg_logo.png',
+    'Pagani': 'assets/loghi/pagani_logo.png',
+    'Lotus': 'assets/loghi/lotus_logo.png',
+  };
 }
 
 /* ------- Brand card con effetto tap/hold (come HomePage) ------- */
@@ -261,7 +270,9 @@ class _BrandCardState extends State<_BrandCard> {
             decoration: BoxDecoration(
               color: Colors.grey.withOpacity(0.15),
               borderRadius: BorderRadius.circular(16),
-              boxShadow: const [BoxShadow(blurRadius: 8, color: Colors.black26)],
+              boxShadow: const [
+                BoxShadow(blurRadius: 8, color: Colors.black26),
+              ],
             ),
             padding: const EdgeInsets.all(12),
             child: Column(
@@ -269,7 +280,12 @@ class _BrandCardState extends State<_BrandCard> {
               children: [
                 Row(
                   children: [
-                    Image.asset(widget.logo, height: 60, width: 60, fit: BoxFit.contain),
+                    Image.asset(
+                      widget.logo,
+                      height: 60,
+                      width: 60,
+                      fit: BoxFit.contain,
+                    ),
                     const SizedBox(width: 16),
                     Expanded(
                       child: Center(
@@ -281,7 +297,9 @@ class _BrandCardState extends State<_BrandCard> {
                               fontWeight: FontWeight.w700,
                               color: Colors.white,
                               letterSpacing: 1.2,
-                              shadows: [Shadow(blurRadius: 6, color: Colors.black87)],
+                              shadows: [
+                                Shadow(blurRadius: 6, color: Colors.black87),
+                              ],
                             ),
                           ),
                         ),
@@ -314,20 +332,17 @@ class _GradientText extends StatelessWidget {
   final TextStyle style;
   final List<Color> colors;
 
-  const _GradientText(
-    this.text, {
-    required this.style,
-    required this.colors,
-  });
+  const _GradientText(this.text, {required this.style, required this.colors});
 
   @override
   Widget build(BuildContext context) {
     return ShaderMask(
-      shaderCallback: (bounds) => LinearGradient(
-        colors: colors,
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-      ).createShader(Rect.fromLTWH(0, 0, bounds.width, bounds.height)),
+      shaderCallback:
+          (bounds) => LinearGradient(
+            colors: colors,
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ).createShader(Rect.fromLTWH(0, 0, bounds.width, bounds.height)),
       child: Text(text, style: style),
     );
   }

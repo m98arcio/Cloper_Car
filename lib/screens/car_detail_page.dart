@@ -58,7 +58,9 @@ class _CarDetailPageState extends State<CarDetailPage> {
       if (perm == LocationPermission.deniedForever) {
         throw Exception('Permesso negato in modo permanente.');
       }
-      final p = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+      final p = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+      );
       if (!mounted) return;
       setState(() => _pos = p);
     } catch (e) {
@@ -71,12 +73,13 @@ class _CarDetailPageState extends State<CarDetailPage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => ProfilePage(
-          initialCurrency: widget.preferredCurrency,
-          onChanged: (_) {},
-          cars: widget.cars,
-          rates: widget.rates,
-        ),
+        builder:
+            (_) => ProfilePage(
+              initialCurrency: widget.preferredCurrency,
+              onChanged: (_) {},
+              cars: widget.cars,
+              rates: widget.rates,
+            ),
       ),
     );
   }
@@ -166,9 +169,12 @@ class _CarDetailPageState extends State<CarDetailPage> {
                 const SizedBox(height: 14),
                 AnimatedSwitcher(
                   duration: const Duration(milliseconds: 180),
-                  child: _tab == 0
-                      ? _DescriptionCard(text: c.description ?? _defaultDesc(c))
-                      : _SpecsCard(car: c),
+                  child:
+                      _tab == 0
+                          ? _DescriptionCard(
+                            text: c.description ?? _defaultDesc(c),
+                          )
+                          : _SpecsCard(car: c),
                 ),
                 const SizedBox(height: 16),
                 _PriceCard(
@@ -194,6 +200,7 @@ class _CarDetailPageState extends State<CarDetailPage> {
       bottomNavigationBar: AppBottomBar(
         currentIndex: 0,
         cars: widget.cars,
+        allCars: widget.cars,
         rates: widget.rates,
         preferredCurrency: widget.preferredCurrency,
         onProfileTap: _openProfile,
@@ -218,7 +225,10 @@ class _HeroGalleryState extends State<_HeroGallery> {
   int _i = 0;
   Timer? _timer;
 
-  List<String> get imgs => widget.images.isNotEmpty ? widget.images : ['assets/macchine/supercar.jpg'];
+  List<String> get imgs =>
+      widget.images.isNotEmpty
+          ? widget.images
+          : ['assets/macchine/supercar.jpg'];
 
   @override
   void initState() {
@@ -227,7 +237,10 @@ class _HeroGalleryState extends State<_HeroGallery> {
     _i = _pc.initialPage % imgs.length;
     _timer = Timer.periodic(const Duration(seconds: 6), (_) {
       if (_pc.hasClients) {
-        _pc.nextPage(duration: const Duration(milliseconds: 400), curve: Curves.easeInOut);
+        _pc.nextPage(
+          duration: const Duration(milliseconds: 400),
+          curve: Curves.easeInOut,
+        );
       }
     });
   }
@@ -315,7 +328,8 @@ class _SegmentedPill extends StatelessWidget {
         children: [
           AnimatedAlign(
             duration: const Duration(milliseconds: 180),
-            alignment: index == 0 ? Alignment.centerLeft : Alignment.centerRight,
+            alignment:
+                index == 0 ? Alignment.centerLeft : Alignment.centerRight,
             child: Padding(
               padding: const EdgeInsets.all(4),
               child: Container(
@@ -358,12 +372,12 @@ class _SectionTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.only(left: 4),
-        child: Text(
-          text,
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
-        ),
-      );
+    padding: const EdgeInsets.only(left: 4),
+    child: Text(
+      text,
+      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
+    ),
+  );
 }
 
 // ================= CARD BASE =================
@@ -416,7 +430,11 @@ class _SpecsCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     String fmtCm(double? v) =>
-        v == null ? '—' : (v % 1 == 0 ? '${v.toStringAsFixed(0)} cm' : '${v.toStringAsFixed(1)} cm');
+        v == null
+            ? '—'
+            : (v % 1 == 0
+                ? '${v.toStringAsFixed(0)} cm'
+                : '${v.toStringAsFixed(1)} cm');
 
     MapEntry<String, String> _kv(String k, String v) => MapEntry(k, v);
 
@@ -469,7 +487,11 @@ class _SpecGroup extends StatelessWidget {
   final String title;
   final IconData icon;
   final List<MapEntry<String, String>> rows;
-  const _SpecGroup({required this.title, required this.icon, required this.rows});
+  const _SpecGroup({
+    required this.title,
+    required this.icon,
+    required this.rows,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -480,7 +502,10 @@ class _SpecGroup extends StatelessWidget {
           children: [
             Icon(icon, size: 18),
             const SizedBox(width: 8),
-            Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),
+            Text(
+              title,
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
+            ),
           ],
         ),
         const SizedBox(height: 8),
@@ -490,11 +515,18 @@ class _SpecGroup extends StatelessWidget {
             child: Row(
               children: [
                 Expanded(
-                  child: Text('${e.key}:', style: const TextStyle(fontWeight: FontWeight.w700)),
+                  child: Text(
+                    '${e.key}:',
+                    style: const TextStyle(fontWeight: FontWeight.w700),
+                  ),
                 ),
                 const SizedBox(width: 6),
                 Expanded(
-                  child: Text(e.value, textAlign: TextAlign.right, style: const TextStyle(color: Colors.white70)),
+                  child: Text(
+                    e.value,
+                    textAlign: TextAlign.right,
+                    style: const TextStyle(color: Colors.white70),
+                  ),
                 ),
               ],
             ),
@@ -539,7 +571,10 @@ class _PriceCard extends StatelessWidget {
               children: [
                 const Icon(Icons.sell_outlined),
                 const SizedBox(width: 8),
-                const Text('Prezzo', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
+                const Text(
+                  'Prezzo',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
+                ),
                 const Spacer(),
                 AnimatedRotation(
                   duration: const Duration(milliseconds: 200),
@@ -555,7 +590,13 @@ class _PriceCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(mainText, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w900)),
+                    Text(
+                      mainText,
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w900,
+                      ),
+                    ),
                     for (final line in extras) ...[
                       const SizedBox(height: 6),
                       Text(line),
@@ -563,7 +604,8 @@ class _PriceCard extends StatelessWidget {
                   ],
                 ),
               ),
-              crossFadeState: open ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+              crossFadeState:
+                  open ? CrossFadeState.showSecond : CrossFadeState.showFirst,
               duration: const Duration(milliseconds: 200),
             ),
           ],
@@ -624,7 +666,10 @@ class _MapCardState extends State<_MapCard> {
     List<DealerPoint> visible;
 
     if (allowedIds.isNotEmpty) {
-      visible = [for (final id in allowedIds) if (byId.containsKey(id)) byId[id]!];
+      visible = [
+        for (final id in allowedIds)
+          if (byId.containsKey(id)) byId[id]!,
+      ];
       if (visible.isEmpty) {
         setState(() {
           _markers = const <Marker>{};
@@ -671,7 +716,8 @@ class _MapCardState extends State<_MapCard> {
 
     if (!mounted) return;
 
-    final shouldAnimate = _controller != null && _centeredDealerId != nearest.id;
+    final shouldAnimate =
+        _controller != null && _centeredDealerId != nearest.id;
 
     setState(() {
       _markers = markers;
@@ -680,7 +726,9 @@ class _MapCardState extends State<_MapCard> {
     });
 
     if (shouldAnimate) {
-      await _controller!.animateCamera(CameraUpdate.newLatLngZoom(nearest.latLng, 11.5));
+      await _controller!.animateCamera(
+        CameraUpdate.newLatLngZoom(nearest.latLng, 11.5),
+      );
     }
   }
 
@@ -723,14 +771,17 @@ class _MapCardState extends State<_MapCard> {
         borderRadius: BorderRadius.circular(22),
       ),
       child: Center(
-        child: Column(mainAxisSize: MainAxisSize.min, children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12),
-            child: Text(msg, textAlign: TextAlign.center),
-          ),
-          const SizedBox(height: 8),
-          ElevatedButton(onPressed: onRetry, child: const Text('Riprova')),
-        ]),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              child: Text(msg, textAlign: TextAlign.center),
+            ),
+            const SizedBox(height: 8),
+            ElevatedButton(onPressed: onRetry, child: const Text('Riprova')),
+          ],
+        ),
       ),
     );
   }

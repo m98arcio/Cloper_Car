@@ -101,15 +101,16 @@ class _HomePageState extends State<HomePage> {
     final changed = await Navigator.push<bool>(
       context,
       MaterialPageRoute(
-        builder: (_) => ProfilePage(
-          initialCurrency: _preferred,
-          onChanged: (c) async {
-            final prefs = await SharedPreferences.getInstance();
-            await prefs.setString(_prefKeyCurrency, c);
-          },
-          cars: _cars,
-          rates: _rates,
-        ),
+        builder:
+            (_) => ProfilePage(
+              initialCurrency: _preferred,
+              onChanged: (c) async {
+                final prefs = await SharedPreferences.getInstance();
+                await prefs.setString(_prefKeyCurrency, c);
+              },
+              cars: _cars,
+              rates: _rates,
+            ),
       ),
     );
 
@@ -137,15 +138,13 @@ class _HomePageState extends State<HomePage> {
       body: Stack(
         children: [
           const DarkLiveBackground(),
-          SafeArea(
-            top: false, // evitiamo doppio padding sotto l’AppBar
-            child: _buildBody(),
-          ),
+          SafeArea(top: false, child: _buildBody()),
         ],
       ),
       bottomNavigationBar: AppBottomBar(
         currentIndex: 0,
         cars: _cars,
+        allCars: _cars,
         rates: _rates,
         preferredCurrency: _preferred,
         onProfileTap: _openProfile,
@@ -192,7 +191,7 @@ class _HomePageState extends State<HomePage> {
                   children: [
                     AspectRatio(
                       aspectRatio: 16 / 9,
-                      child: Image.asset(                    
+                      child: Image.asset(
                         'assets/macchine/supercar.jpg',
                         fit: BoxFit.cover,
                       ),
@@ -242,11 +241,12 @@ class _HomePageState extends State<HomePage> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (_) => BrandCatalogPage(
-                        cars: _cars,
-                        rates: _rates,
-                        preferredCurrency: _preferred,
-                      ),
+                      builder:
+                          (_) => BrandCatalogPage(
+                            cars: _cars,
+                            rates: _rates,
+                            preferredCurrency: _preferred,
+                          ),
                     ),
                   );
                 },
@@ -271,18 +271,22 @@ class _HomePageState extends State<HomePage> {
                   brand: b,
                   imagePath: logo,
                   onTap: () {
-                    final filtered = _cars
-                        .where((c) => c.brand.toLowerCase() == b.toLowerCase())
-                        .toList();
+                    final filtered =
+                        _cars
+                            .where(
+                              (c) => c.brand.toLowerCase() == b.toLowerCase(),
+                            )
+                            .toList();
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (_) => CarListPage(
-                          brand: b,
-                          cars: filtered,
-                          rates: _rates,
-                          preferredCurrency: _preferred,
-                        ),
+                        builder:
+                            (_) => CarListPage(
+                              brand: b,
+                              cars: filtered,
+                              rates: _rates,
+                              preferredCurrency: _preferred,
+                            ),
                       ),
                     );
                   },
@@ -293,11 +297,12 @@ class _HomePageState extends State<HomePage> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (_) => BrandCatalogPage(
-                          cars: _cars,
-                          rates: _rates,
-                          preferredCurrency: _preferred,
-                        ),
+                        builder:
+                            (_) => BrandCatalogPage(
+                              cars: _cars,
+                              rates: _rates,
+                              preferredCurrency: _preferred,
+                            ),
                       ),
                     );
                   },
@@ -372,10 +377,14 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
               SizedBox(height: 10),
-              Text('Email: info@clopercar.fake',
-                  style: TextStyle(color: Colors.white70)),
-              Text('Telefono: +39 012 345 6789',
-                  style: TextStyle(color: Colors.white70)),
+              Text(
+                'Email: info@clopercar.fake',
+                style: TextStyle(color: Colors.white70),
+              ),
+              Text(
+                'Telefono: +39 012 345 6789',
+                style: TextStyle(color: Colors.white70),
+              ),
               SizedBox(height: 20),
             ],
           ),
@@ -419,20 +428,17 @@ class _GradientText extends StatelessWidget {
   final TextStyle style;
   final List<Color> colors;
 
-  const _GradientText(
-    this.text, {
-    required this.style,
-    required this.colors,
-  });
+  const _GradientText(this.text, {required this.style, required this.colors});
 
   @override
   Widget build(BuildContext context) {
     return ShaderMask(
-      shaderCallback: (bounds) => LinearGradient(
-        colors: colors,
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-      ).createShader(Rect.fromLTWH(0, 0, bounds.width, bounds.height)),
+      shaderCallback:
+          (bounds) => LinearGradient(
+            colors: colors,
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ).createShader(Rect.fromLTWH(0, 0, bounds.width, bounds.height)),
       child: Text(text, style: style),
     );
   }
@@ -492,7 +498,9 @@ class _BrandChipState extends State<_BrandChip> {
             decoration: BoxDecoration(
               color: const Color(0xFFEFEFEF).withOpacity(0.06),
               borderRadius: BorderRadius.circular(14),
-              boxShadow: const [BoxShadow(blurRadius: 10, color: Colors.black26)],
+              boxShadow: const [
+                BoxShadow(blurRadius: 10, color: Colors.black26),
+              ],
             ),
             padding: const EdgeInsets.all(10),
             child: Row(

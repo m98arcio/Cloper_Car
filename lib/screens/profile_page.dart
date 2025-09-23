@@ -1,4 +1,3 @@
-// lib/screens/profile_page.dart
 import 'package:flutter/material.dart';
 import '../widgets/app_bottom_bar.dart';
 import '../widgets/dark_live_background.dart';
@@ -92,8 +91,9 @@ class _ProfilePageState extends State<ProfilePage> {
         ],
       ),
       bottomNavigationBar: AppBottomBar(
-        currentIndex: 3, // Profilo
+        currentIndex: 3,
         cars: widget.cars,
+        allCars: widget.cars,
         rates: widget.rates,
         preferredCurrency: _currency,
         onProfileTap: _openProfile,
@@ -162,20 +162,17 @@ class _GradientText extends StatelessWidget {
   final TextStyle style;
   final List<Color> colors;
 
-  const _GradientText(
-    this.text, {
-    required this.style,
-    required this.colors,
-  });
+  const _GradientText(this.text, {required this.style, required this.colors});
 
   @override
   Widget build(BuildContext context) {
     return ShaderMask(
-      shaderCallback: (bounds) => LinearGradient(
-        colors: colors,
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-      ).createShader(Rect.fromLTWH(0, 0, bounds.width, bounds.height)),
+      shaderCallback:
+          (bounds) => LinearGradient(
+            colors: colors,
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ).createShader(Rect.fromLTWH(0, 0, bounds.width, bounds.height)),
       child: Text(text, style: style),
     );
   }

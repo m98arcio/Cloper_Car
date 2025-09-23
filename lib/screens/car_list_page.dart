@@ -13,6 +13,7 @@ class CarListPage extends StatefulWidget {
   final List<Car> cars;
   final Map<String, double>? rates;
   final String preferredCurrency;
+  final List<Car>? allCars;
 
   const CarListPage({
     super.key,
@@ -20,6 +21,7 @@ class CarListPage extends StatefulWidget {
     required this.cars,
     this.rates,
     required this.preferredCurrency,
+    this.allCars,
   });
 
   @override
@@ -73,17 +75,26 @@ class _CarListPageState extends State<CarListPage> {
     final controller = VideoPlayerController.asset(assetPath);
     setState(() {
       _videoController = controller;
-      _videoInit = controller.initialize().then((_) {
-        controller..setLooping(true)..setVolume(0)..play();
-        if (mounted) setState(() {});
-      }).catchError((_) async {
-        final fb = VideoPlayerController.asset('assets/video/ferrari.mp4');
-        _videoController = fb;
-        _videoInit = fb.initialize().then((_) {
-          fb..setLooping(true)..setVolume(0)..play();
-          if (mounted) setState(() {});
-        });
-      });
+      _videoInit = controller
+          .initialize()
+          .then((_) {
+            controller
+              ..setLooping(true)
+              ..setVolume(0)
+              ..play();
+            if (mounted) setState(() {});
+          })
+          .catchError((_) async {
+            final fb = VideoPlayerController.asset('assets/video/ferrari.mp4');
+            _videoController = fb;
+            _videoInit = fb.initialize().then((_) {
+              fb
+                ..setLooping(true)
+                ..setVolume(0)
+                ..play();
+              if (mounted) setState(() {});
+            });
+          });
     });
   }
 
@@ -91,12 +102,13 @@ class _CarListPageState extends State<CarListPage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => ProfilePage(
-          initialCurrency: widget.preferredCurrency,
-          onChanged: (_) {},
-          cars: widget.cars,
-          rates: widget.rates,
-        ),
+        builder:
+            (_) => ProfilePage(
+              initialCurrency: widget.preferredCurrency,
+              onChanged: (_) {},
+              cars: widget.cars,
+              rates: widget.rates,
+            ),
       ),
     );
   }
@@ -135,18 +147,22 @@ class _CarListPageState extends State<CarListPage> {
                   SizedBox(
                     height: 220,
                     width: double.infinity,
-                    child: (_videoController != null)
-                        ? FutureBuilder<void>(
-                            future: _videoInit,
-                            builder: (context, snap) {
-                              if (snap.connectionState == ConnectionState.done &&
-                                  _videoController!.value.isInitialized) {
-                                return VideoPlayer(_videoController!);
-                              }
-                              return const Center(child: CircularProgressIndicator());
-                            },
-                          )
-                        : const Center(child: CircularProgressIndicator()),
+                    child:
+                        (_videoController != null)
+                            ? FutureBuilder<void>(
+                              future: _videoInit,
+                              builder: (context, snap) {
+                                if (snap.connectionState ==
+                                        ConnectionState.done &&
+                                    _videoController!.value.isInitialized) {
+                                  return VideoPlayer(_videoController!);
+                                }
+                                return const Center(
+                                  child: CircularProgressIndicator(),
+                                );
+                              },
+                            )
+                            : const Center(child: CircularProgressIndicator()),
                   ),
                   Container(
                     height: 220,
@@ -196,7 +212,11 @@ class _CarListPageState extends State<CarListPage> {
                       builder: (context, child) {
                         double value = 0.0;
                         if (_pageController.hasClients) {
-                          value = ((_pageController.page ?? _pageController.initialPage) - index).toDouble();
+                          value =
+                              ((_pageController.page ??
+                                          _pageController.initialPage) -
+                                      index)
+                                  .toDouble();
                         }
                         final scale = (1 - (value.abs() * 0.2)).clamp(0.8, 1.0);
                         final verticalOffset = (value * 40).clamp(-40.0, 40.0);
@@ -206,7 +226,10 @@ class _CarListPageState extends State<CarListPage> {
                           child: Transform.scale(
                             scale: scale,
                             child: Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 24),
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 30,
+                                horizontal: 24,
+                              ),
                               child: child,
                             ),
                           ),
@@ -218,12 +241,13 @@ class _CarListPageState extends State<CarListPage> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (_) => CarDetailPage(
-                                car: car,
-                                rates: widget.rates,
-                                preferredCurrency: widget.preferredCurrency,
-                                cars: widget.cars,
-                              ),
+                              builder:
+                                  (_) => CarDetailPage(
+                                    car: car,
+                                    rates: widget.rates,
+                                    preferredCurrency: widget.preferredCurrency,
+                                    cars: widget.cars,
+                                  ),
                             ),
                           );
                         },
@@ -239,6 +263,7 @@ class _CarListPageState extends State<CarListPage> {
       bottomNavigationBar: AppBottomBar(
         currentIndex: 1,
         cars: widget.cars,
+        allCars: widget.allCars ?? widget.cars,
         rates: widget.rates,
         preferredCurrency: widget.preferredCurrency,
         onProfileTap: _openProfile,
@@ -274,9 +299,10 @@ class _CarCardState extends State<_CarCard> {
 
   @override
   Widget build(BuildContext context) {
-    final img = widget.car.images.isNotEmpty
-        ? widget.car.images.first
-        : 'assets/macchine/supercar.jpg';
+    final img =
+        widget.car.images.isNotEmpty
+            ? widget.car.images.first
+            : 'assets/macchine/supercar.jpg';
 
     return AnimatedScale(
       scale: _scale,
@@ -313,16 +339,21 @@ class _CarCardState extends State<_CarCard> {
                 children: [
                   // IMMAGINE
                   SizedBox(
-                    height: 200, 
+                    height: 200,
                     width: double.infinity,
                     child: Image.asset(
                       img,
                       fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => Container(
-                        color: Colors.grey[800],
-                        alignment: Alignment.center,
-                        child: const Icon(Icons.broken_image, size: 40, color: Colors.white54),
-                      ),
+                      errorBuilder:
+                          (_, __, ___) => Container(
+                            color: Colors.grey[800],
+                            alignment: Alignment.center,
+                            child: const Icon(
+                              Icons.broken_image,
+                              size: 40,
+                              color: Colors.white54,
+                            ),
+                          ),
                     ),
                   ),
 
@@ -355,7 +386,10 @@ class _CarCardState extends State<_CarCard> {
                       blur: 12,
                       opacity: 0.18,
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 8,
+                        ),
                         child: Text(
                           widget.car.model,
                           maxLines: 1,
@@ -420,20 +454,17 @@ class _GradientText extends StatelessWidget {
   final TextStyle style;
   final List<Color> colors;
 
-  const _GradientText(
-    this.text, {
-    required this.style,
-    required this.colors,
-  });
+  const _GradientText(this.text, {required this.style, required this.colors});
 
   @override
   Widget build(BuildContext context) {
     return ShaderMask(
-      shaderCallback: (bounds) => LinearGradient(
-        colors: colors,
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-      ).createShader(Rect.fromLTWH(0, 0, bounds.width, bounds.height)),
+      shaderCallback:
+          (bounds) => LinearGradient(
+            colors: colors,
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ).createShader(Rect.fromLTWH(0, 0, bounds.width, bounds.height)),
       child: Text(text, style: style),
     );
   }
