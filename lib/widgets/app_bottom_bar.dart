@@ -1,3 +1,4 @@
+// lib/widgets/app_bottom_bar.dart
 import 'package:flutter/material.dart';
 import '../models/car.dart';
 import '../screens/brand_catalog_page.dart';
@@ -5,8 +6,8 @@ import '../screens/incoming_page.dart';
 
 class AppBottomBar extends StatelessWidget {
   final int currentIndex;
-  final List<Car> cars; 
-  final List<Car> allCars; 
+  final List<Car> cars;              // lista corrente (può essere filtrata o una sola)
+  final List<Car>? allCars;          // se null, IncomingPage carica il catalogo completo
   final Map<String, double>? rates;
   final String preferredCurrency;
   final VoidCallback onProfileTap;
@@ -15,7 +16,7 @@ class AppBottomBar extends StatelessWidget {
     super.key,
     required this.currentIndex,
     required this.cars,
-    required this.allCars,
+    this.allCars,
     required this.rates,
     required this.preferredCurrency,
     required this.onProfileTap,
@@ -31,32 +32,31 @@ class AppBottomBar extends StatelessWidget {
       type: BottomNavigationBarType.fixed,
       onTap: (i) {
         if (i == 0) {
-          // Home
           Navigator.popUntil(context, (r) => r.isFirst);
         } else if (i == 1) {
-          // Catalogo
           Navigator.push(
             context,
             MaterialPageRoute(
               builder: (_) => BrandCatalogPage(
-                cars: allCars,
+                cars: allCars ?? cars, // se disponibile, usa la completa
                 rates: rates,
                 preferredCurrency: preferredCurrency,
               ),
             ),
           );
         } else if (i == 2) {
+          // Mostra SEMPRE tutte le auto in arrivo:
+          // passa allCars: null per forzare il caricamento del catalogo completo in IncomingPage
           Navigator.push(
             context,
             MaterialPageRoute(
               builder: (_) => IncomingPage(
-                cars: allCars,
-                allCars: allCars,
+                cars: allCars ?? cars, // lista d’appoggio per il primo render
+                allCars: null,         // forza load completo dentro IncomingPage
               ),
             ),
           );
         } else if (i == 3) {
-          // Profilo
           onProfileTap();
         }
       },

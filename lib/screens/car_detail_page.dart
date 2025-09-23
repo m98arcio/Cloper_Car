@@ -200,7 +200,7 @@ class _CarDetailPageState extends State<CarDetailPage> {
       bottomNavigationBar: AppBottomBar(
         currentIndex: 0,
         cars: widget.cars,
-        allCars: widget.cars,
+        allCars: null, 
         rates: widget.rates,
         preferredCurrency: widget.preferredCurrency,
         onProfileTap: _openProfile,
