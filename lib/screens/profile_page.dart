@@ -1,4 +1,6 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../models/car.dart';
 import '../widgets/app_bottom_bar.dart';
@@ -29,7 +31,6 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   void initState() {
     super.initState();
-    // usa la preferenza globale se già inizializzata, altrimenti il valore passato
     _currency = CurrencyService.preferred.isNotEmpty
         ? CurrencyService.preferred
         : widget.initialCurrency;
@@ -38,7 +39,7 @@ class _ProfilePageState extends State<ProfilePage> {
   Future<void> _set(String code) async {
     setState(() => _currency = code);
     await CurrencyService.save(code);
-    widget.onChanged(code); 
+    widget.onChanged(code);
   }
 
   Future<void> _openProfile() async {
@@ -47,8 +48,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    final subtitle =
-        CurrencyService.labelFor(_currency);
+    final subtitle = CurrencyService.labelFor(_currency);
 
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -94,14 +94,55 @@ class _ProfilePageState extends State<ProfilePage> {
                       ],
                     ),
                   ),
+
+                // ------------------- PULSANTE ESCI -------------------
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 32),
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(24),
+                      ),
+                      backgroundColor: Colors.transparent,
+                      shadowColor: Colors.transparent,
+                    ),
+                    onPressed: () {
+                      if (Platform.isAndroid) {
+                        SystemNavigator.pop();
+                      } else if (Platform.isIOS) {
+                        exit(0);
+                      }
+                    },
+                    child: Ink(
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [Colors.orangeAccent, Colors.deepOrange],
+                        ),
+                        borderRadius: BorderRadius.circular(24),
+                      ),
+                      child: Container(
+                        alignment: Alignment.center,
+                        height: 50,
+                        child: const Text(
+                          'Esci dall\'app',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
         ],
       ),
-
       bottomNavigationBar: AppBottomBar(
-        currentIndex: 3,               
+        currentIndex: 3,
         cars: widget.cars,
         allCars: widget.cars,
         rates: widget.rates,
@@ -112,7 +153,6 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   // ----- helpers UI -----
-
   Widget _tile({
     required String title,
     required String subtitle,
@@ -125,26 +165,22 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  // Estrae il nome leggibile dalla label "Euro (€)" -> "Euro"
   String _nameFromLabel(String label) {
     final idx = label.indexOf('(');
     return (idx > 0) ? label.substring(0, idx).trim() : label;
   }
 
-  // Estrae il simbolo dalla label "Euro (€)" -> "€"
   String _symbolFromLabel(String label) {
     final start = label.indexOf('(');
     final end = label.indexOf(')');
     if (start != -1 && end != -1 && end > start) {
-      final inside = label.substring(start + 1, end).trim();
-      return inside;
+      return label.substring(start + 1, end).trim();
     }
     return '';
   }
 }
 
 /* ---------------- AppBar con titolo a gradiente ---------------- */
-
 class _ProfileAppBar extends StatelessWidget implements PreferredSizeWidget {
   const _ProfileAppBar();
 
@@ -164,7 +200,7 @@ class _ProfileAppBar extends StatelessWidget implements PreferredSizeWidget {
           fontSize: 28,
           fontWeight: FontWeight.w900,
           letterSpacing: 1.1,
-          color: Colors.white, // sostituito dallo shader
+          color: Colors.white,
         ),
         colors: [Colors.orangeAccent, Colors.deepOrange],
       ),
@@ -173,7 +209,6 @@ class _ProfileAppBar extends StatelessWidget implements PreferredSizeWidget {
 }
 
 /* ---------------- GradientText riutilizzabile (privato) ---------------- */
-
 class _GradientText extends StatelessWidget {
   final String text;
   final TextStyle style;
