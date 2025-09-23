@@ -34,6 +34,9 @@ class _CarListPageState extends State<CarListPage> {
   Future<void>? _videoInit;
   final PageController _pageController = PageController(viewportFraction: 0.6);
 
+  // ------- ORDINAMENTO -------
+  _SortOrder _sort = _SortOrder.normal;
+
   @override
   void initState() {
     super.initState();
@@ -76,44 +79,61 @@ class _CarListPageState extends State<CarListPage> {
     final controller = VideoPlayerController.asset(assetPath);
     setState(() {
       _videoController = controller;
-      _videoInit = controller.initialize().then((_) {
-        controller
-          ..setLooping(true)
-          ..setVolume(0)
-          ..play();
-        if (mounted) setState(() {});
-      }).catchError((_) async {
-        final fb = VideoPlayerController.asset('assets/video/ferrari.mp4');
-        _videoController = fb;
-        _videoInit = fb.initialize().then((_) {
-          fb
-            ..setLooping(true)
-            ..setVolume(0)
-            ..play();
-          if (mounted) setState(() {});
-        });
-      });
+      _videoInit = controller
+          .initialize()
+          .then((_) {
+            controller
+              ..setLooping(true)
+              ..setVolume(0)
+              ..play();
+            if (mounted) setState(() {});
+          })
+          .catchError((_) async {
+            final fb = VideoPlayerController.asset('assets/video/ferrari.mp4');
+            _videoController = fb;
+            _videoInit = fb.initialize().then((_) {
+              fb
+                ..setLooping(true)
+                ..setVolume(0)
+                ..play();
+              if (mounted) setState(() {});
+            });
+          });
     });
   }
 
   Future<void> _openProfile() async {
-    Navigator.push(
+    await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => ProfilePage(
-          initialCurrency: CurrencyService.preferred,
-          onChanged: (_) {},
-          cars: widget.allCars ?? widget.cars,
-          rates: widget.rates,
-        ),
+        builder:
+            (_) => ProfilePage(
+              initialCurrency: CurrencyService.preferred,
+              onChanged: (_) {},
+              cars: widget.allCars ?? widget.cars,
+              rates: widget.rates,
+            ),
       ),
-    ).then((_) => setState(() {}));
+    );
+    if (mounted) setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
     final brand = widget.brand;
     final availableCars = widget.cars.where((c) => !c.incoming).toList();
+
+    final List<Car> sorted = List.of(availableCars);
+    switch (_sort) {
+      case _SortOrder.priceAsc:
+        sorted.sort((a, b) => a.priceEur.compareTo(b.priceEur));
+        break;
+      case _SortOrder.priceDesc:
+        sorted.sort((a, b) => b.priceEur.compareTo(a.priceEur));
+        break;
+      case _SortOrder.normal:
+        break;
+    }
 
     final currentCurrency = CurrencyService.preferred;
 
@@ -147,18 +167,22 @@ class _CarListPageState extends State<CarListPage> {
                   SizedBox(
                     height: 220,
                     width: double.infinity,
-                    child: (_videoController != null)
-                        ? FutureBuilder<void>(
-                            future: _videoInit,
-                            builder: (context, snap) {
-                              if (snap.connectionState == ConnectionState.done &&
-                                  _videoController!.value.isInitialized) {
-                                return VideoPlayer(_videoController!);
-                              }
-                              return const Center(child: CircularProgressIndicator());
-                            },
-                          )
-                        : const Center(child: CircularProgressIndicator()),
+                    child:
+                        (_videoController != null)
+                            ? FutureBuilder<void>(
+                              future: _videoInit,
+                              builder: (context, snap) {
+                                if (snap.connectionState ==
+                                        ConnectionState.done &&
+                                    _videoController!.value.isInitialized) {
+                                  return VideoPlayer(_videoController!);
+                                }
+                                return const Center(
+                                  child: CircularProgressIndicator(),
+                                );
+                              },
+                            )
+                            : const Center(child: CircularProgressIndicator()),
                   ),
                   Container(
                     height: 220,
@@ -193,22 +217,154 @@ class _CarListPageState extends State<CarListPage> {
                 ],
               ),
 
+              /* ====== TITOLO SEZIONE + MENU ORDINAMENTO ====== */
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+                child: Row(
+                  children: [
+                    const Expanded(
+                      child: Text(
+                        'Modelli disponibili',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                    ),
+                    AnimatedSize(
+                      duration: const Duration(milliseconds: 180),
+                      curve: Curves.easeOut,
+                      child: IntrinsicWidth(
+                        child: PopupMenuButton<_SortOrder>(
+                          tooltip: 'Ordina',
+                          initialValue: _sort,
+                          onSelected: (v) => setState(() => _sort = v),
+                          position: PopupMenuPosition.under,
+                          offset: const Offset(0, 6),
+                          constraints: const BoxConstraints(minWidth: 220),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          color: const Color(0xFF1E1E1F),
+                          itemBuilder:
+                              (context) => [
+                                const PopupMenuItem(
+                                  value: _SortOrder.normal,
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 10,
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Icon(Icons.sort, size: 18),
+                                      SizedBox(width: 12),
+                                      Flexible(
+                                        child: Text(
+                                          'Default',
+                                          maxLines: 1,
+                                          softWrap: false,
+                                          overflow: TextOverflow.visible,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const PopupMenuItem(
+                                  value: _SortOrder.priceAsc,
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 10,
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Icon(Icons.arrow_upward, size: 18),
+                                      SizedBox(width: 12),
+                                      Flexible(
+                                        child: Text(
+                                          'Prezzo crescente',
+                                          maxLines: 1,
+                                          softWrap: false,
+                                          overflow: TextOverflow.visible,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const PopupMenuItem(
+                                  value: _SortOrder.priceDesc,
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 10,
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Icon(Icons.arrow_downward, size: 18),
+                                      SizedBox(width: 12),
+                                      Flexible(
+                                        child: Text(
+                                          'Prezzo decrescente',
+                                          maxLines: 1,
+                                          softWrap: false,
+                                          overflow: TextOverflow.visible,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 8,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.06),
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(color: Colors.white24),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(_sortIcon(_sort), size: 18),
+                                const SizedBox(width: 8),
+                                Text(
+                                  _sortLabel(_sort),
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                  softWrap: false,
+                                  overflow: TextOverflow.fade,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
               /* ============== LISTA VERTICALE ANIMATA ============== */
               Expanded(
                 child: PageView.builder(
                   controller: _pageController,
                   scrollDirection: Axis.vertical,
-                  itemCount: availableCars.length,
+                  itemCount: sorted.length,
                   physics: const BouncingScrollPhysics(),
                   itemBuilder: (context, index) {
-                    final car = availableCars[index];
+                    final car = sorted[index];
 
                     return AnimatedBuilder(
                       animation: _pageController,
                       builder: (context, child) {
                         double value = 0.0;
                         if (_pageController.hasClients) {
-                          value = ((_pageController.page ?? _pageController.initialPage) - index).toDouble();
+                          value =
+                              ((_pageController.page ??
+                                          _pageController.initialPage) -
+                                      index)
+                                  .toDouble();
                         }
                         final scale = (1 - (value.abs() * 0.2)).clamp(0.8, 1.0);
                         final verticalOffset = (value * 40).clamp(-40.0, 40.0);
@@ -218,7 +374,10 @@ class _CarListPageState extends State<CarListPage> {
                           child: Transform.scale(
                             scale: scale,
                             child: Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 24),
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 30,
+                                horizontal: 24,
+                              ),
                               child: child,
                             ),
                           ),
@@ -230,12 +389,13 @@ class _CarListPageState extends State<CarListPage> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (_) => CarDetailPage(
-                                car: car,
-                                rates: widget.rates,
-                                preferredCurrency: currentCurrency,
-                                cars: availableCars,
-                              ),
+                              builder:
+                                  (_) => CarDetailPage(
+                                    car: car,
+                                    rates: widget.rates,
+                                    preferredCurrency: currentCurrency,
+                                    cars: sorted,
+                                  ),
                             ),
                           );
                         },
@@ -250,7 +410,7 @@ class _CarListPageState extends State<CarListPage> {
       ),
       bottomNavigationBar: AppBottomBar(
         currentIndex: 1,
-        cars: availableCars,
+        cars: sorted,
         allCars: widget.allCars ?? widget.cars,
         rates: widget.rates,
         preferredCurrency: currentCurrency,
@@ -258,7 +418,31 @@ class _CarListPageState extends State<CarListPage> {
       ),
     );
   }
+
+  String _sortLabel(_SortOrder s) {
+    switch (s) {
+      case _SortOrder.normal:
+        return 'Default';
+      case _SortOrder.priceAsc:
+        return 'Prezzo Crescente';
+      case _SortOrder.priceDesc:
+        return 'Prezzo Decrescente';
+    }
+  }
+
+  IconData _sortIcon(_SortOrder s) {
+    switch (s) {
+      case _SortOrder.normal:
+        return Icons.sort;
+      case _SortOrder.priceAsc:
+        return Icons.arrow_upward;
+      case _SortOrder.priceDesc:
+        return Icons.arrow_downward;
+    }
+  }
 }
+
+enum _SortOrder { normal, priceAsc, priceDesc }
 
 /* ---------- resto del file invariato ---------- */
 
@@ -288,7 +472,10 @@ class _CarCardState extends State<_CarCard> {
 
   @override
   Widget build(BuildContext context) {
-    final img = widget.car.images.isNotEmpty ? widget.car.images.first : 'assets/macchine/supercar.jpg';
+    final img =
+        widget.car.images.isNotEmpty
+            ? widget.car.images.first
+            : 'assets/macchine/supercar.jpg';
 
     return AnimatedScale(
       scale: _scale,
@@ -330,11 +517,16 @@ class _CarCardState extends State<_CarCard> {
                     child: Image.asset(
                       img,
                       fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => Container(
-                        color: Colors.grey[800],
-                        alignment: Alignment.center,
-                        child: const Icon(Icons.broken_image, size: 40, color: Colors.white54),
-                      ),
+                      errorBuilder:
+                          (_, __, ___) => Container(
+                            color: Colors.grey[800],
+                            alignment: Alignment.center,
+                            child: const Icon(
+                              Icons.broken_image,
+                              size: 40,
+                              color: Colors.white54,
+                            ),
+                          ),
                     ),
                   ),
 
@@ -367,7 +559,10 @@ class _CarCardState extends State<_CarCard> {
                       blur: 12,
                       opacity: 0.18,
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 8,
+                        ),
                         child: Text(
                           widget.car.model,
                           maxLines: 1,
@@ -437,9 +632,12 @@ class _GradientText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ShaderMask(
-      shaderCallback: (bounds) =>
-          LinearGradient(colors: colors, begin: Alignment.topLeft, end: Alignment.bottomRight)
-              .createShader(Rect.fromLTWH(0, 0, bounds.width, bounds.height)),
+      shaderCallback:
+          (bounds) => LinearGradient(
+            colors: colors,
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ).createShader(Rect.fromLTWH(0, 0, bounds.width, bounds.height)),
       child: Text(text, style: style),
     );
   }
