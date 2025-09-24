@@ -75,13 +75,13 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
                 const Divider(height: 1, color: Colors.white12),
 
-                for (final c in CurrencyService.currencies)
-                  RadioListTile<String>(
-                    value: c['code']!,
-                    // ignore: deprecated_member_use
-                    groupValue: _currency,
-                    // ignore: deprecated_member_use
-                    onChanged: (v) => _set(v!),
+                for (final c in CurrencyService.currencies) ...[
+                  ListTile(
+                    leading: Icon(
+                      _currency == c['code']!
+                          ? Icons.radio_button_checked
+                          : Icons.radio_button_unchecked,
+                    ),
                     title: Row(
                       children: [
                         Text(
@@ -95,11 +95,14 @@ class _ProfilePageState extends State<ProfilePage> {
                         Text(_nameFromLabel(c['label']!)),
                       ],
                     ),
+                    onTap: () => _set(c['code']!),
                   ),
-
+                  const Divider(height: 1, color: Colors.white12),
+                ],
                 // ------------------- PULSANTE ESCI -------------------
                 Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 32),
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 24, horizontal: 32),
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 16),
