@@ -184,7 +184,7 @@
     "brand": "Bugatti",
     "model": "Bugatti Solitaire",
     "year": 2023,
-    "priceEur": 86420,
+    "priceEur": 15550000,
     "powerHp": 466,
     "images": [
       "assets/macchine_per_brand/Bugatti/Bugatti_Solitaire/1.png",
@@ -211,7 +211,7 @@
     "brand": "Bugatti",
     "model": "Bugatti Veyron",
     "year": 2023,
-    "priceEur": 134309,
+    "priceEur": 2254500,
     "powerHp": 298,
     "images": [
       "assets/macchine_per_brand/Bugatti/Bugatti_Veyron/1.png",
@@ -236,7 +236,7 @@
     "brand": "Bugatti",
     "model": "Bugatti Chiron",
     "year": 2023,
-    "priceEur": 594277,
+    "priceEur": 3550250,
     "powerHp": 911,
     "images": [
       "assets/macchine_per_brand/Bugatti/Bugatti_Chiron/1.png",
@@ -263,7 +263,7 @@
     "brand": "Bugatti",
     "model": "Bugatti Divo",
     "year": 2023,
-    "priceEur": 207755,
+    "priceEur": 10115000,
     "powerHp": 600,
     "images": [
       "assets/macchine_per_brand/Bugatti/Bugatti_Divo/1.png",
