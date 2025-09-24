@@ -25,7 +25,7 @@ class AppBottomBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return BottomNavigationBar(
       currentIndex: currentIndex,
-      selectedItemColor: Colors.redAccent,
+      selectedItemColor: Colors.white, // sarà sostituito dal gradient
       unselectedItemColor: Colors.grey.shade400,
       backgroundColor: Colors.black.withOpacity(0.95),
       type: BottomNavigationBarType.fixed,
@@ -57,12 +57,33 @@ class AppBottomBar extends StatelessWidget {
           onProfileTap();
         }
       },
-      items: const [
-        BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-        BottomNavigationBarItem(icon: Icon(Icons.directions_car), label: 'Catalogo'),
-        BottomNavigationBarItem(icon: Icon(Icons.local_shipping), label: 'In arrivo'),
-        BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profilo'),
+      items: [
+        _buildGradientIconItem(Icons.home, 'Home', 0),
+        _buildGradientIconItem(Icons.directions_car, 'Catalogo', 1),
+        _buildGradientIconItem(Icons.local_shipping, 'In arrivo', 2),
+        _buildGradientIconItem(Icons.person, 'Profilo', 3),
       ],
     );
+  }
+
+  BottomNavigationBarItem _buildGradientIconItem(IconData icon, String label, int index) {
+    if (index == currentIndex) {
+      return BottomNavigationBarItem(
+        icon: ShaderMask(
+          shaderCallback: (bounds) => const LinearGradient(
+            colors: [Colors.orangeAccent, Colors.deepOrange],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ).createShader(Rect.fromLTWH(0, 0, bounds.width, bounds.height)),
+          child: Icon(icon, color: Colors.white),
+        ),
+        label: label,
+      );
+    } else {
+      return BottomNavigationBarItem(
+        icon: Icon(icon),
+        label: label,
+      );
+    }
   }
 }
