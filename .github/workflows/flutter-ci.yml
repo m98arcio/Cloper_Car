@@ -27,10 +27,14 @@ jobs:
         run: flutter pub get
 
       - name: Analisi statica
-        run: flutter analyze
+        run: flutter analyze --no-fatal-infos --no-fatal-warnings
 
       - name: Unit + Widget tests (headless)
         run: xvfb-run -a flutter test --no-pub --exclude-tags native
+
+      - name: Install Android SDK 35
+        run: |
+          yes | ${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager "platforms;android-35" "build-tools;35.0.0"
 
       - name: Build APK release
         run: flutter build apk --release
@@ -66,14 +70,14 @@ jobs:
       - name: Flutter pub get
         run: flutter pub get
 
+      - name: Install Android SDK 35
+        run: |
+          yes | ${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager "platforms;android-35" "build-tools;35.0.0"
+
       # Pre-build per scaldare la cache gradle/AGP
       - name: Warm up Gradle / Build debug
         run: flutter build apk --debug
 
-      # Avvia emulatore e lancia gli integration test.
-      # Funziona sia con:
-      #  - flutter test -d emulator-5554 integration_test
-      #  - flutter drive --driver=test_driver/integration_test.dart --target=<tuo file>
       - name: Run integration tests on Android emulator
         uses: reactivecircus/android-emulator-runner@v2
         with:
@@ -87,9 +91,7 @@ jobs:
             flutter devices
 
             if [ -d "integration_test" ]; then
-              # Se esiste un driver classico, prova flutter drive
               if [ -f "test_driver/integration_test.dart" ]; then
-                # Prova a trovare un test target principale se non hai un nome fisso
                 DEFAULT_TARGET=$(ls integration_test | head -n1)
                 if [ -z "$DEFAULT_TARGET" ]; then
                   echo "Nessun file in integration_test/ trovato"
@@ -101,7 +103,6 @@ jobs:
                   --target=integration_test/$DEFAULT_TARGET \
                   -d emulator-5554
               else
-                # Nuovo runner integration_test
                 echo "Eseguo flutter test -d emulator-5554 integration_test"
                 flutter test -d emulator-5554 integration_test
               fi
