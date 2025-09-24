@@ -4,62 +4,117 @@ on:
   push:
   pull_request:
 
+permissions:
+  contents: read
+
 jobs:
-  # --- Job principale: lint, unit test, widget test, build ---
-  build-test:
+  lint-and-tests:
+    name: Analyze + Unit/Widget tests
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
           flutter-version: "3.24.0"
+          channel: "stable"
+          cache: true
 
-      - name: Install dependencies
+      - name: Flutter pub get
         run: flutter pub get
 
-      - name: Analisi statica
+      # (opzionale) aggiorna i pacchetti se serve
+      # - name: Flutter pub upgrade (safely)
+      #   run: flutter pub upgrade --major-versions
+
+      - name: Analyze
         run: flutter analyze
 
-      - name: Unit + Widget tests (headless)
-        run: xvfb-run -a flutter test --no-pub --exclude-tags native
+      # xvfb per widget/golden che usano rendering headless
+      - name: Unit & Widget tests (headless)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y xvfb
+          # escludi eventualmente test marcati come 'native' o 'e2e' che richiedono device/emulatore
+          xvfb-run -a flutter test --no-pub --exclude-tags native --exclude-tags e2e
 
-      - name: Build APK release
-        run: flutter build apk --release
-
-      - name: Upload artifact (APK)
-        uses: actions/upload-artifact@v4
-        with:
-          name: app-release-apk
-          path: build/app/outputs/flutter-apk/app-release.apk
-
-  # --- Job dedicato ai test di integrazione che usano plugin nativi ---
-  integration-android:
+  android-integration:
+    name: Android Emulator + Integration tests + APK
+    needs: lint-and-tests
     runs-on: ubuntu-latest
-    needs: build-test
+    timeout-minutes: 40
 
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Setup Java (JDK 17)
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
           flutter-version: "3.24.0"
+          channel: "stable"
+          cache: true
 
-      - name: Install dependencies
+      - name: Flutter pub get
         run: flutter pub get
 
-      - name: Avvio emulatore Android e test di integrazione
+      # Pre-build per scaldare la cache gradle/AGP
+      - name: Warm up Gradle / Build debug
+        run: flutter build apk --debug
+
+      # Avvia emulatore e lancia gli integration test.
+      # Funziona sia con:
+      #  - flutter test -d emulator-5554 integration_test
+      #  - flutter drive --driver=test_driver/integration_test.dart --target=<tuo file>
+      - name: Run integration tests on Android emulator
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 33
           arch: x86_64
           profile: pixel_5
+          emulator-options: -no-snapshot -no-window -gpu swiftshader_indirect
           script: |
-            flutter build apk
-            # Esegui integration_test marcati come "native"
-            flutter test -d emulator-5554 integration_test --tags native
+            set -euxo pipefail
+            flutter doctor -v
+            flutter devices
+
+            if [ -d "integration_test" ]; then
+              # Se esiste un driver classico, prova flutter drive
+              if [ -f "test_driver/integration_test.dart" ]; then
+                # Prova a trovare un test target principale se non hai un nome fisso
+                DEFAULT_TARGET=$(ls integration_test | head -n1)
+                if [ -z "$DEFAULT_TARGET" ]; then
+                  echo "Nessun file in integration_test/ trovato"
+                  exit 1
+                fi
+                echo "Eseguo flutter drive su: integration_test/$DEFAULT_TARGET"
+                flutter drive \
+                  --driver=test_driver/integration_test.dart \
+                  --target=integration_test/$DEFAULT_TARGET \
+                  -d emulator-5554
+              else
+                # Nuovo runner integration_test
+                echo "Eseguo flutter test -d emulator-5554 integration_test"
+                flutter test -d emulator-5554 integration_test
+              fi
+            else
+              echo "Nessuna cartella integration_test/ presente: salto gli integration test."
+            fi
+
+      - name: Build APK (release)
+        run: flutter build apk --release
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
