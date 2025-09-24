@@ -8,12 +8,11 @@ plugins {
 android {
     namespace = "com.example.personale"
 
-    // Imposta esplicitamente il livello SDK richiesto dai plugin recenti (es. geolocator_android)
-    compileSdk = 35
+    compileSdk = 36
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
-        // Con Flutter 3.22+ è consigliato Java 17
+
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
@@ -25,9 +24,8 @@ android {
     defaultConfig {
         applicationId = "com.example.personale"
 
-        // Puoi lasciare minSdk dal template Flutter (va bene), oppure fissarlo esplicito a 21+
         minSdk = flutter.minSdkVersion
-        targetSdk = 35
+        targetSdk = 36
 
         versionCode = flutter.versionCode
         versionName = flutter.versionName
