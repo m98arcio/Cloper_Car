@@ -38,7 +38,6 @@ android {
             )
         }
         debug {
-            // In debug NON serve minify/shrink
             isMinifyEnabled = false
             isShrinkResources = false
         }
