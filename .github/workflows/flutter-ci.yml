@@ -16,6 +16,9 @@ jobs:
         with:
           flutter-version: "3.24.0"
 
+      - name: Clean the project
+        run: flutter clean
+
       - name: Install dependencies
         run: flutter pub get
 
