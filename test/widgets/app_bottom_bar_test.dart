@@ -13,8 +13,8 @@ void main() {
         body: const SizedBox(),
         bottomNavigationBar: AppBottomBar(
           currentIndex: 0,
-          cars: const <Car>[],          // lista vuota ok per il test
-          allCars: const <Car>[],       // opzionale; passata per sicurezza
+          cars: const <Car>[],
+          allCars: const <Car>[],
           rates: null,
           preferredCurrency: 'EUR',
           onProfileTap: () => tapped.value = true,
