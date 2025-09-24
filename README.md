@@ -55,7 +55,7 @@ flutter run -d emulator   # oppure: flutter run
 ```
 lib/
   models/            # Modelli (Car, DealerPoint, ...)
-  screens/           # Schermate (Home, Incoming, Dettaglio, Profilo, ...)
+  screens/           # Schermate (Home, incoming, Dettaglio, Profilo, ...)
   widgets/           # Widget riutilizzabili (BrandLogo, BottomBar, ...)
   services/          # Servizi (LocalCatalog, CurrencyService, RatesApi, ...)
 assets/

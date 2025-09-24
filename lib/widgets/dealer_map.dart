@@ -51,12 +51,18 @@ class _DealerMapCardState extends State<DealerMapCard> {
       if (perm == LocationPermission.denied) {
         perm = await Geolocator.requestPermission();
       }
-      if (perm == LocationPermission.deniedForever || perm == LocationPermission.denied) {
+      if (perm == LocationPermission.deniedForever ||
+          perm == LocationPermission.denied) {
         setState(() => _error = 'Permesso posizione negato.');
         return;
       }
 
-      final pos = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+      final pos = await Geolocator.getCurrentPosition(
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.high,
+        ),
+      );
+
       setState(() {
         _pos = pos;
       });
@@ -97,7 +103,8 @@ class _DealerMapCardState extends State<DealerMapCard> {
       allowedDealerIds: visible.map((d) => d.id).toList(),
     );
 
-    final distM = _distanceMeters(user.latitude, user.longitude, nearest.lat, nearest.lng);
+    final distM = _distanceMeters(
+        user.latitude, user.longitude, nearest.lat, nearest.lng);
 
     // Marker dei dealer (evidenzia il più vicino in verde)
     final markers = <Marker>{
@@ -124,7 +131,8 @@ class _DealerMapCardState extends State<DealerMapCard> {
       ),
     };
 
-    final shouldAnimate = _controller != null && _centeredDealerId != nearest.id;
+    final shouldAnimate =
+        _controller != null && _centeredDealerId != nearest.id;
 
     setState(() {
       _markers = markers;
@@ -134,7 +142,8 @@ class _DealerMapCardState extends State<DealerMapCard> {
     });
 
     if (shouldAnimate && _controller != null) {
-      await _controller!.animateCamera(CameraUpdate.newLatLngZoom(nearest.latLng, 11.5));
+      await _controller!
+          .animateCamera(CameraUpdate.newLatLngZoom(nearest.latLng, 11.5));
     }
   }
 
@@ -173,7 +182,8 @@ class _DealerMapCardState extends State<DealerMapCard> {
               future: DealersRepo.load(),
               builder: (context, snap) {
                 if (!snap.hasData) return const SizedBox.shrink();
-                final d = snap.data!.firstWhere((x) => x.id == _centeredDealerId!,
+                final d = snap.data!.firstWhere(
+                    (x) => x.id == _centeredDealerId!,
                     orElse: () => snap.data!.first);
                 return _NearestBanner(
                   title: d.name,
@@ -220,7 +230,8 @@ class _DealerMapCardState extends State<DealerMapCard> {
   }
 
   Future<void> _openExternalMaps(double lat, double lng) async {
-    final uri = Uri.parse('https://www.google.com/maps/dir/?api=1&destination=$lat,$lng');
+    final uri = Uri.parse(
+        'https://www.google.com/maps/dir/?api=1&destination=$lat,$lng');
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
     }
@@ -236,8 +247,10 @@ class _DealerMapCardState extends State<DealerMapCard> {
     final dLat = _toRad(lat2 - lat1);
     final dLon = _toRad(lon2 - lon1);
     final a = math.sin(dLat / 2) * math.sin(dLat / 2) +
-        math.cos(_toRad(lat1)) * math.cos(_toRad(lat2)) *
-            math.sin(dLon / 2) * math.sin(dLon / 2);
+        math.cos(_toRad(lat1)) *
+            math.cos(_toRad(lat2)) *
+            math.sin(dLon / 2) *
+            math.sin(dLon / 2);
     final c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a));
     return R * c;
   }
@@ -266,7 +279,7 @@ class _NearestBanner extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceVariant,
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
