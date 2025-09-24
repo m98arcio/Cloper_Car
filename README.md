@@ -5,7 +5,7 @@ Tecnologie principali: **Flutter**, **Google Maps**, **Geolocator**, **Video Pla
 
 ## Requisiti
 
-- **Flutter SDK** ≥ 3.7.2 (vedi `environment.sdk` nel `pubspec.yaml`)
+- **Flutter SDK** ≥ 3.5.0 (vedi `environment.sdk` nel `pubspec.yaml`)
 - **Android Studio** (per gli emulatori Android)
 - Plugin Flutter/Dart per l’IDE (consigliato)
 
