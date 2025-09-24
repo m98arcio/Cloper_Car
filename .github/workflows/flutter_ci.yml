@@ -1,22 +1,21 @@
-name: Flutter CI with Android Emulator
+name: Flutter CI
 
 on:
   push:
-    branches: [ "main", "Branch2" ]
+    branches: ["main", "Branch2"]
   pull_request:
-    branches: [ "main", "Branch2" ]
+    branches: ["main", "Branch2"]
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
 
     steps:
       # Step 1: Checkout code
       - name: Checkout
         uses: actions/checkout@v4
 
-      # Step 2: Setup Java (per Android build)
+      # Step 2: Setup Java
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
@@ -34,9 +33,7 @@ jobs:
 
       # Step 4: Install dependencies
       - name: Install dependencies
-        run: |
-          flutter pub get
-          flutter pub upgrade
+        run: flutter pub get
 
       # Step 5: Static analysis
       - name: Analyze
@@ -46,22 +43,20 @@ jobs:
       - name: Run unit & widget tests
         run: flutter test
 
-      # Step 7: Run integration tests on Android Emulator
-      - name: Run integration tests (Android Emulator)
+      # Step 7: Setup Android Emulator (ARM)
+      - name: Run Android emulator (ARM)
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 36
           target: google_apis
-          arch: x86_64
+          arch: arm64
           force-avd-creation: true
           emulator-options: -no-window -no-audio -no-boot-anim
-          wait-for-boot: true
           script: |
-            flutter doctor
-            flutter drive --driver=test_driver/integration_test.dart --target=integration_test/app_start_test.dart -d emulator-5554
+            flutter drive --driver=integration_test/driver.dart --target=integration_test/app_test.dart
 
       # Step 8: Build Android APK (release)
-      - name: Build Android APK (release)
+      - name: Build Android APK
         if: ${{ success() }}
         run: flutter build apk --release
 
