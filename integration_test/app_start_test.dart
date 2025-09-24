@@ -19,6 +19,5 @@ void main() {
     expect(find.byType(MaterialApp), findsOneWidget);
 
     // Esempio opzionale: controlla che un testo della tua home sia visibile
-    // expect(find.text('Concessionario Supercar'), findsOneWidget);
   });
 }

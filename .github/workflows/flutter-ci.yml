@@ -29,11 +29,11 @@ jobs:
       - name: Analisi statica
         run: flutter analyze --no-fatal-infos --no-fatal-warnings
 
-      - name: Unit + Widget tests (headless)
+      - name: Unit + Widget tests
         run: xvfb-run -a flutter test --no-pub --exclude-tags native
 
-      - name: Integration tests (headless)
-        run: xvfb-run -a flutter test --no-pub integration_test
+      - name: Integration tests
+        run: flutter test integration_test --no-pub
 
       - name: Install Android SDK 35
         run: |
