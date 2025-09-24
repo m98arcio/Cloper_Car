@@ -164,7 +164,7 @@ class _HomePageState extends State<HomePage> {
     };
 
     // Ordine fisso dei primi 4 brand
-    final fixedBrands = ['Ferrari', 'Lotus', 'Lamborghini', 'Porsche'];
+    final fixedBrands = ['Ferrari', 'Lotus', 'Lamborghini'];
     final displayedBrands =
         fixedBrands.where((b) => allBrands.contains(b)).toList();
 
