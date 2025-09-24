@@ -43,6 +43,7 @@ class _HomePageState extends State<HomePage> {
     _bootstrap();
     _loadNews();
   }
+  
 
   Future<void> _bootstrap() async {
     setState(() {

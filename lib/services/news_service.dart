@@ -19,7 +19,6 @@ class NewsItem {
 }
 
 class NewsService {
-  // Aggiunto CarScoops e Autocar (RSS affidabili)
   static const Map<String, String> _feeds = {
     'Motor1':     'https://www.motor1.com/rss/news/',
     'Autoblog':   'https://www.autoblog.com/rss.xml',
@@ -30,7 +29,6 @@ class NewsService {
   };
 
   static const _headers = {
-    // molti siti rifiutano richieste senza UA
     'User-Agent':
         'Mozilla/5.0 (Android 14; Mobile) AppleWebKit/537.36 '
         '(KHTML, like Gecko) Chrome/124.0 Mobile Safari/537.36',
@@ -55,28 +53,24 @@ class NewsService {
 
         final body = utf8.decode(res.bodyBytes);
 
-        // Prova RSS
         try {
           final rss = RssFeed.parse(body);
           for (final item in (rss.items ?? const <RssItem>[]).take(maxPerFeed)) {
             out.add(_fromRss(item, source));
           }
           continue;
-        } catch (_) {/* non RSS */}
+        } catch (_) {}
 
-        // Prova Atom
         try {
           final atom = AtomFeed.parse(body);
           for (final item in (atom.items ?? const <AtomItem>[]).take(maxPerFeed)) {
             out.add(_fromAtom(item, source));
           }
-        } catch (_) {/* non Atom */}
+        } catch (_) {}
       } catch (_) {
-        // rete/timeouts: ignora questo feed
       }
     }
 
-    // Ordina per data e tronca
     out.sort((a, b) {
       final ad = a.pubDate?.millisecondsSinceEpoch ?? 0;
       final bd = b.pubDate?.millisecondsSinceEpoch ?? 0;
@@ -124,7 +118,7 @@ class NewsService {
     return NewsItem(
       title: (i.title ?? '').trim().isEmpty ? '(senza titolo)' : i.title!.trim(),
       link: linkHref,
-      pubDate: i.updated, // più affidabile con webfeed
+      pubDate: i.updated,
       imageUrl: img,
       source: source,
     );

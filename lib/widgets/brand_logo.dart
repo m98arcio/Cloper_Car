@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
 
-/// Logo temporaneo:
-/// - se [imagePath] è valorizzato, mostra quell'immagine
-/// - altrimenti cerchio/quadrato con iniziale del brand su sfondo gradiente
 class BrandLogo extends StatelessWidget {
   final String brand;
   final String? imagePath;
@@ -59,7 +56,6 @@ class BrandLogo extends StatelessWidget {
     );
   }
 
-  /// Palette semplice per rendere i placeholder coerenti tra i brand.
   List<Color> _brandColors(String b) {
     switch (b.toLowerCase()) {
       case 'ferrari':

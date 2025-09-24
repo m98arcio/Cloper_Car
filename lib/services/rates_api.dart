@@ -1,8 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
-/// Converte da EUR verso altre valute usando Frankfurter (no API key).
-/// Ritorna ad es.: { 'USD': 1.09, 'GBP': 0.84 } oppure null se fallisce.
+/// Converte da EUR verso altre valute usando Frankfurter.
 class RatesApi {
   static const _headers = {
     'User-Agent':
@@ -29,7 +28,7 @@ class RatesApi {
       );
       return Map<String, double>.from(rates);
     } catch (_) {
-      return null; // in Home gestisci già il fallback a EUR
+      return null;
     }
   }
 }

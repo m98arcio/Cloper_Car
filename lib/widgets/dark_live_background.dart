@@ -1,8 +1,6 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 
-/// Sfondo animato a ONDE nere con sfumature grigie.
-/// Usalo dietro ai contenuti: Stack(children:[DarkLiveBackground(), SafeArea(...)] )
 class DarkLiveBackground extends StatefulWidget {
   const DarkLiveBackground({super.key});
 
@@ -62,7 +60,7 @@ class _WavesPainter extends CustomPainter {
     canvas.drawRect(rect, bgPaint);
 
     // parametri onda
-    final baseAmp = size.height * 0.06; // ampiezza base
+    final baseAmp = size.height * 0.06;
     final speed = 2 * math.pi * time;
 
     // disegna 3 strati di onde con fasi/ampiezze diverse
@@ -118,9 +116,8 @@ class _WavesPainter extends CustomPainter {
     final h = size.height * heightFactor;
     final w = size.width;
 
-    // path a onde (cubic bezier + sin per “morbidezza”)
     final path = Path()..moveTo(0, h);
-    final seg = 6; // numero “creste”
+    final seg = 6;
     for (int i = 0; i <= seg; i++) {
       final x = w * i / seg;
       final t = (i / seg) * 2 * math.pi + phase;

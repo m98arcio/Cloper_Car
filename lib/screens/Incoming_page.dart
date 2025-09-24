@@ -33,11 +33,15 @@ class _IncomingPageState extends State<IncomingPage>
   // -------- sensori / animazioni --------
   StreamSubscription? _accSub, _gyroSub;
   double _roll = 0, _pitch = 0, _accRoll = 0, _accPitch = 0;
-  double? _baseRoll, _basePitch;
   DateTime? _lastGyroTime;
   static const _alpha = 0.92;
   static const _clamp = 0.30;
   double _deadzone(double v, [double eps = 0.02]) => v.abs() < eps ? 0 : v;
+
+  // Baseline con calibrazione ritardata
+  double? _offsetRoll, _offsetPitch;
+  Timer? _calibTimer;
+  bool _calibrated = false;
 
   late final PageController _page;
   late final AnimationController _glow;
@@ -70,7 +74,6 @@ class _IncomingPageState extends State<IncomingPage>
   }
 
   Future<void> _ensureAllCarsLoaded() async {
-
     if (widget.allCars != null) {
       setState(() => _allCars = widget.allCars);
       return;
@@ -83,29 +86,12 @@ class _IncomingPageState extends State<IncomingPage>
         _allCars = all;
         _loadingCars = false;
       });
-    } catch (e) {
+    } catch (_) {
       if (!mounted) return;
-      // Non blocchiamo la pagina: se fallisce useremo widget.cars come fallback
       setState(() {
         _allCars = null;
         _loadingCars = false;
       });
-    }
-  }
-
-  Future<void> _initData() async {
-    try {
-      final dealers = await DealersRepo.load();
-      final pos = await _getPosition();
-      if (!mounted) return;
-      setState(() {
-        _dealers = dealers;
-        _pos = pos;
-        _loadError = null;
-      });
-    } catch (e) {
-      if (!mounted) return;
-      setState(() => _loadError = e.toString());
     }
   }
 
@@ -125,28 +111,49 @@ class _IncomingPageState extends State<IncomingPage>
     );
   }
 
+  Future<void> _initData() async {
+    try {
+      final dealers = await DealersRepo.load();
+      final pos = await _getPosition();
+      if (!mounted) return;
+      setState(() {
+        _dealers = dealers;
+        _pos = pos;
+        _loadError = null;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _loadError = e.toString());
+    }
+  }
+
   void _startSensors() {
     _accSub = accelerometerEventStream().listen((e) {
       final ax = e.x.toDouble(), ay = e.y.toDouble(), az = e.z.toDouble();
       _accRoll = math.atan2(ay, az);
       _accPitch = math.atan2(-ax, math.sqrt(ay * ay + az * az));
     });
+
     _gyroSub = gyroscopeEventStream().listen((g) {
       final now = DateTime.now();
-      final dt =
-          _lastGyroTime == null
-              ? 0.016
-              : (now.difference(_lastGyroTime!).inMicroseconds / 1e6);
+      final dt = _lastGyroTime == null
+          ? 0.016
+          : (now.difference(_lastGyroTime!).inMicroseconds / 1e6);
       _lastGyroTime = now;
 
-      _roll = (_alpha * (_roll + g.x * dt)) + ((1 - _alpha) * _accRoll);
-      _pitch = (_alpha * (_pitch + g.y * dt)) + ((1 - _alpha) * _accPitch);
+      _roll  = (_alpha * (_roll  + g.y * dt)) + ((1 - _alpha) * _accRoll);
+      _pitch = (_alpha * (_pitch + g.x * dt)) + ((1 - _alpha) * _accPitch);
 
-      _roll = _roll.clamp(-_clamp, _clamp);
+      _roll  = _roll.clamp(-_clamp, _clamp);
       _pitch = _pitch.clamp(-_clamp, _clamp);
 
-      _baseRoll ??= _roll;
-      _basePitch ??= _pitch;
+      // Calibrazione ritardata
+      _calibTimer ??= Timer(const Duration(milliseconds: 400), () {
+        _offsetRoll  = _roll;
+        _offsetPitch = _pitch;
+        _calibrated = true;
+        if (mounted) setState(() {});
+      });
 
       if (mounted) setState(() {});
     });
@@ -156,6 +163,7 @@ class _IncomingPageState extends State<IncomingPage>
   void dispose() {
     _glow.dispose();
     _page.dispose();
+    _calibTimer?.cancel();
     _accSub?.cancel();
     _gyroSub?.cancel();
     super.dispose();
@@ -163,7 +171,6 @@ class _IncomingPageState extends State<IncomingPage>
 
   @override
   Widget build(BuildContext context) {
-    // Sorgente: preferisci SEMPRE il catalogo completo (_allCars or widget.allCars).
     final source = _allCars ?? widget.allCars ?? widget.cars;
     final cars = source.where((c) => c.incoming).toList();
 
@@ -234,9 +241,11 @@ class _IncomingPageState extends State<IncomingPage>
                       );
                       final dealer = _nearestDealerFor(car);
 
-                      final rotY = _deadzone((_roll - (_baseRoll ?? 0))) * 0.45;
-                      final rotX =
-                          _deadzone((_pitch - (_basePitch ?? 0))) * 0.35;
+                      double rotX = 0, rotY = 0;
+                      if (_calibrated && _offsetRoll != null && _offsetPitch != null) {
+                        rotX = -_deadzone(_pitch - _offsetPitch!) * 0.50;
+                        rotY = -_deadzone(_roll  - _offsetRoll! ) * 0.40;
+                      }
 
                       return Transform(
                         alignment: Alignment.center,
@@ -282,13 +291,12 @@ class _IncomingPageState extends State<IncomingPage>
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder:
-                  (_) => ProfilePage(
-                    initialCurrency: 'EUR',
-                    onChanged: (_) {},
-                    cars: source,
-                    rates: null,
-                  ),
+              builder: (_) => ProfilePage(
+                initialCurrency: 'EUR',
+                onChanged: (_) {},
+                cars: source,
+                rates: null,
+              ),
             ),
           );
         },
@@ -315,16 +323,13 @@ class _IncomingPageState extends State<IncomingPage>
 
     final user = LatLng(_pos!.latitude, _pos!.longitude);
     DealerPoint best = candidates.first;
-    double bestD = _haversine(
-      user.latitude,
-      user.longitude,
-      best.lat,
-      best.lng,
-    );
+    double bestD =
+        _haversine(user.latitude, user.longitude, best.lat, best.lng);
 
     for (int i = 1; i < candidates.length; i++) {
       final d = candidates[i];
-      final dist = _haversine(user.latitude, user.longitude, d.lat, d.lng);
+      final dist =
+          _haversine(user.latitude, user.longitude, d.lat, d.lng);
       if (dist < bestD) {
         bestD = dist;
         best = d;
@@ -337,13 +342,12 @@ class _IncomingPageState extends State<IncomingPage>
     const R = 6371000.0;
     final dLat = _toRad(lat2 - lat1);
     final dLon = _toRad(lon2 - lon1);
-    final a =
-        math.sin(dLat / 2) * math.sin(dLat / 2) +
+    final a = math.sin(dLat / 2) * math.sin(dLat / 2) +
         math.cos(_toRad(lat1)) *
             math.cos(_toRad(lat2)) *
             math.sin(dLon / 2) *
             math.sin(dLon / 2);
-    final c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a));
+    final c = 2 * math.atan2(math.sqrt(1 - a), math.sqrt(a));
     return R * c;
   }
 
@@ -386,7 +390,7 @@ class _IncomingAppBar extends StatelessWidget implements PreferredSizeWidget {
   }
 }
 
-/* ---------------- GradientText riutilizzabile (privato) ---------------- */
+/* ---------------- GradientText ---------------- */
 
 class _GradientText extends StatelessWidget {
   final String text;
@@ -398,18 +402,17 @@ class _GradientText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ShaderMask(
-      shaderCallback:
-          (bounds) => LinearGradient(
-            colors: colors,
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ).createShader(Rect.fromLTWH(0, 0, bounds.width, bounds.height)),
+      shaderCallback: (bounds) => LinearGradient(
+        colors: colors,
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+      ).createShader(Rect.fromLTWH(0, 0, bounds.width, bounds.height)),
       child: Text(text, style: style),
     );
   }
 }
 
-/* --------------------------- Availability Banner --------------------------- */
+/* ---------------- Availability Banner ---------------- */
 
 class _AvailabilityBanner extends StatelessWidget {
   final String city;

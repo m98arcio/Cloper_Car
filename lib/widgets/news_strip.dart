@@ -4,10 +4,6 @@ import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../services/news_service.dart';
 
-/// Strip notizie con card grandi, PageView orizzontale e auto-scroll.
-/// - Passa [items] dalla Home (già caricate).
-/// - [onRefresh] per il pulsante ricarica quando non ci sono news.
-/// - [autoScroll] abilita/disabilita lo scorrimento automatico.
 class NewsStrip extends StatefulWidget {
   final List<NewsItem> items;
   final VoidCallback? onRefresh;

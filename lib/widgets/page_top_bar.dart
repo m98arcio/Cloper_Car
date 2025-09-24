@@ -1,4 +1,3 @@
-// lib/widgets/page_top_bar.dart
 import 'package:flutter/material.dart';
 
 class PageTopBar extends StatelessWidget {
@@ -39,7 +38,7 @@ class PageTopBar extends StatelessWidget {
                   style: const TextStyle(
                     fontSize: 32,
                     fontWeight: FontWeight.w900,
-                    color: Colors.white, // viene sostituito dallo ShaderMask
+                    color: Colors.white,
                     letterSpacing: 1.2,
                   ),
                 ),

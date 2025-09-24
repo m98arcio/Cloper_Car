@@ -1,4 +1,3 @@
-// lib/widgets/flip_incoming_card.dart
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -11,7 +10,7 @@ import '../models/dealer_point.dart';
 class FlipIncomingCard extends StatefulWidget {
   final Car car;
   final DateTime eta;
-  final DealerPoint? dealer;   // <-- usa DealerPoint
+  final DealerPoint? dealer;
   final AnimationController glow;
   final Position? userPos;
 
@@ -30,7 +29,7 @@ class FlipIncomingCard extends StatefulWidget {
 
 class _FlipIncomingCardState extends State<FlipIncomingCard>
     with SingleTickerProviderStateMixin {
-  late final AnimationController _flip; // 0 -> front, 1 -> back
+  late final AnimationController _flip;
   bool get _isBack => _flip.value >= 0.5;
 
   @override
@@ -63,7 +62,7 @@ class _FlipIncomingCardState extends State<FlipIncomingCard>
       child: AnimatedBuilder(
         animation: _flip,
         builder: (context, _) {
-          final angle = _flip.value * math.pi; // 0..pi
+          final angle = _flip.value * math.pi;
           final showBack = angle > math.pi / 2;
           final transform = Matrix4.identity()
             ..setEntry(3, 2, 0.0012)
