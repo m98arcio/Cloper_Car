@@ -137,11 +137,11 @@ class _FrontFace extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: cs.primary.withOpacity(0.35)),
+        border: Border.all(color: cs.primary.withValues(alpha: 0.35)),
         boxShadow: [
           BoxShadow(
             color: cs.primary
-                .withOpacity(0.3 * (0.6 + 0.4 * math.sin(glow.value * math.pi))),
+                 .withValues(alpha: 0.3 * (0.6 + 0.4 * math.sin(glow.value * math.pi))),
             blurRadius: 24,
             spreadRadius: 1,
           ),
@@ -168,7 +168,7 @@ class _FrontFace extends StatelessWidget {
             child: DecoratedBox(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [Colors.transparent, Colors.black.withOpacity(0.55)],
+                  colors: [Colors.transparent, Colors.black.withValues(alpha: 0.55)],
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                 ),
@@ -183,7 +183,7 @@ class _FrontFace extends StatelessWidget {
               padding:
                   const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.12),
+                color: Colors.white.withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(color: Colors.white24),
               ),
@@ -218,7 +218,7 @@ class _FrontFace extends StatelessWidget {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.12),
+                    color: Colors.white.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(10),
                     border: Border.all(color: Colors.white24),
                   ),
@@ -273,7 +273,7 @@ class _BackFace extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: cs.primary.withOpacity(0.35)),
+        border: Border.all(color: cs.primary.withValues(alpha: 0.35)),
         gradient: const LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -300,7 +300,7 @@ class _BackFace extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(
                       horizontal: 12, vertical: 8),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.12),
+                    color: Colors.white.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(10),
                     border: Border.all(color: Colors.white24),
                   ),
@@ -329,7 +329,7 @@ class _BackFace extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 10, vertical: 6),
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.08),
+                          color: Colors.white.withValues(alpha: 0.08),
                           borderRadius: BorderRadius.circular(8),
                           border: Border.all(color: Colors.white24),
                         ),

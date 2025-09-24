@@ -43,7 +43,6 @@ class _HomePageState extends State<HomePage> {
     _bootstrap();
     _loadNews();
   }
-  
 
   Future<void> _bootstrap() async {
     setState(() {
@@ -73,8 +72,9 @@ class _HomePageState extends State<HomePage> {
       if (!mounted) return;
       setState(() => _error = e.toString());
     } finally {
-      if (!mounted) return;
-      setState(() => _loading = false);
+      if (mounted) {
+        setState(() => _loading = false);
+      }
     }
   }
 
@@ -92,8 +92,9 @@ class _HomePageState extends State<HomePage> {
       if (!mounted) return;
       setState(() => _newsError = e.toString());
     } finally {
-      if (!mounted) return;
-      setState(() => _newsLoading = false);
+      if (mounted) {
+        setState(() => _newsLoading = false);
+      }
     }
   }
 
@@ -101,16 +102,15 @@ class _HomePageState extends State<HomePage> {
     final changed = await Navigator.push<bool>(
       context,
       MaterialPageRoute(
-        builder:
-            (_) => ProfilePage(
-              initialCurrency: _preferred,
-              onChanged: (c) async {
-                final prefs = await SharedPreferences.getInstance();
-                await prefs.setString(_prefKeyCurrency, c);
-              },
-              cars: _cars,
-              rates: _rates,
-            ),
+        builder: (_) => ProfilePage(
+          initialCurrency: _preferred,
+          onChanged: (c) async {
+            final prefs = await SharedPreferences.getInstance();
+            await prefs.setString(_prefKeyCurrency, c);
+          },
+          cars: _cars,
+          rates: _rates,
+        ),
       ),
     );
 
@@ -131,10 +131,9 @@ class _HomePageState extends State<HomePage> {
         backgroundColor: const Color(0xFF0E0E0F),
         elevation: 0,
         centerTitle: true,
-        toolbarHeight: 72, 
+        toolbarHeight: 72,
         title: const _AppBarBrandTitle(),
       ),
-
       body: Stack(
         children: [
           const DarkLiveBackground(),
@@ -241,12 +240,11 @@ class _HomePageState extends State<HomePage> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder:
-                          (_) => BrandCatalogPage(
-                            cars: _cars,
-                            rates: _rates,
-                            preferredCurrency: _preferred,
-                          ),
+                      builder: (_) => BrandCatalogPage(
+                        cars: _cars,
+                        rates: _rates,
+                        preferredCurrency: _preferred,
+                      ),
                     ),
                   );
                 },
@@ -271,22 +269,20 @@ class _HomePageState extends State<HomePage> {
                   brand: b,
                   imagePath: logo,
                   onTap: () {
-                    final filtered =
-                        _cars
-                            .where(
-                              (c) => c.brand.toLowerCase() == b.toLowerCase(),
-                            )
-                            .toList();
+                    final filtered = _cars
+                        .where(
+                          (c) => c.brand.toLowerCase() == b.toLowerCase(),
+                        )
+                        .toList();
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder:
-                            (_) => CarListPage(
-                              brand: b,
-                              cars: filtered,
-                              rates: _rates,
-                              preferredCurrency: _preferred,
-                            ),
+                        builder: (_) => CarListPage(
+                          brand: b,
+                          cars: filtered,
+                          rates: _rates,
+                          preferredCurrency: _preferred,
+                        ),
                       ),
                     );
                   },
@@ -297,12 +293,11 @@ class _HomePageState extends State<HomePage> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder:
-                            (_) => BrandCatalogPage(
-                              cars: _cars,
-                              rates: _rates,
-                              preferredCurrency: _preferred,
-                            ),
+                        builder: (_) => BrandCatalogPage(
+                          cars: _cars,
+                          rates: _rates,
+                          preferredCurrency: _preferred,
+                        ),
                       ),
                     );
                   },
@@ -433,12 +428,11 @@ class _GradientText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ShaderMask(
-      shaderCallback:
-          (bounds) => LinearGradient(
-            colors: colors,
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ).createShader(Rect.fromLTWH(0, 0, bounds.width, bounds.height)),
+      shaderCallback: (bounds) => LinearGradient(
+        colors: colors,
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+      ).createShader(Rect.fromLTWH(0, 0, bounds.width, bounds.height)),
       child: Text(text, style: style),
     );
   }
@@ -496,7 +490,7 @@ class _BrandChipState extends State<_BrandChip> {
           child: Container(
             width: 160,
             decoration: BoxDecoration(
-              color: const Color(0xFFEFEFEF).withOpacity(0.06),
+              color: const Color(0xFFEFEFEF).withValues(alpha: 0.06),
               borderRadius: BorderRadius.circular(14),
               boxShadow: const [
                 BoxShadow(blurRadius: 10, color: Colors.black26),
@@ -578,9 +572,9 @@ class _SeeAllChipState extends State<_SeeAllChip> {
                 begin: Alignment.centerLeft,
                 end: Alignment.centerRight,
                 colors: [
-                  Colors.grey.withOpacity(0.5),
-                  Colors.grey.withOpacity(0.25),
-                  Colors.grey.withOpacity(0.125),
+                  Colors.grey.withValues(alpha: 0.5),
+                  Colors.grey.withValues(alpha: 0.25),
+                  Colors.grey.withValues(alpha: 0.125),
                   Colors.transparent,
                 ],
                 stops: const [0.0, 0.5, 0.75, 1.0],

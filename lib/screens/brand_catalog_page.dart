@@ -242,7 +242,7 @@ class _BrandCardState extends State<_BrandCard> {
           highlightColor: Colors.white10,
           child: Container(
             decoration: BoxDecoration(
-              color: Colors.grey.withOpacity(0.15),
+              color: Colors.grey.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(16),
               boxShadow: const [BoxShadow(blurRadius: 8, color: Colors.black26)],
             ),

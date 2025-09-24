@@ -108,7 +108,9 @@ class _IncomingPageState extends State<IncomingPage>
       return null;
     }
     return Geolocator.getCurrentPosition(
-      desiredAccuracy: LocationAccuracy.high,
+      locationSettings: AndroidSettings(
+        accuracy: LocationAccuracy.high,
+      ),
     );
   }
 
@@ -425,7 +427,7 @@ class _AvailabilityBanner extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
       decoration: BoxDecoration(
-        color: Colors.black.withOpacity(0.22),
+        color: Colors.black.withValues(alpha: 0.22),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: Colors.white10),
       ),

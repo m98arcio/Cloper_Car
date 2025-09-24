@@ -78,7 +78,9 @@ class _ProfilePageState extends State<ProfilePage> {
                 for (final c in CurrencyService.currencies)
                   RadioListTile<String>(
                     value: c['code']!,
+                    // ignore: deprecated_member_use
                     groupValue: _currency,
+                    // ignore: deprecated_member_use
                     onChanged: (v) => _set(v!),
                     title: Row(
                       children: [

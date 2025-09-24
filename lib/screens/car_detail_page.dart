@@ -59,7 +59,9 @@ class _CarDetailPageState extends State<CarDetailPage> {
         throw Exception('Permesso negato in modo permanente.');
       }
       final p = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high,
+        locationSettings: AndroidSettings(
+          accuracy: LocationAccuracy.high,
+        ),
       );
       if (!mounted) return;
       setState(() => _pos = p);
@@ -385,7 +387,7 @@ class _Card extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFFEFEFEF).withOpacity(0.07),
+        color: const Color(0xFFEFEFEF).withValues(alpha: 0.07),
         borderRadius: BorderRadius.circular(22),
         boxShadow: const [BoxShadow(blurRadius: 14, color: Colors.black38)],
       ),
@@ -429,7 +431,7 @@ class _SpecsCard extends StatelessWidget {
         ? '—'
         : (v % 1 == 0 ? '${v.toStringAsFixed(0)} cm' : '${v.toStringAsFixed(1)} cm');
 
-    MapEntry<String, String> _kv(String k, String v) => MapEntry(k, v);
+    MapEntry<String, String> kv(String k, String v) => MapEntry(k, v);
 
     return _Card(
       child: Column(
@@ -452,11 +454,11 @@ class _SpecsCard extends StatelessWidget {
             title: 'Motore e Prestazioni',
             icon: Icons.settings,
             rows: [
-              _kv('Motore', car.engine ?? '—'),
-              _kv('Cambio', car.gearbox ?? '—'),
-              _kv('Potenza', '${car.powerHp} CV'),
-              _kv('0–100 km/h', car.zeroTo100 ?? '—'),
-              _kv('Velocità max', car.topSpeed ?? '—'),
+              kv('Motore', car.engine ?? '—'),
+              kv('Cambio', car.gearbox ?? '—'),
+              kv('Potenza', '${car.powerHp} CV'),
+              kv('0–100 km/h', car.zeroTo100 ?? '—'),
+              kv('Velocità max', car.topSpeed ?? '—'),
             ],
           ),
           const SizedBox(height: 12),
@@ -464,9 +466,9 @@ class _SpecsCard extends StatelessWidget {
             title: 'Dimensioni',
             icon: Icons.straighten,
             rows: [
-              _kv('Lunghezza', fmtCm(car.lengthCm)),
-              _kv('Larghezza', fmtCm(car.widthCm)),
-              _kv('Passo', fmtCm(car.wheelbaseCm)),
+              kv('Lunghezza', fmtCm(car.lengthCm)),
+              kv('Larghezza', fmtCm(car.widthCm)),
+              kv('Passo', fmtCm(car.wheelbaseCm)),
             ],
           ),
         ],
@@ -553,7 +555,7 @@ class _PriceCard extends StatelessWidget {
         curve: Curves.easeOutCubic,
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: const Color(0xFFEFEFEF).withOpacity(0.07),
+          color: const Color(0xFFEFEFEF).withValues(alpha: 0.07),
           borderRadius: BorderRadius.circular(22),
           boxShadow: const [BoxShadow(blurRadius: 14, color: Colors.black38)],
         ),
@@ -732,7 +734,7 @@ class _MapCardState extends State<_MapCard> {
       return Container(
         height: 220,
         decoration: BoxDecoration(
-          color: const Color(0xFFEFEFEF).withOpacity(0.07),
+          color: const Color(0xFFEFEFEF).withValues(alpha: 0.07),
           borderRadius: BorderRadius.circular(22),
         ),
         child: const Center(child: CircularProgressIndicator()),
@@ -742,7 +744,7 @@ class _MapCardState extends State<_MapCard> {
     return Container(
       height: 220,
       decoration: BoxDecoration(
-        color: const Color(0xFFEFEFEF).withOpacity(0.07),
+        color: const Color(0xFFEFEFEF).withValues(alpha: 0.07),
         borderRadius: BorderRadius.circular(22),
       ),
       clipBehavior: Clip.antiAlias,
@@ -760,7 +762,7 @@ class _MapCardState extends State<_MapCard> {
     return Container(
       height: 220,
       decoration: BoxDecoration(
-        color: const Color(0xFFEFEFEF).withOpacity(0.07),
+        color: const Color(0xFFEFEFEF).withValues(alpha: 0.07),
         borderRadius: BorderRadius.circular(22),
       ),
       child: Center(

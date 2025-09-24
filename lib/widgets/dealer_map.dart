@@ -163,7 +163,7 @@ class _DealerMapCardState extends State<DealerMapCard> {
         Container(
           height: widget.height,
           decoration: BoxDecoration(
-            color: const Color(0xFFEFEFEF).withOpacity(0.07),
+            color: const Color(0xFFEFEFEF).withValues(alpha: 0.07),
             borderRadius: BorderRadius.circular(22),
           ),
           clipBehavior: Clip.antiAlias,
@@ -203,7 +203,7 @@ class _DealerMapCardState extends State<DealerMapCard> {
   Widget _skeleton(double h) => Container(
         height: h,
         decoration: BoxDecoration(
-          color: const Color(0xFFEFEFEF).withOpacity(0.07),
+          color: const Color(0xFFEFEFEF).withValues(alpha: 0.07),
           borderRadius: BorderRadius.circular(22),
         ),
         child: const Center(child: CircularProgressIndicator()),
@@ -213,7 +213,7 @@ class _DealerMapCardState extends State<DealerMapCard> {
     return Container(
       height: widget.height,
       decoration: BoxDecoration(
-        color: const Color(0xFFEFEFEF).withOpacity(0.07),
+        color: const Color(0xFFEFEFEF).withValues(alpha: 0.07),
         borderRadius: BorderRadius.circular(22),
       ),
       child: Center(

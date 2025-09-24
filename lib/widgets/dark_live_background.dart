@@ -69,7 +69,7 @@ class _WavesPainter extends CustomPainter {
       size,
       phase: speed,
       amp: baseAmp,
-      color1: Colors.white.withOpacity(0.08),
+      color1: Colors.white.withValues(alpha: 0.08),
       color2: Colors.transparent,
       heightFactor: 0.55,
     );
@@ -79,7 +79,7 @@ class _WavesPainter extends CustomPainter {
       size,
       phase: speed + math.pi / 2,
       amp: baseAmp * 0.75,
-      color1: Colors.white.withOpacity(0.06),
+      color1: Colors.white.withValues(alpha: 0.06),
       color2: Colors.transparent,
       heightFactor: 0.65,
     );
@@ -89,7 +89,7 @@ class _WavesPainter extends CustomPainter {
       size,
       phase: speed + math.pi,
       amp: baseAmp * 0.5,
-      color1: Colors.white.withOpacity(0.045),
+      color1: Colors.white.withValues(alpha: 0.045),
       color2: Colors.transparent,
       heightFactor: 0.75,
     );
@@ -98,7 +98,7 @@ class _WavesPainter extends CustomPainter {
     final vignette = RadialGradient(
       center: const Alignment(0.1, -0.2),
       radius: 1.1,
-      colors: [Colors.transparent, Colors.black.withOpacity(0.25)],
+      colors: [Colors.transparent, Colors.black.withValues(alpha: 0.25)],
       stops: const [0.7, 1.0],
     );
     canvas.drawRect(rect, Paint()..shader = vignette.createShader(rect));

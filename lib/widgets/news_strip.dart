@@ -111,7 +111,7 @@ class _NewsStripState extends State<NewsStrip> {
         margin: const EdgeInsets.symmetric(horizontal: 16),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: const Color(0xFFEFEFEF).withOpacity(0.06),
+          color: const Color(0xFFEFEFEF).withValues(alpha: 0.06),
           borderRadius: BorderRadius.circular(16),
         ),
         child: Row(
@@ -171,9 +171,9 @@ class _NewsCard extends StatelessWidget {
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
-                    Colors.black.withOpacity(0.60),
-                    Colors.black.withOpacity(0.10),
-                    Colors.black.withOpacity(0.70),
+                    Colors.black.withValues(alpha: 0.60),
+                    Colors.black.withValues(alpha: 0.10),
+                    Colors.black.withValues(alpha: 0.70),
                   ],
                   begin: Alignment.bottomCenter,
                   end: Alignment.topCenter,
@@ -194,7 +194,7 @@ class _NewsCard extends StatelessWidget {
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                         decoration: BoxDecoration(
-                          color: Colors.black.withOpacity(0.45),
+                          color: Colors.black.withValues(alpha: 0.45),
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Text(

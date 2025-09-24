@@ -192,7 +192,7 @@ class _CarListPageState extends State<CarListPage> {
                         begin: Alignment.bottomCenter,
                         end: Alignment.topCenter,
                         colors: [
-                          Colors.black.withOpacity(0.55),
+                          Colors.black.withValues(alpha: 0.55),
                           Colors.transparent,
                         ],
                       ),
@@ -318,7 +318,7 @@ class _CarListPageState extends State<CarListPage> {
                               vertical: 8,
                             ),
                             decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.06),
+                              color: Colors.white.withValues(alpha: 0.06),
                               borderRadius: BorderRadius.circular(12),
                               border: Border.all(color: Colors.white24),
                             ),
@@ -486,11 +486,11 @@ class _CarCardState extends State<_CarCard> {
         borderRadius: BorderRadius.circular(24),
         child: Ink(
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.05),
+            color: Colors.white.withValues(alpha: 0.05),
             borderRadius: BorderRadius.circular(24),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.35),
+                color: Colors.black.withValues(alpha: 0.35),
                 blurRadius: 20,
                 offset: const Offset(0, 10),
               ),
@@ -539,7 +539,7 @@ class _CarCardState extends State<_CarCard> {
                             begin: Alignment.bottomCenter,
                             end: Alignment.topCenter,
                             colors: [
-                              Colors.black.withOpacity(0.55),
+                              Colors.black.withValues(alpha: 0.55),
                               Colors.transparent,
                             ],
                             stops: const [0.0, 0.6],
@@ -610,8 +610,8 @@ class _Frosted extends StatelessWidget {
         filter: ImageFilter.blur(sigmaX: blur, sigmaY: blur),
         child: Container(
           decoration: BoxDecoration(
-            color: Colors.black.withOpacity(opacity),
-            border: Border.all(color: Colors.white.withOpacity(0.12)),
+            color: Colors.black.withValues(alpha: 0.15),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.12)),
             borderRadius: BorderRadius.circular(borderRadius),
           ),
           child: child,
