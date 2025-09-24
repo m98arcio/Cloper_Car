@@ -1,4 +1,26 @@
-# Miscellaneous
+# =========================
+# Flutter / Dart
+# =========================
+.dart_tool/
+.packages
+.flutter-plugins
+.flutter-plugins-dependencies
+.flutter-versions
+.melos_tool/
+.pub-cache/
+.pub/
+build/
+coverage/
+
+/doc/api/
+/ios/Flutter/.last_build_id
+
+# File generati da Flutter su qualunque piattaforma
+**/GeneratedPluginRegistrant.*
+
+# =========================
+# IDE / Editor / OS
+# =========================
 *.class
 *.log
 *.pyc
@@ -12,36 +34,71 @@
 .swiftpm/
 migrate_working_dir/
 
-# IntelliJ related
+# IntelliJ / Android Studio
 *.iml
 *.ipr
-*.iws
+.iws
 .idea/
+.vscode/
 
-# The .vscode folder contains launch configuration and tasks you configure in
-# VS Code which you may wish to be included in version control, so this line
-# is commented out by default.
-#.vscode/
+# =========================
+# Android
+# =========================
+android/.gradle/
+android/**/build/
+android/.cxx/
+android/**/captures/
+android/**/.externalNativeBuild/
+android/local.properties
 
-# Flutter/Dart/Pub related
-**/doc/api/
-**/ios/Flutter/.last_build_id
-.dart_tool/
-.flutter-plugins
-.flutter-plugins-dependencies
-.pub-cache/
-.pub/
-/build/
+# Keystore/chiavi locali
+android/key.properties
+android/**/*.jks
+android/**/*.keystore
 
-# Symbolication related
+android/app/src/debug/
+android/app/src/profile/
+
+# =========================
+# iOS
+# =========================
+ios/Pods/
+ios/.symlinks/
+ios/Flutter/App.framework
+ios/Flutter/Flutter.framework
+ios/Flutter/Flutter.podspec
+ios/Flutter/Generated.xcconfig
+ios/Flutter/ephemeral/
+ios/Runner.xcworkspace/xcuserdata/
+ios/**/*.xcuserdatad/
+ios/**/*.xcuserstate
+ios/**/DerivedData/
+
+# =========================
+# macOS
+# =========================
+macos/Pods/
+macos/Flutter/ephemeral/
+macos/Runner.xcworkspace/xcuserdata/
+macos/Flutter/GeneratedPluginRegistrant.*
+macos/**/DerivedData/
+
+# =========================
+# Windows
+# =========================
+windows/flutter/ephemeral/
+windows/**/build/
+
+# =========================
+# Linux
+# =========================
+linux/flutter/ephemeral/
+linux/**/build/
+
+# =========================
+# Symbolication / Obfuscation
+# =========================
 app.*.symbols
-
-# Obfuscation related
 app.*.map.json
 
-# Android Studio will place build artifacts here
-/android/app/debug
-/android/app/profile
-/android/app/release
-
-/styles.xml
+ styles.xml
