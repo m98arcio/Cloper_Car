@@ -9,7 +9,7 @@ permissions:
 
 jobs:
   lint-and-tests:
-    name: Analyze + Unit/Widget tests + Build
+    name: Analyze + Unit/Widget tests + Integration + Build
     runs-on: ubuntu-latest
 
     steps:
@@ -31,6 +31,9 @@ jobs:
 
       - name: Unit + Widget tests (headless)
         run: xvfb-run -a flutter test --no-pub --exclude-tags native
+
+      - name: Integration tests (headless)
+        run: xvfb-run -a flutter test --no-pub integration_test
 
       - name: Install Android SDK 35
         run: |

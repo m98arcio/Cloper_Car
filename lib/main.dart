@@ -1,6 +1,5 @@
-// lib/main.dart
 import 'package:flutter/material.dart';
-import 'screens/splash_screen.dart'; // importa lo splash
+import 'screens/splash_screen.dart';
 import 'services/currency_service.dart';
 
 Future<void> main() async {
@@ -18,7 +17,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Concessionario SuperCar',
       theme: ThemeData.dark(useMaterial3: true),
-      home: const SplashScreen(), // ← mostra prima lo splash screen
+      home: const SplashScreen(),
     );
   }
 }
