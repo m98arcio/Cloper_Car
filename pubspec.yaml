@@ -18,7 +18,6 @@ dependencies:
   http: ^1.2.2
   shared_preferences: ^2.3.2
   webfeed: ^0.7.0
-  palette_generator: ^0.3.3+2
   google_fonts: ^6.1.0
   carousel_slider: ^5.1.1
   video_player: ^2.9.1
