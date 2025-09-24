@@ -34,7 +34,9 @@ jobs:
 
       # Step 4: Install dependencies
       - name: Install dependencies
-        run: flutter pub get
+        run: |
+          flutter pub get
+          flutter pub upgrade
 
       # Step 5: Static analysis
       - name: Analyze
@@ -53,6 +55,7 @@ jobs:
           arch: x86_64
           force-avd-creation: true
           emulator-options: -no-window -no-audio -no-boot-anim
+          wait-for-boot: true
           script: |
             flutter doctor
             flutter drive --driver=test_driver/integration_test.dart --target=integration_test/app_start_test.dart -d emulator-5554
