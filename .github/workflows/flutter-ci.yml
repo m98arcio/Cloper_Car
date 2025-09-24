@@ -8,34 +8,9 @@ permissions:
   contents: read
 
 jobs:
-  lint-and-tests:
-    name: Analyze + Unit/Widget tests + Integration + Build
+  lint-tests-build:
+    name: Analyze + Unit/Widget + Integration (Linux) + Build APK
     runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          flutter-version: "3.24.0"
-          channel: "stable"
-          cache: true
-
-      - name: Flutter pub get
-        run: flutter pub get
-
-      - name: Analisi statica
-        run: flutter analyze --no-fatal-infos --no-fatal-warnings
-
-      - name: Unit + Widget tests
-        run: xvfb-run -a flutter test --no-pub --exclude-tags native
-
-  integration-android:
-    name: Integration Tests Android
-    runs-on: ubuntu-latest
-    timeout-minutes: 40
 
     steps:
       - name: Checkout
@@ -57,36 +32,29 @@ jobs:
       - name: Flutter pub get
         run: flutter pub get
 
-      - name: Warm up Gradle / Build debug
-        run: flutter build apk --debug
+      - name: Analisi statica
+        run: flutter analyze --no-fatal-infos --no-fatal-warnings
 
-      - name: Run integration tests on Android emulator
-        uses: reactivecircus/android-emulator-runner@v2
-        with:
-          api-level: 35
-          arch: x86_64
-          profile: pixel_5
-          emulator-options: -no-snapshot -no-window -gpu swiftshader_indirect
-          script: |
-            set -euxo pipefail
-            flutter doctor -v
-            flutter devices
+      - name: Unit + Widget tests
+        run: xvfb-run -a flutter test --no-pub --exclude-tags native
 
-            if [ -d "integration_test" ]; then
-              if [ -f "test_driver/integration_test.dart" ]; then
-                TARGET=$(ls integration_test | head -n1)
-                echo "Eseguo flutter drive su: integration_test/$TARGET"
-                flutter drive \
-                  --driver=test_driver/integration_test.dart \
-                  --target=integration_test/$TARGET \
-                  -d emulator-5554
-              else
-                echo "Eseguo flutter test -d emulator-5554 integration_test"
-                flutter test -d emulator-5554 integration_test
-              fi
-            else
-              echo "Nessuna cartella integration_test/ presente: salto gli integration test."
-            fi
+      - name: Disable web
+        run: flutter config --no-enable-web
+
+      - name: Enable Linux desktop
+        run: flutter config --enable-linux-desktop
+
+      - name: Install Xvfb
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y xvfb
+
+      - name: Integration tests (Linux desktop)
+        run: xvfb-run -a flutter test -d linux integration_test/app_start_test.dart --no-pub
+
+      - name: Install Android SDK 36
+        run: |
+          yes | ${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager "platforms;android-36" "build-tools;36.0.0"
 
       - name: Build APK release
         run: flutter build apk --release

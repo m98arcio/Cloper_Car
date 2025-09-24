@@ -44,7 +44,7 @@ class _BrandCatalogPageState extends State<BrandCatalogPage> {
       if (!mounted) return;
       setState(() => _rates = r);
     } catch (_) {
-      // lascio _rates null: mostreremo solo EUR
+      //si visualizza solo EUR
     }
   }
 
