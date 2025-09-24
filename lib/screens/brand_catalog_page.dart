@@ -114,7 +114,8 @@ class _BrandCatalogPageState extends State<BrandCatalogPage> {
                   logo: logo,
                   onTap: () {
                     final filtered = availableCars
-                        .where((c) => c.brand.toLowerCase() == brand.toLowerCase())
+                        .where(
+                            (c) => c.brand.toLowerCase() == brand.toLowerCase())
                         .toList();
                     Navigator.push(
                       context,
@@ -123,7 +124,8 @@ class _BrandCatalogPageState extends State<BrandCatalogPage> {
                           brand: brand,
                           cars: filtered,
                           rates: _rates,
-                          preferredCurrency: _preferredCurrency, // valuta attuale
+                          preferredCurrency:
+                              _preferredCurrency, // valuta attuale
                           allCars: widget.cars,
                         ),
                       ),
@@ -244,7 +246,9 @@ class _BrandCardState extends State<_BrandCard> {
             decoration: BoxDecoration(
               color: Colors.grey.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(16),
-              boxShadow: const [BoxShadow(blurRadius: 8, color: Colors.black26)],
+              boxShadow: const [
+                BoxShadow(blurRadius: 8, color: Colors.black26)
+              ],
             ),
             padding: const EdgeInsets.all(12),
             child: Column(
@@ -252,7 +256,8 @@ class _BrandCardState extends State<_BrandCard> {
               children: [
                 Row(
                   children: [
-                    Image.asset(widget.logo, height: 60, width: 60, fit: BoxFit.contain),
+                    Image.asset(widget.logo,
+                        height: 60, width: 60, fit: BoxFit.contain),
                     const SizedBox(width: 16),
                     Expanded(
                       child: Center(
@@ -264,7 +269,9 @@ class _BrandCardState extends State<_BrandCard> {
                               fontWeight: FontWeight.w700,
                               color: Colors.white,
                               letterSpacing: 1.2,
-                              shadows: [Shadow(blurRadius: 6, color: Colors.black87)],
+                              shadows: [
+                                Shadow(blurRadius: 6, color: Colors.black87)
+                              ],
                             ),
                           ),
                         ),

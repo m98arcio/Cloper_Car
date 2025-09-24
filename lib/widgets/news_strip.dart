@@ -33,7 +33,8 @@ class _NewsStripState extends State<NewsStrip> {
   @override
   void didUpdateWidget(covariant NewsStrip oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.items != widget.items || oldWidget.autoScroll != widget.autoScroll) {
+    if (oldWidget.items != widget.items ||
+        oldWidget.autoScroll != widget.autoScroll) {
       _disposeTimer();
       _setupTimer();
     }
@@ -118,7 +119,8 @@ class _NewsStripState extends State<NewsStrip> {
           children: [
             const Icon(Icons.newspaper),
             const SizedBox(width: 10),
-            const Expanded(child: Text('Nessuna notizia disponibile al momento.')),
+            const Expanded(
+                child: Text('Nessuna notizia disponibile al momento.')),
             if (onRefresh != null)
               IconButton(onPressed: onRefresh, icon: const Icon(Icons.refresh)),
           ],
@@ -132,7 +134,9 @@ class _NewsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final date = item.pubDate != null ? DateFormat('dd MMM').format(item.pubDate!) : null;
+    final date = item.pubDate != null
+        ? DateFormat('dd MMM').format(item.pubDate!)
+        : null;
 
     return InkWell(
       borderRadius: BorderRadius.circular(18),
@@ -192,19 +196,23 @@ class _NewsCard extends StatelessWidget {
                   Row(
                     children: [
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 4),
                         decoration: BoxDecoration(
                           color: Colors.black.withValues(alpha: 0.45),
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Text(
                           item.source,
-                          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700),
+                          style: const TextStyle(
+                              fontSize: 12, fontWeight: FontWeight.w700),
                         ),
                       ),
                       const SizedBox(width: 8),
                       if (date != null)
-                        Text(date, style: const TextStyle(fontSize: 12, color: Colors.white70)),
+                        Text(date,
+                            style: const TextStyle(
+                                fontSize: 12, color: Colors.white70)),
                     ],
                   ),
                   const Spacer(),

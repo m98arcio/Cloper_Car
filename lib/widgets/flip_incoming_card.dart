@@ -140,8 +140,8 @@ class _FrontFace extends StatelessWidget {
         border: Border.all(color: cs.primary.withValues(alpha: 0.35)),
         boxShadow: [
           BoxShadow(
-            color: cs.primary
-                 .withValues(alpha: 0.3 * (0.6 + 0.4 * math.sin(glow.value * math.pi))),
+            color: cs.primary.withValues(
+                alpha: 0.3 * (0.6 + 0.4 * math.sin(glow.value * math.pi))),
             blurRadius: 24,
             spreadRadius: 1,
           ),
@@ -168,7 +168,10 @@ class _FrontFace extends StatelessWidget {
             child: DecoratedBox(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [Colors.transparent, Colors.black.withValues(alpha: 0.55)],
+                  colors: [
+                    Colors.transparent,
+                    Colors.black.withValues(alpha: 0.55)
+                  ],
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                 ),
@@ -180,8 +183,7 @@ class _FrontFace extends StatelessWidget {
             right: 16,
             top: 16,
             child: Container(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
               decoration: BoxDecoration(
                 color: Colors.white.withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(12),
@@ -224,8 +226,7 @@ class _FrontFace extends StatelessWidget {
                   ),
                   child: const Text(
                     'Tocca la card per saperne di più',
-                    style:
-                        TextStyle(fontSize: 13, color: Colors.white70),
+                    style: TextStyle(fontSize: 13, color: Colors.white70),
                   ),
                 ),
               ],
@@ -297,8 +298,8 @@ class _BackFace extends StatelessWidget {
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 12, vertical: 8),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   decoration: BoxDecoration(
                     color: Colors.white.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(10),
@@ -316,8 +317,7 @@ class _BackFace extends StatelessWidget {
 
           // Specs
           Padding(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
             child: Align(
               alignment: Alignment.centerLeft,
               child: Wrap(
@@ -333,8 +333,7 @@ class _BackFace extends StatelessWidget {
                           borderRadius: BorderRadius.circular(8),
                           border: Border.all(color: Colors.white24),
                         ),
-                        child: Text(s,
-                            style: const TextStyle(fontSize: 13)),
+                        child: Text(s, style: const TextStyle(fontSize: 13)),
                       ),
                     )
                     .toList(),
@@ -367,8 +366,7 @@ class _BackFace extends StatelessWidget {
                     if (userPos != null)
                       Marker(
                         markerId: const MarkerId('me'),
-                        position: LatLng(
-                            userPos!.latitude, userPos!.longitude),
+                        position: LatLng(userPos!.latitude, userPos!.longitude),
                         icon: BitmapDescriptor.defaultMarkerWithHue(
                             BitmapDescriptor.hueAzure),
                         infoWindow: const InfoWindow(title: 'Tu sei qui'),

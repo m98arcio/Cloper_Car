@@ -14,7 +14,6 @@ import '../models/car.dart';
 import '../models/dealer_point.dart';
 import '../services/local_catalog.dart';
 
-
 class IncomingPage extends StatefulWidget {
   const IncomingPage({
     super.key,
@@ -144,15 +143,15 @@ class _IncomingPageState extends State<IncomingPage>
           : (now.difference(_lastGyroTime!).inMicroseconds / 1e6);
       _lastGyroTime = now;
 
-      _roll  = (_alpha * (_roll  + g.y * dt)) + ((1 - _alpha) * _accRoll);
+      _roll = (_alpha * (_roll + g.y * dt)) + ((1 - _alpha) * _accRoll);
       _pitch = (_alpha * (_pitch + g.x * dt)) + ((1 - _alpha) * _accPitch);
 
-      _roll  = _roll.clamp(-_clamp, _clamp);
+      _roll = _roll.clamp(-_clamp, _clamp);
       _pitch = _pitch.clamp(-_clamp, _clamp);
 
       // Calibrazione ritardata
       _calibTimer ??= Timer(const Duration(milliseconds: 400), () {
-        _offsetRoll  = _roll;
+        _offsetRoll = _roll;
         _offsetPitch = _pitch;
         _calibrated = true;
         if (mounted) setState(() {});
@@ -245,9 +244,11 @@ class _IncomingPageState extends State<IncomingPage>
                       final dealer = _nearestDealerFor(car);
 
                       double rotX = 0, rotY = 0;
-                      if (_calibrated && _offsetRoll != null && _offsetPitch != null) {
+                      if (_calibrated &&
+                          _offsetRoll != null &&
+                          _offsetPitch != null) {
                         rotX = _deadzone(_pitch - _offsetPitch!) * 0.50;
-                        rotY = -_deadzone(_roll  - _offsetRoll! ) * 0.40;
+                        rotY = -_deadzone(_roll - _offsetRoll!) * 0.40;
                       }
 
                       return Transform(
@@ -331,8 +332,7 @@ class _IncomingPageState extends State<IncomingPage>
 
     for (int i = 1; i < candidates.length; i++) {
       final d = candidates[i];
-      final dist =
-          _haversine(user.latitude, user.longitude, d.lat, d.lng);
+      final dist = _haversine(user.latitude, user.longitude, d.lat, d.lng);
       if (dist < bestD) {
         bestD = dist;
         best = d;

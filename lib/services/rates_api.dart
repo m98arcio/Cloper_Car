@@ -4,15 +4,14 @@ import 'package:http/http.dart' as http;
 /// Converte da EUR verso altre valute usando Frankfurter.
 class RatesApi {
   static const _headers = {
-    'User-Agent':
-        'Mozilla/5.0 (Android 14; Mobile) AppleWebKit/537.36 '
+    'User-Agent': 'Mozilla/5.0 (Android 14; Mobile) AppleWebKit/537.36 '
         '(KHTML, like Gecko) Chrome/124.0 Mobile Safari/537.36',
     'Accept': 'application/json,text/plain,*/*',
   };
 
   Future<Map<String, double>?> fetchRates() async {
-    final uri = Uri.parse(
-        'https://api.frankfurter.app/latest?from=EUR&to=USD,GBP');
+    final uri =
+        Uri.parse('https://api.frankfurter.app/latest?from=EUR&to=USD,GBP');
 
     try {
       final res = await http

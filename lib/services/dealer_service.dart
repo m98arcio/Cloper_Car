@@ -36,7 +36,9 @@ class DealersRepo {
     // 👇 PATH CORRETTO in base al tuo pubspec.yaml
     final txt = await rootBundle.loadString('assets/dealers.json');
     final raw = json.decode(txt) as List<dynamic>;
-    _cache = raw.map((e) => DealerPoint.fromJson(e as Map<String, dynamic>)).toList();
+    _cache = raw
+        .map((e) => DealerPoint.fromJson(e as Map<String, dynamic>))
+        .toList();
     return _cache!;
   }
 

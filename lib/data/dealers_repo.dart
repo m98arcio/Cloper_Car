@@ -30,11 +30,13 @@ class DealersRepo {
     }
 
     DealerPoint best = candidates.first;
-    double bestDist = _distanceMeters(origin.latitude, origin.longitude, best.lat, best.lng);
+    double bestDist =
+        _distanceMeters(origin.latitude, origin.longitude, best.lat, best.lng);
 
     for (int i = 1; i < candidates.length; i++) {
       final d = candidates[i];
-      final dist = _distanceMeters(origin.latitude, origin.longitude, d.lat, d.lng);
+      final dist =
+          _distanceMeters(origin.latitude, origin.longitude, d.lat, d.lng);
       if (dist < bestDist) {
         best = d;
         bestDist = dist;
@@ -44,13 +46,16 @@ class DealersRepo {
   }
 
   /// Haversine (metri)
-  static double _distanceMeters(double lat1, double lon1, double lat2, double lon2) {
+  static double _distanceMeters(
+      double lat1, double lon1, double lat2, double lon2) {
     const R = 6371000.0;
     final dLat = _toRad(lat2 - lat1);
     final dLon = _toRad(lon2 - lon1);
     final a = math.sin(dLat / 2) * math.sin(dLat / 2) +
-        math.cos(_toRad(lat1)) * math.cos(_toRad(lat2)) *
-            math.sin(dLon / 2) * math.sin(dLon / 2);
+        math.cos(_toRad(lat1)) *
+            math.cos(_toRad(lat2)) *
+            math.sin(dLon / 2) *
+            math.sin(dLon / 2);
     final c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a));
     return R * c;
   }

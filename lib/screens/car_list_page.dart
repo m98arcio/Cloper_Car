@@ -79,26 +79,23 @@ class _CarListPageState extends State<CarListPage> {
     final controller = VideoPlayerController.asset(assetPath);
     setState(() {
       _videoController = controller;
-      _videoInit = controller
-          .initialize()
-          .then((_) {
-            controller
-              ..setLooping(true)
-              ..setVolume(0)
-              ..play();
-            if (mounted) setState(() {});
-          })
-          .catchError((_) async {
-            final fb = VideoPlayerController.asset('assets/video/ferrari.mp4');
-            _videoController = fb;
-            _videoInit = fb.initialize().then((_) {
-              fb
-                ..setLooping(true)
-                ..setVolume(0)
-                ..play();
-              if (mounted) setState(() {});
-            });
-          });
+      _videoInit = controller.initialize().then((_) {
+        controller
+          ..setLooping(true)
+          ..setVolume(0)
+          ..play();
+        if (mounted) setState(() {});
+      }).catchError((_) async {
+        final fb = VideoPlayerController.asset('assets/video/ferrari.mp4');
+        _videoController = fb;
+        _videoInit = fb.initialize().then((_) {
+          fb
+            ..setLooping(true)
+            ..setVolume(0)
+            ..play();
+          if (mounted) setState(() {});
+        });
+      });
     });
   }
 
@@ -106,13 +103,12 @@ class _CarListPageState extends State<CarListPage> {
     await Navigator.push(
       context,
       MaterialPageRoute(
-        builder:
-            (_) => ProfilePage(
-              initialCurrency: CurrencyService.preferred,
-              onChanged: (_) {},
-              cars: widget.allCars ?? widget.cars,
-              rates: widget.rates,
-            ),
+        builder: (_) => ProfilePage(
+          initialCurrency: CurrencyService.preferred,
+          onChanged: (_) {},
+          cars: widget.allCars ?? widget.cars,
+          rates: widget.rates,
+        ),
       ),
     );
     if (mounted) setState(() {});
@@ -167,22 +163,21 @@ class _CarListPageState extends State<CarListPage> {
                   SizedBox(
                     height: 220,
                     width: double.infinity,
-                    child:
-                        (_videoController != null)
-                            ? FutureBuilder<void>(
-                              future: _videoInit,
-                              builder: (context, snap) {
-                                if (snap.connectionState ==
-                                        ConnectionState.done &&
-                                    _videoController!.value.isInitialized) {
-                                  return VideoPlayer(_videoController!);
-                                }
-                                return const Center(
-                                  child: CircularProgressIndicator(),
-                                );
-                              },
-                            )
-                            : const Center(child: CircularProgressIndicator()),
+                    child: (_videoController != null)
+                        ? FutureBuilder<void>(
+                            future: _videoInit,
+                            builder: (context, snap) {
+                              if (snap.connectionState ==
+                                      ConnectionState.done &&
+                                  _videoController!.value.isInitialized) {
+                                return VideoPlayer(_videoController!);
+                              }
+                              return const Center(
+                                child: CircularProgressIndicator(),
+                              );
+                            },
+                          )
+                        : const Center(child: CircularProgressIndicator()),
                   ),
                   Container(
                     height: 220,
@@ -246,72 +241,71 @@ class _CarListPageState extends State<CarListPage> {
                             borderRadius: BorderRadius.circular(12),
                           ),
                           color: const Color(0xFF1E1E1F),
-                          itemBuilder:
-                              (context) => [
-                                const PopupMenuItem(
-                                  value: _SortOrder.normal,
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal: 16,
-                                    vertical: 10,
+                          itemBuilder: (context) => [
+                            const PopupMenuItem(
+                              value: _SortOrder.normal,
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 10,
+                              ),
+                              child: Row(
+                                children: [
+                                  Icon(Icons.sort, size: 18),
+                                  SizedBox(width: 12),
+                                  Flexible(
+                                    child: Text(
+                                      'Default',
+                                      maxLines: 1,
+                                      softWrap: false,
+                                      overflow: TextOverflow.visible,
+                                    ),
                                   ),
-                                  child: Row(
-                                    children: [
-                                      Icon(Icons.sort, size: 18),
-                                      SizedBox(width: 12),
-                                      Flexible(
-                                        child: Text(
-                                          'Default',
-                                          maxLines: 1,
-                                          softWrap: false,
-                                          overflow: TextOverflow.visible,
-                                        ),
-                                      ),
-                                    ],
+                                ],
+                              ),
+                            ),
+                            const PopupMenuItem(
+                              value: _SortOrder.priceAsc,
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 10,
+                              ),
+                              child: Row(
+                                children: [
+                                  Icon(Icons.arrow_upward, size: 18),
+                                  SizedBox(width: 12),
+                                  Flexible(
+                                    child: Text(
+                                      'Prezzo crescente',
+                                      maxLines: 1,
+                                      softWrap: false,
+                                      overflow: TextOverflow.visible,
+                                    ),
                                   ),
-                                ),
-                                const PopupMenuItem(
-                                  value: _SortOrder.priceAsc,
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal: 16,
-                                    vertical: 10,
+                                ],
+                              ),
+                            ),
+                            const PopupMenuItem(
+                              value: _SortOrder.priceDesc,
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 10,
+                              ),
+                              child: Row(
+                                children: [
+                                  Icon(Icons.arrow_downward, size: 18),
+                                  SizedBox(width: 12),
+                                  Flexible(
+                                    child: Text(
+                                      'Prezzo decrescente',
+                                      maxLines: 1,
+                                      softWrap: false,
+                                      overflow: TextOverflow.visible,
+                                    ),
                                   ),
-                                  child: Row(
-                                    children: [
-                                      Icon(Icons.arrow_upward, size: 18),
-                                      SizedBox(width: 12),
-                                      Flexible(
-                                        child: Text(
-                                          'Prezzo crescente',
-                                          maxLines: 1,
-                                          softWrap: false,
-                                          overflow: TextOverflow.visible,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                const PopupMenuItem(
-                                  value: _SortOrder.priceDesc,
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal: 16,
-                                    vertical: 10,
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      Icon(Icons.arrow_downward, size: 18),
-                                      SizedBox(width: 12),
-                                      Flexible(
-                                        child: Text(
-                                          'Prezzo decrescente',
-                                          maxLines: 1,
-                                          softWrap: false,
-                                          overflow: TextOverflow.visible,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
+                                ],
+                              ),
+                            ),
+                          ],
                           child: Container(
                             padding: const EdgeInsets.symmetric(
                               horizontal: 12,
@@ -360,11 +354,10 @@ class _CarListPageState extends State<CarListPage> {
                       builder: (context, child) {
                         double value = 0.0;
                         if (_pageController.hasClients) {
-                          value =
-                              ((_pageController.page ??
-                                          _pageController.initialPage) -
-                                      index)
-                                  .toDouble();
+                          value = ((_pageController.page ??
+                                      _pageController.initialPage) -
+                                  index)
+                              .toDouble();
                         }
                         final scale = (1 - (value.abs() * 0.2)).clamp(0.8, 1.0);
                         final verticalOffset = (value * 40).clamp(-40.0, 40.0);
@@ -389,13 +382,12 @@ class _CarListPageState extends State<CarListPage> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder:
-                                  (_) => CarDetailPage(
-                                    car: car,
-                                    rates: widget.rates,
-                                    preferredCurrency: currentCurrency,
-                                    cars: sorted,
-                                  ),
+                              builder: (_) => CarDetailPage(
+                                car: car,
+                                rates: widget.rates,
+                                preferredCurrency: currentCurrency,
+                                cars: sorted,
+                              ),
                             ),
                           );
                         },
@@ -472,10 +464,9 @@ class _CarCardState extends State<_CarCard> {
 
   @override
   Widget build(BuildContext context) {
-    final img =
-        widget.car.images.isNotEmpty
-            ? widget.car.images.first
-            : 'assets/macchine/supercar.jpg';
+    final img = widget.car.images.isNotEmpty
+        ? widget.car.images.first
+        : 'assets/macchine/supercar.jpg';
 
     return AnimatedScale(
       scale: _scale,
@@ -517,16 +508,15 @@ class _CarCardState extends State<_CarCard> {
                     child: Image.asset(
                       img,
                       fit: BoxFit.cover,
-                      errorBuilder:
-                          (_, __, ___) => Container(
-                            color: Colors.grey[800],
-                            alignment: Alignment.center,
-                            child: const Icon(
-                              Icons.broken_image,
-                              size: 40,
-                              color: Colors.white54,
-                            ),
-                          ),
+                      errorBuilder: (_, __, ___) => Container(
+                        color: Colors.grey[800],
+                        alignment: Alignment.center,
+                        child: const Icon(
+                          Icons.broken_image,
+                          size: 40,
+                          color: Colors.white54,
+                        ),
+                      ),
                     ),
                   ),
 
@@ -632,12 +622,11 @@ class _GradientText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ShaderMask(
-      shaderCallback:
-          (bounds) => LinearGradient(
-            colors: colors,
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ).createShader(Rect.fromLTWH(0, 0, bounds.width, bounds.height)),
+      shaderCallback: (bounds) => LinearGradient(
+        colors: colors,
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+      ).createShader(Rect.fromLTWH(0, 0, bounds.width, bounds.height)),
       child: Text(text, style: style),
     );
   }

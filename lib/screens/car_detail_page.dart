@@ -226,8 +226,9 @@ class _HeroGalleryState extends State<_HeroGallery> {
   int _i = 0;
   Timer? _timer;
 
-  List<String> get imgs =>
-      widget.images.isNotEmpty ? widget.images : ['assets/macchine/supercar.jpg'];
+  List<String> get imgs => widget.images.isNotEmpty
+      ? widget.images
+      : ['assets/macchine/supercar.jpg'];
 
   @override
   void initState() {
@@ -327,7 +328,8 @@ class _SegmentedPill extends StatelessWidget {
         children: [
           AnimatedAlign(
             duration: const Duration(milliseconds: 180),
-            alignment: index == 0 ? Alignment.centerLeft : Alignment.centerRight,
+            alignment:
+                index == 0 ? Alignment.centerLeft : Alignment.centerRight,
             child: Padding(
               padding: const EdgeInsets.all(4),
               child: Container(
@@ -429,7 +431,9 @@ class _SpecsCard extends StatelessWidget {
   Widget build(BuildContext context) {
     String fmtCm(double? v) => v == null
         ? '—'
-        : (v % 1 == 0 ? '${v.toStringAsFixed(0)} cm' : '${v.toStringAsFixed(1)} cm');
+        : (v % 1 == 0
+            ? '${v.toStringAsFixed(0)} cm'
+            : '${v.toStringAsFixed(1)} cm');
 
     MapEntry<String, String> kv(String k, String v) => MapEntry(k, v);
 

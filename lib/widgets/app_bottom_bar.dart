@@ -66,7 +66,8 @@ class AppBottomBar extends StatelessWidget {
     );
   }
 
-  BottomNavigationBarItem _buildGradientIconItem(IconData icon, String label, int index) {
+  BottomNavigationBarItem _buildGradientIconItem(
+      IconData icon, String label, int index) {
     if (index == currentIndex) {
       return BottomNavigationBarItem(
         icon: ShaderMask(

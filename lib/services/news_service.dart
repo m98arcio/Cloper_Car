@@ -20,17 +20,16 @@ class NewsItem {
 
 class NewsService {
   static const Map<String, String> _feeds = {
-    'Motor1':     'https://www.motor1.com/rss/news/',
-    'Autoblog':   'https://www.autoblog.com/rss.xml',
-    'TopGear':    'https://www.topgear.com/feeds/news',
-    'AutoExpress':'https://www.autoexpress.co.uk/rss',
-    'CarScoops':  'https://www.carscoops.com/feed/',
-    'Autocar':    'https://www.autocar.co.uk/rss',
+    'Motor1': 'https://www.motor1.com/rss/news/',
+    'Autoblog': 'https://www.autoblog.com/rss.xml',
+    'TopGear': 'https://www.topgear.com/feeds/news',
+    'AutoExpress': 'https://www.autoexpress.co.uk/rss',
+    'CarScoops': 'https://www.carscoops.com/feed/',
+    'Autocar': 'https://www.autocar.co.uk/rss',
   };
 
   static const _headers = {
-    'User-Agent':
-        'Mozilla/5.0 (Android 14; Mobile) AppleWebKit/537.36 '
+    'User-Agent': 'Mozilla/5.0 (Android 14; Mobile) AppleWebKit/537.36 '
         '(KHTML, like Gecko) Chrome/124.0 Mobile Safari/537.36',
     'Accept': 'application/rss+xml, application/xml;q=0.9, */*;q=0.8',
   };
@@ -55,7 +54,8 @@ class NewsService {
 
         try {
           final rss = RssFeed.parse(body);
-          for (final item in (rss.items ?? const <RssItem>[]).take(maxPerFeed)) {
+          for (final item
+              in (rss.items ?? const <RssItem>[]).take(maxPerFeed)) {
             out.add(_fromRss(item, source));
           }
           continue;
@@ -63,12 +63,12 @@ class NewsService {
 
         try {
           final atom = AtomFeed.parse(body);
-          for (final item in (atom.items ?? const <AtomItem>[]).take(maxPerFeed)) {
+          for (final item
+              in (atom.items ?? const <AtomItem>[]).take(maxPerFeed)) {
             out.add(_fromAtom(item, source));
           }
         } catch (_) {}
-      } catch (_) {
-      }
+      } catch (_) {}
     }
 
     out.sort((a, b) {
@@ -95,7 +95,8 @@ class NewsService {
     }
 
     return NewsItem(
-      title: (i.title ?? '').trim().isEmpty ? '(senza titolo)' : i.title!.trim(),
+      title:
+          (i.title ?? '').trim().isEmpty ? '(senza titolo)' : i.title!.trim(),
       link: (i.link ?? '').trim(),
       pubDate: i.pubDate,
       imageUrl: img,
@@ -116,7 +117,8 @@ class NewsService {
     }
 
     return NewsItem(
-      title: (i.title ?? '').trim().isEmpty ? '(senza titolo)' : i.title!.trim(),
+      title:
+          (i.title ?? '').trim().isEmpty ? '(senza titolo)' : i.title!.trim(),
       link: linkHref,
       pubDate: i.updated,
       imageUrl: img,
