@@ -5,8 +5,10 @@ on:
   pull_request:
 
 jobs:
+  # --- Job principale: lint, unit test, widget test, build ---
   build-test:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -16,26 +18,48 @@ jobs:
         with:
           flutter-version: "3.24.0"
 
-      - name: Clean the project
-        run: flutter clean
-
       - name: Install dependencies
         run: flutter pub get
 
       - name: Analisi statica
         run: flutter analyze
 
-      - name: Test (unit + widget)
-        run: flutter test --no-pub
-
-      - name: Integration tests (headless)
-        run: flutter test integration_test --no-pub
+      - name: Unit + Widget tests (headless)
+        run: xvfb-run -a flutter test --no-pub --exclude-tags native
 
       - name: Build APK release
         run: flutter build apk --release
 
-      - name: Artifact APK
+      - name: Upload artifact (APK)
         uses: actions/upload-artifact@v4
         with:
           name: app-release-apk
           path: build/app/outputs/flutter-apk/app-release.apk
+
+  # --- Job dedicato ai test di integrazione che usano plugin nativi ---
+  integration-android:
+    runs-on: ubuntu-latest
+    needs: build-test
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.24.0"
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Avvio emulatore Android e test di integrazione
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 33
+          arch: x86_64
+          profile: pixel_5
+          script: |
+            flutter build apk
+            # Esegui integration_test marcati come "native"
+            flutter test -d emulator-5554 integration_test --tags native
