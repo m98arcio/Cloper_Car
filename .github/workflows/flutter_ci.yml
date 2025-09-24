@@ -1,4 +1,4 @@
-name: Flutter CI
+name: Flutter CI with Android Emulator
 
 on:
   push:
@@ -9,6 +9,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
 
     steps:
       # Step 1: Checkout code
@@ -43,11 +44,18 @@ jobs:
       - name: Run unit & widget tests
         run: flutter test
 
-      # Step 7: Run integration tests (headless, senza Chrome)
-      - name: Run integration tests
-        run: |
-          sudo apt-get update && sudo apt-get install -y ninja-build libgtk-3-dev xvfb libglu1-mesa
-          xvfb-run -s "-screen 0 1600x1200x24" flutter test integration_test/*.dart
+      # Step 7: Run integration tests on Android Emulator
+      - name: Run integration tests (Android Emulator)
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 36
+          target: google_apis
+          arch: x86_64
+          force-avd-creation: true
+          emulator-options: -no-window -no-audio -no-boot-anim
+          script: |
+            flutter doctor
+            flutter drive --driver=test_driver/integration_test.dart --target=integration_test/app_start_test.dart -d emulator-5554
 
       # Step 8: Build Android APK (release)
       - name: Build Android APK (release)
