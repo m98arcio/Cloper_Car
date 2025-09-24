@@ -11,15 +11,18 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Step 1: Checkout code
       - name: Checkout
         uses: actions/checkout@v4
 
+      # Step 2: Setup Java (per Android build)
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
 
+      # Step 3: Setup Flutter
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
@@ -28,25 +31,31 @@ jobs:
       - name: Flutter version
         run: flutter --version
 
-      - name: Install Flutter dependencies
+      # Step 4: Install dependencies
+      - name: Install dependencies
         run: flutter pub get
 
-      - name: Install system dependencies
-        run: sudo apt-get update && sudo apt-get install -y ninja-build libgtk-3-dev xvfb
-
+      # Step 5: Static analysis
       - name: Analyze
         run: flutter analyze
 
+      # Step 6: Run unit & widget tests
       - name: Run unit & widget tests
         run: flutter test
 
+      # Step 7: Run integration tests in headless mode
       - name: Run integration tests
-        run: xvfb-run -s "-screen 0 1600x1200x24" flutter test integration_test
+        run: |
+          sudo apt-get update && sudo apt-get install -y ninja-build libgtk-3-dev xvfb libglu1-mesa
+          # Esegui tutti i test di integrazione
+          xvfb-run -s "-screen 0 1600x1200x24" flutter test integration_test/*.dart
 
+      # Step 8: Build Android APK (release)
       - name: Build Android APK (release)
         if: ${{ success() }}
         run: flutter build apk --release
 
+      # Step 9: Upload APK artifact
       - name: Upload APK artifact
         if: ${{ success() }}
         uses: actions/upload-artifact@v4
