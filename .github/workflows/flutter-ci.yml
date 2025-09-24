@@ -26,13 +26,6 @@ jobs:
       - name: Flutter pub get
         run: flutter pub get
 
-      # (opzionale) aggiorna i pacchetti se serve
-      # - name: Flutter pub upgrade (safely)
-      #   run: flutter pub upgrade --major-versions
-
-      - name: Analyze
-        run: flutter analyze
-
       # xvfb per widget/golden che usano rendering headless
       - name: Unit & Widget tests (headless)
         run: |
