@@ -243,7 +243,7 @@ class _IncomingPageState extends State<IncomingPage>
 
                       double rotX = 0, rotY = 0;
                       if (_calibrated && _offsetRoll != null && _offsetPitch != null) {
-                        rotX = -_deadzone(_pitch - _offsetPitch!) * 0.50;
+                        rotX = _deadzone(_pitch - _offsetPitch!) * 0.50;
                         rotY = -_deadzone(_roll  - _offsetRoll! ) * 0.40;
                       }
 
