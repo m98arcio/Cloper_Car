@@ -9,7 +9,6 @@ void main() {
       home: Scaffold(body: DarkLiveBackground()),
     ));
 
-    // Il widget di background è presente
     expect(find.byType(DarkLiveBackground), findsOneWidget);
   });
 }

@@ -22,13 +22,11 @@ void main() {
       ),
     ));
 
-    // Verifica etichette
     expect(find.text('Home'), findsOneWidget);
     expect(find.text('Catalogo'), findsOneWidget);
     expect(find.text('In arrivo'), findsOneWidget);
     expect(find.text('Profilo'), findsOneWidget);
 
-    // Tap su Profilo deve invocare la callback, non navigare
     await tester.tap(find.text('Profilo'));
     await tester.pumpAndSettle();
 

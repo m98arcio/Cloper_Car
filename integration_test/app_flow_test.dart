@@ -24,7 +24,6 @@ void main() {
     await tester.pumpAndSettle();
 
     // La pagina del catalogo dovrebbe mostrare un titolo/indicatore contenente "Catalogo"
-    // (usa find.textContaining per essere più robusti a titoli personalizzati)
     expect(find.textContaining('Catalogo'), findsWidgets);
 
     // 4) Vai su "In arrivo"
@@ -33,9 +32,6 @@ void main() {
 
     // Verifica che la pagina "In Arrivo" sia visibile (AppBar con titolo "In Arrivo")
     expect(find.text('In Arrivo'), findsWidgets);
-
-    // In base ai dati, potresti vedere card incoming oppure empty state:
-    // Non imponiamo una condizione specifica: basta che il titolo esista.
 
     // 5) Torna alla Home toccando "Home"
     await tester.tap(find.text('Home'));

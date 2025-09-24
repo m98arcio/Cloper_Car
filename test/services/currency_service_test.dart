@@ -20,7 +20,7 @@ void main() {
       await CurrencyService.save('USD');
       expect(CurrencyService.preferred, 'USD');
 
-      await CurrencyService.init(); // simula riavvio app
+      await CurrencyService.init();
       expect(CurrencyService.preferred, 'USD');
     });
 
