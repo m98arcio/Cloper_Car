@@ -26,17 +26,23 @@ jobs:
       - name: Flutter pub get
         run: flutter pub get
 
-      # xvfb per widget/golden che usano rendering headless
-      - name: Unit & Widget tests (headless)
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y xvfb
-          # escludi eventualmente test marcati come 'native' o 'e2e' che richiedono device/emulatore
-          xvfb-run -a flutter test --no-pub --exclude-tags native --exclude-tags e2e
+      - name: Analisi statica
+        run: flutter analyze
 
-  android-integration:
-    name: Android Emulator + Integration tests + APK
-    needs: lint-and-tests
+      - name: Unit + Widget tests (headless)
+        run: xvfb-run -a flutter test --no-pub --exclude-tags native
+
+      - name: Build APK release
+        run: flutter build apk --release
+
+      - name: Upload artifact (APK)
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
+
+  # --- Job dedicato ai test di integrazione che usano plugin nativi ---
+  integration-android:
     runs-on: ubuntu-latest
     timeout-minutes: 40
 
