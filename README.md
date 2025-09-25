@@ -65,9 +65,13 @@ flutter run -d emulator
 ## Permessi & Note utili
 
 * **Geolocalizzazione**: l’app chiede i permessi in runtime. Se li neghi, alcune funzioni (es. dealer più vicino) mostreranno comportamenti limitati.
-* **Google Maps**: per avere la mappa completamente operativa, aggiungi la tua **API Key**:
+* **Google Maps**: per avere la mappa completamente operativa, crea il file google_maps_api.xml
+al percorso: `android/app/src/main/res/values/google_maps_api.xml` 
+dentro il file va scritto:
 
-  * Android: in `android/app/src/main/res/values/google_maps_api.xml`
+<resources>
+  <string name="google_maps_api_key">TUA API KEY</string>
+</resources>
 
 ---
 
