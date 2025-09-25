@@ -9,6 +9,7 @@ import '../screens/profile_page.dart';
 import '../services/rates_api.dart';
 import '../services/currency_service.dart';
 
+// Pagina del catalogo, mostra i marchi di auto
 class BrandCatalogPage extends StatefulWidget {
   final List<Car> cars;
   final Map<String, double>? rates;
@@ -40,21 +41,21 @@ class _BrandCatalogPageState extends State<BrandCatalogPage> {
   Future<void> _bootstrapRatesIfNeeded() async {
     if (_rates != null) return;
     try {
-      final r = await RatesApi().fetchRates();
+      final r = await RatesApi().fetchRates(); //rischiama API esterna
       if (!mounted) return;
       setState(() => _rates = r);
     } catch (_) {
-      //si visualizza solo EUR
+      //Se fallisce usa solo EUR
     }
   }
-
+  // apre pagina profilo
   Future<void> _openProfile() async {
     await Navigator.push(
       context,
       MaterialPageRoute(
         builder: (_) => ProfilePage(
           initialCurrency: CurrencyService.preferred,
-          onChanged: (_) {}, // il CurrencyService notifica già chi osserva
+          onChanged: (_) {},
           cars: widget.cars,
           rates: _rates,
         ),
@@ -73,7 +74,7 @@ class _BrandCatalogPageState extends State<BrandCatalogPage> {
     final thumbs = _brandThumbnails();
     final logos = _brandLogos();
 
-    // Non mostrare le auto con incoming == true nel catalogo acquistabile
+    // filtra solo auto già disponibili
     final availableCars = widget.cars.where((c) => !c.incoming).toList();
 
     return Scaffold(
@@ -96,7 +97,7 @@ class _BrandCatalogPageState extends State<BrandCatalogPage> {
       ),
       body: Stack(
         children: [
-          const DarkLiveBackground(),
+          const DarkLiveBackground(), // sfondo animato
           SafeArea(
             top: false,
             child: ListView.separated(
@@ -113,6 +114,7 @@ class _BrandCatalogPageState extends State<BrandCatalogPage> {
                   cover: cover,
                   logo: logo,
                   onTap: () {
+                    //apre lista auto di quel marchio
                     final filtered = availableCars
                         .where(
                             (c) => c.brand.toLowerCase() == brand.toLowerCase())
@@ -125,7 +127,7 @@ class _BrandCatalogPageState extends State<BrandCatalogPage> {
                           cars: filtered,
                           rates: _rates,
                           preferredCurrency:
-                              _preferredCurrency, // valuta attuale
+                              _preferredCurrency,
                           allCars: widget.cars,
                         ),
                       ),

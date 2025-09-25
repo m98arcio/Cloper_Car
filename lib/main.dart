@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
 import 'screens/splash_screen.dart';
+import 'package:flutter/services.dart';
 import 'services/currency_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  //app verticale
+    await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
   await CurrencyService.init();
   runApp(const MyApp());
 }

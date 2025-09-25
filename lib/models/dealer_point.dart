@@ -1,5 +1,6 @@
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
+// Modello per rappresentare un concessionario
 class DealerPoint {
   final String id;
   final String name;
@@ -14,9 +15,11 @@ class DealerPoint {
     required this.lat,
     required this.lng,
   });
-
+  
+  //ricostruisce le cordinate in un formato leggibile da ggogle maps
   LatLng get latLng => LatLng(lat, lng);
 
+  // Crea un DealerPoint leggendo i dati da JSON
   factory DealerPoint.fromJson(Map<String, dynamic> json) {
     return DealerPoint(
       id: json['id'] as String,

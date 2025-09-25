@@ -17,7 +17,6 @@ class Car {
   final String? description;
   final int? year;
   final bool incoming;
-
   /// Elenco ID dei dealer dove l’auto è disponibile
   final List<String> availableAt;
 
@@ -41,6 +40,7 @@ class Car {
     this.availableAt = const [],
   });
 
+  // Costruzione dell' oggetto Car a partire da JSON
   factory Car.fromJson(Map<String, dynamic> j) => Car(
         id: j['id'] as String,
         brand: j['brand'] as String,
@@ -62,24 +62,4 @@ class Car {
                 ?.cast<String>() ??
             const [],
       );
-
-  Map<String, dynamic> toJson() => {
-        'id': id,
-        'brand': brand,
-        'model': model,
-        'priceEur': priceEur,
-        'powerHp': powerHp,
-        'images': images,
-        if (zeroTo100 != null) 'zeroTo100': zeroTo100,
-        if (topSpeed != null) 'topSpeed': topSpeed,
-        if (engine != null) 'engine': engine,
-        if (gearbox != null) 'gearbox': gearbox,
-        if (lengthCm != null) 'lengthCm': lengthCm,
-        if (widthCm != null) 'widthCm': widthCm,
-        if (wheelbaseCm != null) 'wheelbaseCm': wheelbaseCm,
-        if (description != null) 'description': description,
-        if (year != null) 'year': year,
-        if (incoming) 'incoming': incoming,
-        'availableDealerIds': availableAt,
-      };
 }
