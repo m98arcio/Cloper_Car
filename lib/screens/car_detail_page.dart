@@ -32,13 +32,12 @@ class CarDetailPage extends StatefulWidget {
 }
 
 class _CarDetailPageState extends State<CarDetailPage> {
-  // stato UI passaggio da descrizione a dati tecnici + espansione card prezzo
   int _tab = 0;
   bool _priceOpen = false;
 
   Position? _pos;
   String? _locError;
- //chiede permessi per la posizione
+
   @override
   void initState() {
     super.initState();
@@ -60,7 +59,6 @@ class _CarDetailPageState extends State<CarDetailPage> {
       if (perm == LocationPermission.deniedForever) {
         throw Exception('Permesso negato in modo permanente.');
       }
-      // posizione ad alta precisione su Android
       final p = await Geolocator.getCurrentPosition(
         locationSettings: AndroidSettings(
           accuracy: LocationAccuracy.high,
@@ -73,26 +71,26 @@ class _CarDetailPageState extends State<CarDetailPage> {
       setState(() => _locError = e.toString());
     }
   }
-// Apre pagina profilo
-Future<void> _openProfile() async {
-  await Navigator.push(
-    context,
-    MaterialPageRoute(
-      settings: const RouteSettings(name: '/profile'),
-      builder: (_) => ProfilePage(
-        initialCurrency: CurrencyService.preferred,
-        onChanged: (_) {},
-        cars: widget.cars,
-        rates: widget.rates,
+
+  Future<void> _openProfile() async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        settings: const RouteSettings(name: '/profile'),
+        builder: (_) => ProfilePage(
+          initialCurrency: CurrencyService.preferred,
+          onChanged: (_) {},
+          cars: widget.cars,
+          rates: widget.rates,
+        ),
       ),
-    ),
-  );
-  if (mounted) setState(() {});
-}
-  // Testo di fallback se manca descrizione
+    );
+    if (mounted) setState(() {});
+  }
+
   String _defaultDesc(Car c) =>
       '${c.brand} ${c.model} unisce design iconico e prestazioni da pista. Questa scheda è alimentata dai dati locali del catalogo.';
-// Format prezzo in base a valuta preferita + tassi passati
+
   String _formatPrice({
     required double eur,
     required String preferred,
@@ -110,7 +108,6 @@ Future<void> _openProfile() async {
     return '$symbol ${_kSep(value)}';
   }
 
-  // Elenco prezzi in valute alternative
   List<String> _otherPrices({
     required double eur,
     required String preferred,
@@ -125,7 +122,6 @@ Future<void> _openProfile() async {
     return out;
   }
 
-  /// Separatore migliaia semplice (12345 -> 12.345)
   String _kSep(double v) {
     final s = v.toStringAsFixed(0);
     final b = StringBuffer();
@@ -142,7 +138,6 @@ Future<void> _openProfile() async {
     final c = widget.car;
     final currentCurrency = CurrencyService.preferred;
 
-    // testo principale prezzo + valute alternative
     final mainPriceText = _formatPrice(
       eur: c.priceEur,
       preferred: currentCurrency,
@@ -168,40 +163,29 @@ Future<void> _openProfile() async {
             child: ListView(
               padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
               children: [
-                _HeroGallery(images: c.images, title: c.model), // slider immagini
+                _HeroGallery(images: c.images, title: c.model),
                 const SizedBox(height: 12),
-
-                // selettore schede
                 _SegmentedPill(
                   index: _tab,
                   onChanged: (i) => setState(() => _tab = i),
                   leftIcon: Icons.description_outlined,
                   rightIcon: Icons.menu,
                 ),
-
                 const SizedBox(height: 14),
-
-                // contenuto schede
                 AnimatedSwitcher(
                   duration: const Duration(milliseconds: 180),
                   child: _tab == 0
                       ? _DescriptionCard(text: c.description ?? _defaultDesc(c))
                       : _SpecsCard(car: c),
                 ),
-
                 const SizedBox(height: 16),
-
-                // prezzo 
                 _PriceCard(
                   mainText: mainPriceText,
                   open: _priceOpen,
                   onToggle: () => setState(() => _priceOpen = !_priceOpen),
                   extras: otherPrices,
                 ),
-
                 const SizedBox(height: 18),
-
-                // mappa dealer
                 const _SectionTitle('Concessionari vicini'),
                 const SizedBox(height: 8),
                 _MapCard(
@@ -215,10 +199,8 @@ Future<void> _openProfile() async {
           ),
         ],
       ),
-
-      // bottom bar app
       bottomNavigationBar: AppBottomBar(
-        currentIndex: 0,
+        currentIndex: 1,
         cars: widget.cars,
         allCars: widget.cars,
         rates: widget.rates,
@@ -231,7 +213,6 @@ Future<void> _openProfile() async {
 
 /* ====================== WIDGETS ====================== */
 
-// Slider immagini in alto + pallini
 class _HeroGallery extends StatefulWidget {
   final List<String> images;
   final String title;
@@ -252,7 +233,6 @@ class _HeroGalleryState extends State<_HeroGallery> {
   @override
   void initState() {
     super.initState();
-    // page controller e autoplay
     _pc = PageController(initialPage: 1000000 ~/ 2);
     _i = _pc.initialPage % imgs.length;
     _timer = Timer.periodic(const Duration(seconds: 6), (_) {
@@ -278,7 +258,6 @@ class _HeroGalleryState extends State<_HeroGallery> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        // carousel immagini 16:9
         ClipRRect(
           borderRadius: BorderRadius.circular(20),
           child: AspectRatio(
@@ -295,14 +274,12 @@ class _HeroGalleryState extends State<_HeroGallery> {
           ),
         ),
         const SizedBox(height: 8),
-        // titolo auto
         Text(
           widget.title,
           textAlign: TextAlign.center,
           style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 8),
-        // indicatori pagina
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: List.generate(imgs.length, (index) {
@@ -322,7 +299,6 @@ class _HeroGalleryState extends State<_HeroGallery> {
   }
 }
 
-// Selettore a due opzioni (pill)
 class _SegmentedPill extends StatelessWidget {
   final int index;
   final ValueChanged<int> onChanged;
@@ -345,7 +321,6 @@ class _SegmentedPill extends StatelessWidget {
       ),
       child: Stack(
         children: [
-          // “highlight” che scorre a sinistra/destra
           AnimatedAlign(
             duration: const Duration(milliseconds: 180),
             alignment: index == 0 ? Alignment.centerLeft : Alignment.centerRight,
@@ -360,7 +335,6 @@ class _SegmentedPill extends StatelessWidget {
               ),
             ),
           ),
-          // due icone tappabili
           Row(
             children: [
               Expanded(
@@ -385,7 +359,6 @@ class _SegmentedPill extends StatelessWidget {
   }
 }
 
-// Titolo sezione semplice
 class _SectionTitle extends StatelessWidget {
   final String text;
   const _SectionTitle(this.text);
@@ -400,7 +373,6 @@ class _SectionTitle extends StatelessWidget {
       );
 }
 
-// Contenitore con stile card base
 class _Card extends StatelessWidget {
   final Widget child;
   const _Card({required this.child});
@@ -419,7 +391,6 @@ class _Card extends StatelessWidget {
   }
 }
 
-// descrizione nella card
 class _DescriptionCard extends StatelessWidget {
   final String text;
   const _DescriptionCard({required this.text});
@@ -439,7 +410,6 @@ class _DescriptionCard extends StatelessWidget {
   }
 }
 
-/// Card specifiche tecniche
 class _SpecsCard extends StatelessWidget {
   final Car car;
   const _SpecsCard({required this.car});
@@ -492,7 +462,6 @@ class _SpecsCard extends StatelessWidget {
   }
 }
 
-/// Gruppo righe specifiche + titolo con icona
 class _SpecGroup extends StatelessWidget {
   final String title;
   final IconData icon;
@@ -527,7 +496,9 @@ class _SpecGroup extends StatelessWidget {
   }
 }
 
-// Card prezzo con espansione
+// ===========================================
+// CARD PREZZO AGGIORNATA
+// ===========================================
 class _PriceCard extends StatelessWidget {
   final String mainText;
   final bool open;
@@ -550,29 +521,26 @@ class _PriceCard extends StatelessWidget {
         curve: Curves.easeOutCubic,
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: const Color(0xFFEFEFEF).withValues(alpha: 0.07),
+          color: const Color(0xFFEFEFEF).withValues(alpha:0.07),
           borderRadius: BorderRadius.circular(22),
           boxShadow: const [BoxShadow(blurRadius: 14, color: Colors.black38)],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(children: const [
-              Icon(Icons.sell_outlined),
-              SizedBox(width: 8),
-              Text('Prezzo', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
-              Spacer(),
-            ]),
-            // caret animato
-            Align(
-              alignment: Alignment.centerRight,
-              child: AnimatedRotation(
-                duration: const Duration(milliseconds: 200),
-                turns: open ? 0.5 : 0.0,
-                child: const Icon(Icons.expand_more),
-              ),
+            Row(
+              children: [
+                const Icon(Icons.sell_outlined),
+                const SizedBox(width: 8),
+                const Text('Prezzo', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
+                const Spacer(),
+                AnimatedRotation(
+                  duration: const Duration(milliseconds: 200),
+                  turns: open ? 0.5 : 0.0,
+                  child: const Icon(Icons.expand_more),
+                ),
+              ],
             ),
-            // contenuto esteso
             AnimatedCrossFade(
               firstChild: const SizedBox(height: 0),
               secondChild: Padding(
@@ -598,7 +566,9 @@ class _PriceCard extends StatelessWidget {
   }
 }
 
-// Mappa: mostra dealer disponibili per l’auto e centra sul più vicino all’utente
+// ===========================================
+// MAPPA
+// ===========================================
 class _MapCard extends StatefulWidget {
   final Car car;
   final Position? pos;
@@ -620,12 +590,11 @@ class _MapCardState extends State<_MapCard> {
   GoogleMapController? _controller;
   Set<Marker> _markers = const <Marker>{};
   CameraPosition? _initial;
-  String? _centeredDealerId; // evita rianimazioni ripetute
+  String? _centeredDealerId;
 
   @override
   void didUpdateWidget(covariant _MapCard oldWidget) {
     super.didUpdateWidget(oldWidget);
-    // ricalcola se cambia posizione/auto/errore
     if (oldWidget.pos != widget.pos ||
         oldWidget.car != widget.car ||
         oldWidget.error != widget.error) {
@@ -633,9 +602,7 @@ class _MapCardState extends State<_MapCard> {
     }
   }
 
-  // Prepara marker e centro camera
   Future<void> _prepare() async {
-    // se errore o niente posizione: mostra loader
     if (widget.error != null || widget.pos == null) {
       setState(() {
         _markers = const <Marker>{};
@@ -645,19 +612,13 @@ class _MapCardState extends State<_MapCard> {
       return;
     }
 
-    // carica dealer da assets
     final all = await DealersRepo.load();
     final Map<String, DealerPoint> byId = {for (final d in all) d.id: d};
 
-    // filtra per dealer consentiti dall’auto
     final allowedIds = widget.car.availableAt;
     List<DealerPoint> visible;
     if (allowedIds.isNotEmpty) {
-      visible = [
-        for (final id in allowedIds)
-          if (byId.containsKey(id)) byId[id]!,
-      ];
-      // se non ce ne sono → niente mappa
+      visible = [for (final id in allowedIds) if (byId.containsKey(id)) byId[id]!];
       if (visible.isEmpty) {
         setState(() {
           _markers = const <Marker>{};
@@ -670,14 +631,12 @@ class _MapCardState extends State<_MapCard> {
       visible = all;
     }
 
-    // utente + dealer più vicino tra i visibili
     final user = LatLng(widget.pos!.latitude, widget.pos!.longitude);
     final nearest = await DealersRepo.nearestTo(
       user,
       allowedDealerIds: visible.map((d) => d.id).toList(),
     );
 
-    // marker dealer + marker utente
     final markers = <Marker>{
       for (final d in visible)
         Marker(
@@ -723,22 +682,19 @@ class _MapCardState extends State<_MapCard> {
 
   @override
   Widget build(BuildContext context) {
-    // errore permessi/servizi → box con “Riprova”
     if (widget.error != null) return _errorBox(widget.error!, widget.onRetry);
 
-    // pos non pronta o inizializzazione in corso → caricamento
     if (widget.pos == null || _initial == null) {
       return Container(
         height: 220,
         decoration: BoxDecoration(
-          color: const Color(0xFFEFEFEF).withValues(alpha: 0.07),
+          color: const Color(0xFFEFEFEF).withValues(alpha:0.07),
           borderRadius: BorderRadius.circular(22),
         ),
         child: const Center(child: CircularProgressIndicator()),
       );
     }
 
-    // mappa pronta
     return Container(
       height: 220,
       decoration: BoxDecoration(
@@ -756,12 +712,11 @@ class _MapCardState extends State<_MapCard> {
     );
   }
 
-  /// Box errore con pulsante “Riprova”
   Widget _errorBox(String msg, VoidCallback onRetry) {
     return Container(
       height: 220,
       decoration: BoxDecoration(
-        color: const Color(0xFFEFEFEF).withValues(alpha: 0.07),
+        color: const Color(0xFFEFEFEF).withValues(alpha:0.07),
         borderRadius: BorderRadius.circular(22),
       ),
       child: Center(
