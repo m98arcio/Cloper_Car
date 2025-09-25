@@ -100,5 +100,3 @@ linux/**/build/
 # =========================
 app.*.symbols
 app.*.map.json
-
- styles.xml
