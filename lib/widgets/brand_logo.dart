@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 
+/// Mostra il logo di un brand (immagine o placeholder con iniziale).
 class BrandLogo extends StatelessWidget {
-  final String brand;
-  final String? imagePath;
-  final double size;
-  final bool round;
+  final String brand;      // nome brand
+  final String? imagePath; // percorso immagine
+  final double size;       // dimensione
+  final bool round;        // true = cerchio, false = bordi arrotondati
 
   const BrandLogo({
     super.key,
@@ -16,8 +17,9 @@ class BrandLogo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // immagine logo
     if (imagePath != null && imagePath!.isNotEmpty) {
-      final w = round
+      return round
           ? ClipRRect(
               borderRadius: BorderRadius.circular(size / 2),
               child: Image.asset(imagePath!,
@@ -25,12 +27,10 @@ class BrandLogo extends StatelessWidget {
             )
           : Image.asset(imagePath!,
               width: size, height: size, fit: BoxFit.cover);
-      return w;
     }
 
-    // Placeholder generato
-    final letter =
-        brand.isNotEmpty ? brand.characters.first.toUpperCase() : '?';
+    // Se non c’è immagine -> placeholder con iniziale
+    final letter = brand.isNotEmpty ? brand.characters.first.toUpperCase() : '?';
     final colors = _brandColors(brand);
     final borderRadius =
         round ? BorderRadius.circular(size / 2) : BorderRadius.circular(12);
@@ -62,6 +62,7 @@ class BrandLogo extends StatelessWidget {
     );
   }
 
+  // Colori placeholder per brand
   List<Color> _brandColors(String b) {
     switch (b.toLowerCase()) {
       case 'ferrari':

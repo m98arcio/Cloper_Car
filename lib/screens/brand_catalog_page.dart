@@ -9,6 +9,7 @@ import '../screens/profile_page.dart';
 import '../services/rates_api.dart';
 import '../services/currency_service.dart';
 
+// Pagina del catalogo, mostra i marchi di auto
 class BrandCatalogPage extends StatefulWidget {
   final List<Car> cars;
   final Map<String, double>? rates;
@@ -40,21 +41,23 @@ class _BrandCatalogPageState extends State<BrandCatalogPage> {
   Future<void> _bootstrapRatesIfNeeded() async {
     if (_rates != null) return;
     try {
-      final r = await RatesApi().fetchRates();
+      final r = await RatesApi().fetchRates(); // richiama API esterna
       if (!mounted) return;
       setState(() => _rates = r);
     } catch (_) {
-      //si visualizza solo EUR
+      // Se fallisce usa solo EUR
     }
   }
 
+  // apre pagina profilo (aggiunto settings name)
   Future<void> _openProfile() async {
     await Navigator.push(
       context,
       MaterialPageRoute(
+        settings: const RouteSettings(name: '/profile'),
         builder: (_) => ProfilePage(
           initialCurrency: CurrencyService.preferred,
-          onChanged: (_) {}, // il CurrencyService notifica già chi osserva
+          onChanged: (_) {},
           cars: widget.cars,
           rates: _rates,
         ),
@@ -73,7 +76,7 @@ class _BrandCatalogPageState extends State<BrandCatalogPage> {
     final thumbs = _brandThumbnails();
     final logos = _brandLogos();
 
-    // Non mostrare le auto con incoming == true nel catalogo acquistabile
+    // filtra solo auto già disponibili
     final availableCars = widget.cars.where((c) => !c.incoming).toList();
 
     return Scaffold(
@@ -96,7 +99,7 @@ class _BrandCatalogPageState extends State<BrandCatalogPage> {
       ),
       body: Stack(
         children: [
-          const DarkLiveBackground(),
+          const DarkLiveBackground(), // sfondo animato
           SafeArea(
             top: false,
             child: ListView.separated(
@@ -113,19 +116,25 @@ class _BrandCatalogPageState extends State<BrandCatalogPage> {
                   cover: cover,
                   logo: logo,
                   onTap: () {
+                    // apre lista auto di quel marchio (aggiunto settings name)
                     final filtered = availableCars
-                        .where(
-                            (c) => c.brand.toLowerCase() == brand.toLowerCase())
+                        .where((c) =>
+                            c.brand.toLowerCase() == brand.toLowerCase())
                         .toList();
+
+                    // route name stabile per singolo brand
+                    final routeName =
+                        '/catalog/${brand.toLowerCase().replaceAll(' ', '-')}';
+
                     Navigator.push(
                       context,
                       MaterialPageRoute(
+                        settings: RouteSettings(name: routeName),
                         builder: (_) => CarListPage(
                           brand: brand,
                           cars: filtered,
                           rates: _rates,
-                          preferredCurrency:
-                              _preferredCurrency, // valuta attuale
+                          preferredCurrency: _preferredCurrency,
                           allCars: widget.cars,
                         ),
                       ),
@@ -304,7 +313,11 @@ class _GradientText extends StatelessWidget {
   final TextStyle style;
   final List<Color> colors;
 
-  const _GradientText(this.text, {required this.style, required this.colors});
+  const _GradientText(
+    this.text, {
+    required this.style,
+    required this.colors,
+  });
 
   @override
   Widget build(BuildContext context) {

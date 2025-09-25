@@ -12,11 +12,13 @@ import '../models/dealer_point.dart';
 import 'profile_page.dart';
 import '../services/currency_service.dart';
 
+// Pagina dettaglio di un'auto
 class CarDetailPage extends StatefulWidget {
   final Car car;
   final Map<String, double>? rates;
   final String preferredCurrency;
   final List<Car> cars;
+  final List<Car>? allCars;
 
   const CarDetailPage({
     super.key,
@@ -24,6 +26,7 @@ class CarDetailPage extends StatefulWidget {
     this.rates,
     required this.preferredCurrency,
     required this.cars,
+    this.allCars,
   });
 
   @override
@@ -75,6 +78,7 @@ class _CarDetailPageState extends State<CarDetailPage> {
     await Navigator.push(
       context,
       MaterialPageRoute(
+        settings: const RouteSettings(name: '/profile'),
         builder: (_) => ProfilePage(
           initialCurrency: CurrencyService.preferred,
           onChanged: (_) {},
@@ -134,7 +138,6 @@ class _CarDetailPageState extends State<CarDetailPage> {
   @override
   Widget build(BuildContext context) {
     final c = widget.car;
-
     final currentCurrency = CurrencyService.preferred;
 
     final mainPriceText = _formatPrice(
@@ -199,9 +202,9 @@ class _CarDetailPageState extends State<CarDetailPage> {
         ],
       ),
       bottomNavigationBar: AppBottomBar(
-        currentIndex: 0,
+        currentIndex: 1,
         cars: widget.cars,
-        allCars: widget.cars,
+        allCars: widget.allCars,
         rates: widget.rates,
         preferredCurrency: currentCurrency,
         onProfileTap: _openProfile,
@@ -252,11 +255,7 @@ class _HeroGalleryState extends State<_HeroGallery> {
     super.dispose();
   }
 
-  void _onPageChanged(int index) {
-    setState(() {
-      _i = index % imgs.length;
-    });
-  }
+  void _onPageChanged(int index) => setState(() => _i = index % imgs.length);
 
   @override
   Widget build(BuildContext context) {
@@ -303,7 +302,6 @@ class _HeroGalleryState extends State<_HeroGallery> {
   }
 }
 
-// ================= SEGMENTED PILL =================
 class _SegmentedPill extends StatelessWidget {
   final int index;
   final ValueChanged<int> onChanged;
@@ -365,7 +363,6 @@ class _SegmentedPill extends StatelessWidget {
   }
 }
 
-// ================= SECTION TITLE =================
 class _SectionTitle extends StatelessWidget {
   final String text;
   const _SectionTitle(this.text);
@@ -380,7 +377,6 @@ class _SectionTitle extends StatelessWidget {
       );
 }
 
-// ================= CARD BASE =================
 class _Card extends StatelessWidget {
   final Widget child;
   const _Card({required this.child});
@@ -399,7 +395,6 @@ class _Card extends StatelessWidget {
   }
 }
 
-// ================= DESCRIPTION CARD =================
 class _DescriptionCard extends StatelessWidget {
   final String text;
   const _DescriptionCard({required this.text});
@@ -410,10 +405,8 @@ class _DescriptionCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Descrizione',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800),
-          ),
+          const Text('Descrizione',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800)),
           const SizedBox(height: 8),
           Text(text, style: const TextStyle(fontSize: 16, height: 1.35)),
         ],
@@ -422,7 +415,6 @@ class _DescriptionCard extends StatelessWidget {
   }
 }
 
-// ================= SPECS CARD =================
 class _SpecsCard extends StatelessWidget {
   final Car car;
   const _SpecsCard({required this.car});
@@ -441,10 +433,9 @@ class _SpecsCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            car.model.toUpperCase(),
-            style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w900),
-          ),
+          Text(car.model.toUpperCase(),
+              style:
+                  const TextStyle(fontSize: 22, fontWeight: FontWeight.w900)),
           const SizedBox(height: 6),
           Row(
             children: const [
@@ -481,32 +472,25 @@ class _SpecsCard extends StatelessWidget {
   }
 }
 
-// ================= SPEC GROUP =================
 class _SpecGroup extends StatelessWidget {
   final String title;
   final IconData icon;
   final List<MapEntry<String, String>> rows;
-  const _SpecGroup({
-    required this.title,
-    required this.icon,
-    required this.rows,
-  });
+  const _SpecGroup(
+      {required this.title, required this.icon, required this.rows});
 
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          children: [
-            Icon(icon, size: 18),
-            const SizedBox(width: 8),
-            Text(
-              title,
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
-            ),
-          ],
-        ),
+        Row(children: [
+          Icon(icon, size: 18),
+          const SizedBox(width: 8),
+          Text(title,
+              style:
+                  const TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),
+        ]),
         const SizedBox(height: 8),
         ...rows.map(
           (e) => Padding(
@@ -514,19 +498,13 @@ class _SpecGroup extends StatelessWidget {
             child: Row(
               children: [
                 Expanded(
-                  child: Text(
-                    '${e.key}:',
-                    style: const TextStyle(fontWeight: FontWeight.w700),
-                  ),
-                ),
+                    child: Text('${e.key}:',
+                        style: const TextStyle(fontWeight: FontWeight.w700))),
                 const SizedBox(width: 6),
                 Expanded(
-                  child: Text(
-                    e.value,
-                    textAlign: TextAlign.right,
-                    style: const TextStyle(color: Colors.white70),
-                  ),
-                ),
+                    child: Text(e.value,
+                        textAlign: TextAlign.right,
+                        style: const TextStyle(color: Colors.white70))),
               ],
             ),
           ),
@@ -536,7 +514,9 @@ class _SpecGroup extends StatelessWidget {
   }
 }
 
-// ================= PRICE CARD =================
+// ===========================================
+// CARD PREZZO AGGIORNATA
+// ===========================================
 class _PriceCard extends StatelessWidget {
   final String mainText;
   final bool open;
@@ -570,10 +550,9 @@ class _PriceCard extends StatelessWidget {
               children: [
                 const Icon(Icons.sell_outlined),
                 const SizedBox(width: 8),
-                const Text(
-                  'Prezzo',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
-                ),
+                const Text('Prezzo',
+                    style:
+                        TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
                 const Spacer(),
                 AnimatedRotation(
                   duration: const Duration(milliseconds: 200),
@@ -589,13 +568,9 @@ class _PriceCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      mainText,
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w900,
-                      ),
-                    ),
+                    Text(mainText,
+                        style: const TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.w900)),
                     for (final line in extras) ...[
                       const SizedBox(height: 6),
                       Text(line),
@@ -614,7 +589,9 @@ class _PriceCard extends StatelessWidget {
   }
 }
 
-// ================= MAP CARD =================
+// ===========================================
+// MAPPA
+// ===========================================
 class _MapCard extends StatefulWidget {
   final Car car;
   final Position? pos;
@@ -663,11 +640,10 @@ class _MapCardState extends State<_MapCard> {
 
     final allowedIds = widget.car.availableAt;
     List<DealerPoint> visible;
-
     if (allowedIds.isNotEmpty) {
       visible = [
         for (final id in allowedIds)
-          if (byId.containsKey(id)) byId[id]!,
+          if (byId.containsKey(id)) byId[id]!
       ];
       if (visible.isEmpty) {
         setState(() {
@@ -734,6 +710,7 @@ class _MapCardState extends State<_MapCard> {
   @override
   Widget build(BuildContext context) {
     if (widget.error != null) return _errorBox(widget.error!, widget.onRetry);
+
     if (widget.pos == null || _initial == null) {
       return Container(
         height: 220,

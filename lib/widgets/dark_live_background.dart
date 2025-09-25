@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 
+// Sfondo scuro animato con onde in movimento.
 class DarkLiveBackground extends StatefulWidget {
   const DarkLiveBackground({super.key});
 
@@ -15,6 +16,7 @@ class _DarkLiveBackgroundState extends State<DarkLiveBackground>
   @override
   void initState() {
     super.initState();
+    // loop
     _c = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 14),
@@ -29,6 +31,7 @@ class _DarkLiveBackgroundState extends State<DarkLiveBackground>
 
   @override
   Widget build(BuildContext context) {
+    // Ridisegna continuamente il canvas in base al valore dell’animazione
     return AnimatedBuilder(
       animation: _c,
       builder: (_, __) {
@@ -41,10 +44,12 @@ class _DarkLiveBackgroundState extends State<DarkLiveBackground>
   }
 }
 
+//Painter che disegna lo sfondo scuro con onde e vignetta
 class _WavesPainter extends CustomPainter {
-  final double time; // 0..1
+  final double time;
   _WavesPainter({required this.time});
 
+  //Gradiente di base dello sfondo
   final _bg = const LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
@@ -54,47 +59,38 @@ class _WavesPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    // base scura
     final rect = Offset.zero & size;
-    final bgPaint = Paint()..shader = _bg.createShader(rect);
-    canvas.drawRect(rect, bgPaint);
 
-    // parametri onda
-    final baseAmp = size.height * 0.06;
-    final speed = 2 * math.pi * time;
+    //Disegna sfondo scuro
+    canvas.drawRect(rect, Paint()..shader = _bg.createShader(rect));
 
-    // disegna 3 strati di onde con fasi/ampiezze diverse
-    _drawWave(
-      canvas,
-      size,
-      phase: speed,
-      amp: baseAmp,
-      color1: Colors.white.withValues(alpha: 0.08),
-      color2: Colors.transparent,
-      heightFactor: 0.55,
-    );
+    // Parametri base delle onde
+    final baseAmp = size.height * 0.06; // ampiezza
+    final speed = 2 * math.pi * time;   // fase animazione
 
-    _drawWave(
-      canvas,
-      size,
-      phase: speed + math.pi / 2,
-      amp: baseAmp * 0.75,
-      color1: Colors.white.withValues(alpha: 0.06),
-      color2: Colors.transparent,
-      heightFactor: 0.65,
-    );
+    //Tre strati di onde sovrapposte (più realistiche)
+    _drawWave(canvas, size,
+        phase: speed,
+        amp: baseAmp,
+        color1: Colors.white.withValues(alpha: 0.08),
+        color2: Colors.transparent,
+        heightFactor: 0.55);
 
-    _drawWave(
-      canvas,
-      size,
-      phase: speed + math.pi,
-      amp: baseAmp * 0.5,
-      color1: Colors.white.withValues(alpha: 0.045),
-      color2: Colors.transparent,
-      heightFactor: 0.75,
-    );
+    _drawWave(canvas, size,
+        phase: speed + math.pi / 2,
+        amp: baseAmp * 0.75,
+        color1: Colors.white.withValues(alpha: 0.06),
+        color2: Colors.transparent,
+        heightFactor: 0.65);
 
-    // vignette leggera ai bordi
+    _drawWave(canvas, size,
+        phase: speed + math.pi,
+        amp: baseAmp * 0.5,
+        color1: Colors.white.withValues(alpha: 0.045),
+        color2: Colors.transparent,
+        heightFactor: 0.75);
+
+    // Vignetta scura sui bordi (per dare profondità)
     final vignette = RadialGradient(
       center: const Alignment(0.1, -0.2),
       radius: 1.1,
@@ -104,6 +100,7 @@ class _WavesPainter extends CustomPainter {
     canvas.drawRect(rect, Paint()..shader = vignette.createShader(rect));
   }
 
+  // Disegna un'onda con curva sinusoidale e gradiente verticale
   void _drawWave(
     Canvas canvas,
     Size size, {
@@ -113,16 +110,18 @@ class _WavesPainter extends CustomPainter {
     required Color color2,
     required double heightFactor,
   }) {
-    final h = size.height * heightFactor;
+    final h = size.height * heightFactor; // altezza di partenza
     final w = size.width;
 
     final path = Path()..moveTo(0, h);
-    final seg = 6;
+    const seg = 6; // numero segmenti (più alto → curva più precisa)
+
     for (int i = 0; i <= seg; i++) {
       final x = w * i / seg;
       final t = (i / seg) * 2 * math.pi + phase;
       final y = h + math.sin(t) * amp;
 
+      // punti di controllo per la curva cubica (onda morbida)
       final cp1x = x - w / seg * 0.5;
       final cp2x = x - w / seg * 0.1;
       final cp1y = h + math.sin(t - 0.9) * amp * 0.9;
@@ -130,19 +129,21 @@ class _WavesPainter extends CustomPainter {
 
       path.cubicTo(cp1x, cp1y, cp2x, cp2y, x, y);
     }
+
+    // chiude il path fino in fondo allo schermo
     path
       ..lineTo(w, size.height)
       ..lineTo(0, size.height)
       ..close();
 
+    // gradiente verticale che sfuma verso il basso
     final shader = LinearGradient(
       begin: Alignment.topCenter,
       end: Alignment.bottomCenter,
       colors: [color1, color2],
     ).createShader(Offset.zero & size);
 
-    final paint = Paint()..shader = shader;
-    canvas.drawPath(path, paint);
+    canvas.drawPath(path, Paint()..shader = shader);
   }
 
   @override

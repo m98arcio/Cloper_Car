@@ -5,9 +5,9 @@ import 'package:url_launcher/url_launcher.dart';
 import '../services/news_service.dart';
 
 class NewsStrip extends StatefulWidget {
-  final List<NewsItem> items;
-  final VoidCallback? onRefresh;
-  final bool autoScroll;
+  final List<NewsItem> items;      // elenco notizie da mostrare
+  final VoidCallback? onRefresh;   // callback "riprova"
+  final bool autoScroll;           // scorrimento automatico on/off
   const NewsStrip({
     super.key,
     required this.items,
@@ -20,19 +20,20 @@ class NewsStrip extends StatefulWidget {
 }
 
 class _NewsStripState extends State<NewsStrip> {
-  final _pc = PageController(viewportFraction: 0.9);
-  Timer? _timer;
-  int _index = 0;
+  final _pc = PageController(viewportFraction: 0.9); // card quasi a piena larghezza
+  Timer? _timer;      // timer per auto-scroll
+  int _index = 0;     // pagina corrente
 
   @override
   void initState() {
     super.initState();
-    _setupTimer();
+    _setupTimer();    // avvia auto-scroll se serve
   }
 
   @override
   void didUpdateWidget(covariant NewsStrip oldWidget) {
     super.didUpdateWidget(oldWidget);
+    // se cambiano items o autoScroll, ri-configura il timer
     if (oldWidget.items != widget.items ||
         oldWidget.autoScroll != widget.autoScroll) {
       _disposeTimer();
@@ -41,6 +42,7 @@ class _NewsStripState extends State<NewsStrip> {
   }
 
   void _setupTimer() {
+    // attiva solo se richiesto e se ci sono almeno 2 card
     if (!widget.autoScroll || widget.items.length < 2) return;
     _timer = Timer.periodic(const Duration(seconds: 5), (_) {
       if (!mounted || !_pc.hasClients) return;
@@ -67,15 +69,17 @@ class _NewsStripState extends State<NewsStrip> {
 
   @override
   Widget build(BuildContext context) {
+    // stato "vuoto"
     if (widget.items.isEmpty) {
       return _empty(onRefresh: widget.onRefresh);
     }
 
+    // strip: pageview + pallini indicatore
     return SizedBox(
       height: 190,
       child: Column(
         children: [
-          // CARDS
+          // cards
           Expanded(
             child: PageView.builder(
               controller: _pc,
@@ -85,7 +89,7 @@ class _NewsStripState extends State<NewsStrip> {
             ),
           ),
           const SizedBox(height: 8),
-          // INDICATORI
+          // indicatori pagina
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: List.generate(widget.items.length, (i) {
@@ -107,6 +111,7 @@ class _NewsStripState extends State<NewsStrip> {
     );
   }
 
+  // box "nessuna notizia" con eventuale pulsante refresh
   Widget _empty({VoidCallback? onRefresh}) => Container(
         height: 120,
         margin: const EdgeInsets.symmetric(horizontal: 16),
@@ -119,8 +124,7 @@ class _NewsStripState extends State<NewsStrip> {
           children: [
             const Icon(Icons.newspaper),
             const SizedBox(width: 10),
-            const Expanded(
-                child: Text('Nessuna notizia disponibile al momento.')),
+            const Expanded(child: Text('Nessuna notizia disponibile al momento.')),
             if (onRefresh != null)
               IconButton(onPressed: onRefresh, icon: const Icon(Icons.refresh)),
           ],
@@ -134,6 +138,7 @@ class _NewsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // data "dd MMM" se disponibile
     final date = item.pubDate != null
         ? DateFormat('dd MMM').format(item.pubDate!)
         : null;
@@ -141,6 +146,7 @@ class _NewsCard extends StatelessWidget {
     return InkWell(
       borderRadius: BorderRadius.circular(18),
       onTap: () async {
+        // apre la notizia nel browser esterno
         final uri = Uri.tryParse(item.link);
         if (uri != null && await canLaunchUrl(uri)) {
           await launchUrl(uri, mode: LaunchMode.externalApplication);
@@ -156,7 +162,7 @@ class _NewsCard extends StatelessWidget {
         child: Stack(
           fit: StackFit.expand,
           children: [
-            // Immagine / placeholder
+            // immagine o placeholder
             if ((item.imageUrl ?? '').isNotEmpty)
               Image.network(
                 item.imageUrl!,
@@ -170,7 +176,7 @@ class _NewsCard extends StatelessWidget {
             else
               Container(color: Colors.black12),
 
-            // Overlay sfumato
+            // overlay sfumato per leggibilità
             Container(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
@@ -186,37 +192,33 @@ class _NewsCard extends StatelessWidget {
               ),
             ),
 
-            // Testo
+            // testo (source+data in alto, titolo in basso)
             Padding(
               padding: const EdgeInsets.all(14),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // source + date (in alto)
                   Row(
                     children: [
+                      // badge fonte
                       Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 4),
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                         decoration: BoxDecoration(
                           color: Colors.black.withValues(alpha: 0.45),
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Text(
                           item.source,
-                          style: const TextStyle(
-                              fontSize: 12, fontWeight: FontWeight.w700),
+                          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700),
                         ),
                       ),
                       const SizedBox(width: 8),
                       if (date != null)
-                        Text(date,
-                            style: const TextStyle(
-                                fontSize: 12, color: Colors.white70)),
+                        Text(date, style: const TextStyle(fontSize: 12, color: Colors.white70)),
                     ],
                   ),
                   const Spacer(),
-                  // title (in basso)
+                  // titolo
                   Text(
                     item.title,
                     maxLines: 2,

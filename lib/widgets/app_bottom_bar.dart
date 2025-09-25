@@ -3,13 +3,43 @@ import '../models/car.dart';
 import '../screens/brand_catalog_page.dart';
 import '../screens/incoming_page.dart';
 
+// Prova a tornare a una route già presente nello stack (per nome).
+// Ritorna true se trovata, false se non esiste.
+bool _popUntilName(BuildContext context, String name) {
+  var found = false;
+  Navigator.popUntil(context, (route) {
+    if (route.settings.name == name) found = true;
+    // fermati se l'hai trovata oppure se stai per uscire dalla prima
+    return found || route.isFirst;
+  });
+  return found;
+}
+
+// Se la route name è già nello stack fa pop fino a lei; altrimenti fa push.
+void _navigateUnique(
+  BuildContext context, {
+  required String name,
+  required WidgetBuilder builder,
+}) {
+  final exists = _popUntilName(context, name);
+  if (!exists) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        settings: RouteSettings(name: name),
+        builder: builder,
+      ),
+    );
+  }
+}
+
 class AppBottomBar extends StatelessWidget {
   final int currentIndex;
-  final List<Car> cars;
-  final List<Car>? allCars;
+  final List<Car> cars;                 // lista “corrente” (es. filtrata/ordinata)
+  final List<Car>? allCars;             // lista completa, se disponibile
   final Map<String, double>? rates;
   final String preferredCurrency;
-  final VoidCallback onProfileTap;
+  final VoidCallback onProfileTap;      // lasciato come callback esterno
 
   const AppBottomBar({
     super.key,
@@ -25,35 +55,41 @@ class AppBottomBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return BottomNavigationBar(
       currentIndex: currentIndex,
-      selectedItemColor: Colors.white, // sarà sostituito dal gradient
+      selectedItemColor: Colors.white,
       unselectedItemColor: Colors.grey.shade400,
-      backgroundColor: Colors.black.withValues(alpha: 0.95),
+      backgroundColor: Colors.black.withValues(alpha:0.95),
       type: BottomNavigationBarType.fixed,
       onTap: (i) {
         if (i == 0) {
-          Navigator.popUntil(context, (r) => r.isFirst);
+          // HOME: se ha un nome, prova a tornarci; altrimenti pop fino alla prima.
+          final wentHome = _popUntilName(context, '/home');
+          if (!wentHome) {
+            Navigator.popUntil(context, (r) => r.isFirst);
+          }
         } else if (i == 1) {
-          Navigator.push(
+          // CATALOGO: evita duplicati
+          _navigateUnique(
             context,
-            MaterialPageRoute(
-              builder: (_) => BrandCatalogPage(
-                cars: allCars ?? cars,
-                rates: rates,
-                preferredCurrency: preferredCurrency,
-              ),
+            name: '/catalog',
+            builder: (_) => BrandCatalogPage(
+              cars: allCars ?? cars,
+              rates: rates,
+              preferredCurrency: preferredCurrency,
             ),
           );
         } else if (i == 2) {
-          Navigator.push(
+          // IN ARRIVO: evita duplicati
+          _navigateUnique(
             context,
-            MaterialPageRoute(
-              builder: (_) => IncomingPage(
-                cars: allCars ?? cars,
-                allCars: null,
-              ),
+            name: '/incoming',
+            builder: (_) => IncomingPage(
+              cars: allCars ?? cars,
+              allCars: allCars,
             ),
           );
         } else if (i == 3) {
+          // PROFILO: puoi lasciare il comportamento esistente,
+          // oppure applicare lo stesso pattern con un nome '/profile'
           onProfileTap();
         }
       },
@@ -76,9 +112,19 @@ class AppBottomBar extends StatelessWidget {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ).createShader(Rect.fromLTWH(0, 0, bounds.width, bounds.height)),
-          child: Icon(icon, color: Colors.white),
+          child: const Icon(Icons.circle, size: 0), // placeholder per Shader
         ),
         label: label,
+        // Trucco: sopra ho usato ShaderMask su un "placeholder".
+        // Per mostrare l’icona vera con il gradiente:
+        activeIcon: ShaderMask(
+          shaderCallback: (bounds) => const LinearGradient(
+            colors: [Colors.orangeAccent, Colors.deepOrange],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ).createShader(Rect.fromLTWH(0, 0, bounds.width, bounds.height)),
+          child: Icon(icon, color: Colors.white),
+        ),
       );
     } else {
       return BottomNavigationBarItem(

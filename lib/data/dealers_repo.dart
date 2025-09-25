@@ -7,6 +7,7 @@ import '../models/dealer_point.dart';
 class DealersRepo {
   static List<DealerPoint>? _cache;
 
+  // Carica i dealer dal file JSON (con cache in memoria).
   static Future<List<DealerPoint>> load() async {
     if (_cache != null) return _cache!;
     final raw = await rootBundle.loadString('assets/dealers.json');
@@ -15,7 +16,8 @@ class DealersRepo {
     return _cache!;
   }
 
-  /// Dealer più vicino a [origin]; se [allowedDealerIds] è non-vuoto, filtra.
+  // Trova il dealer più vicino a una posizione.
+  // Se passo allowedDealerIds filtro solo quelli.
   static Future<DealerPoint> nearestTo(
     LatLng origin, {
     List<String>? allowedDealerIds,
@@ -45,7 +47,7 @@ class DealersRepo {
     return best;
   }
 
-  /// Haversine (metri)
+  // Calcolo distanza Haversine in metri tra due coordinate.
   static double _distanceMeters(
       double lat1, double lon1, double lat2, double lon2) {
     const R = 6371000.0;
@@ -59,6 +61,7 @@ class DealersRepo {
     final c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a));
     return R * c;
   }
-
+  
+  // Conversione gradi → radianti
   static double _toRad(double deg) => deg * (math.pi / 180.0);
 }
