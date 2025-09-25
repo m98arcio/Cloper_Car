@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
 
-/// Logo temporaneo:
-/// - se [imagePath] è valorizzato, mostra quell'immagine
-/// - altrimenti cerchio/quadrato con iniziale del brand su sfondo gradiente
 class BrandLogo extends StatelessWidget {
   final String brand;
   final String? imagePath;
@@ -23,16 +20,20 @@ class BrandLogo extends StatelessWidget {
       final w = round
           ? ClipRRect(
               borderRadius: BorderRadius.circular(size / 2),
-              child: Image.asset(imagePath!, width: size, height: size, fit: BoxFit.cover),
+              child: Image.asset(imagePath!,
+                  width: size, height: size, fit: BoxFit.cover),
             )
-          : Image.asset(imagePath!, width: size, height: size, fit: BoxFit.cover);
+          : Image.asset(imagePath!,
+              width: size, height: size, fit: BoxFit.cover);
       return w;
     }
 
     // Placeholder generato
-    final letter = brand.isNotEmpty ? brand.characters.first.toUpperCase() : '?';
+    final letter =
+        brand.isNotEmpty ? brand.characters.first.toUpperCase() : '?';
     final colors = _brandColors(brand);
-    final borderRadius = round ? BorderRadius.circular(size / 2) : BorderRadius.circular(12);
+    final borderRadius =
+        round ? BorderRadius.circular(size / 2) : BorderRadius.circular(12);
 
     return Container(
       width: size,
@@ -44,7 +45,9 @@ class BrandLogo extends StatelessWidget {
           end: Alignment.bottomRight,
           colors: colors,
         ),
-        boxShadow: const [BoxShadow(blurRadius: 6, color: Colors.black26, offset: Offset(0, 2))],
+        boxShadow: const [
+          BoxShadow(blurRadius: 6, color: Colors.black26, offset: Offset(0, 2))
+        ],
       ),
       alignment: Alignment.center,
       child: Text(
@@ -59,7 +62,6 @@ class BrandLogo extends StatelessWidget {
     );
   }
 
-  /// Palette semplice per rendere i placeholder coerenti tra i brand.
   List<Color> _brandColors(String b) {
     switch (b.toLowerCase()) {
       case 'ferrari':

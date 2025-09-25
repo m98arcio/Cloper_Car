@@ -1,17 +1,33 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
+/// Converte da EUR verso altre valute usando Frankfurter.
 class RatesApi {
-  // Uses exchangerate.host (no key)
-  static const _endpoint = 'https://api.exchangerate.host/latest?base=EUR&symbols=USD,GBP';
+  static const _headers = {
+    'User-Agent': 'Mozilla/5.0 (Android 14; Mobile) AppleWebKit/537.36 '
+        '(KHTML, like Gecko) Chrome/124.0 Mobile Safari/537.36',
+    'Accept': 'application/json,text/plain,*/*',
+  };
 
-  Future<Map<String, double>> fetchRates() async {
-    final r = await http.get(Uri.parse(_endpoint));
-    if (r.statusCode != 200) {
-      throw Exception('Errore nel caricamento tassi');
+  Future<Map<String, double>?> fetchRates() async {
+    final uri =
+        Uri.parse('https://api.frankfurter.app/latest?from=EUR&to=USD,GBP');
+
+    try {
+      final res = await http
+          .get(uri, headers: _headers)
+          .timeout(const Duration(seconds: 10));
+
+      if (res.statusCode != 200) return null;
+
+      final body = utf8.decode(res.bodyBytes);
+      final decoded = json.decode(body) as Map<String, dynamic>;
+      final rates = (decoded['rates'] as Map).map(
+        (k, v) => MapEntry(k.toString(), (v as num).toDouble()),
+      );
+      return Map<String, double>.from(rates);
+    } catch (_) {
+      return null;
     }
-    final data = json.decode(r.body) as Map<String, dynamic>;
-    final rates = (data['rates'] as Map).map((k, v) => MapEntry(k as String, (v as num).toDouble()));
-    return {'USD': rates['USD']!, 'GBP': rates['GBP']!};
   }
 }

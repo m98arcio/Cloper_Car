@@ -1,4 +1,4 @@
-package com.example.concessionario_supercar
+package com.example.cloper_car
 
 import io.flutter.embedding.android.FlutterActivity
 

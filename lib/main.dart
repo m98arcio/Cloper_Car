@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
-import 'screens/home_page.dart';
+import 'screens/splash_screen.dart';
+import 'services/currency_service.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await CurrencyService.init();
   runApp(const MyApp());
 }
 
@@ -14,7 +17,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Concessionario SuperCar',
       theme: ThemeData.dark(useMaterial3: true),
-      home: const HomePage(),
+      home: const SplashScreen(),
     );
   }
 }

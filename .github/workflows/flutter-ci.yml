@@ -1,0 +1,62 @@
+name: Flutter CI
+
+on:
+  push:
+    branches: [ main, Branch2 ]
+  pull_request:
+    branches: [ main, Branch2 ]
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-test:
+    name: Analyze & Test (unit + integration)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Flutter version
+        run: flutter --version
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Static analysis
+        run: flutter analyze
+
+      # Run unit and widget tests
+      - name: Run unit & widget tests
+        run: flutter test --dart-define=CI=true
+
+      # Run integration tests using the flutter-tester device.
+      # This does NOT require Chrome/Edge or an emulator/VM.
+      - name: Run integration tests (flutter-tester)
+        run: |
+          if [ -d "integration_test" ]; then
+            flutter test integration_test -d flutter-tester --dart-define=CI=true
+          else
+            echo "No integration_test/ directory found; skipping integration tests."
+          fi
+
+      # Optionally collect coverage from unit/widget tests.
+      - name: Generate coverage report
+        run: |
+          rm -rf coverage
+          flutter test --coverage --coverage-path=coverage/lcov.info || true
+        if: always()
+
+      - name: Upload coverage artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-lcov
+          path: coverage/lcov.info
+        if: always()

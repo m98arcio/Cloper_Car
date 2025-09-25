@@ -1,0 +1,44 @@
+[
+    {
+      "id": "milano",
+      "name": "Cloper - Milano",
+      "city": "Milano",
+      "lat": 45.4642,
+      "lng": 9.19
+    },
+    {
+      "id": "torino",
+      "name": "CloperCar - Torino",
+      "city": "Torino",
+      "lat": 45.0703,
+      "lng": 7.6869
+    },
+    {
+      "id": "roma",
+      "name": "ClopeCar - Roma",
+      "city": "Roma",
+      "lat": 41.9028,
+      "lng": 12.4964
+    },
+    {
+      "id": "campobasso",
+      "name": "CloperCar - Campobasso",
+      "city": "Campobasso",
+      "lat": 41.5620,
+      "lng": 14.6567
+    },
+    {
+      "id": "maranello",
+      "name": "CloperCar - Maranello",
+      "city": "Maranello",
+      "lat": 44.5290,
+      "lng": 10.8642
+    },
+    {
+      "id": "verona",
+      "name": "CloperCar - Verona",
+      "city": "Verona",
+      "lat": 45.4384,
+      "lng": 10.9916
+    }
+  ]
