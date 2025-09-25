@@ -8,6 +8,7 @@ import '../data/dealers_repo.dart';
 import '../models/dealer_point.dart';
 import '../models/car.dart';
 
+// Card con mappa che mostra i concessionari per un’auto
 class DealerMapCard extends StatefulWidget {
   final Car car;
   final double height;
@@ -23,14 +24,14 @@ class DealerMapCard extends StatefulWidget {
 }
 
 class _DealerMapCardState extends State<DealerMapCard> {
-  GoogleMapController? _controller;
-  CameraPosition? _initial;
-  Set<Marker> _markers = const {};
-  String? _centeredDealerId;
-  double? _nearestDistanceM;
+  GoogleMapController? _controller;   // controller mappa
+  CameraPosition? _initial;           // posizione iniziale camera
+  Set<Marker> _markers = const {};    // marker dei dealer + utente
+  String? _centeredDealerId;          // dealer attualmente centrato
+  double? _nearestDistanceM;          // distanza dal più vicino
 
-  String? _error;
-  Position? _pos;
+  String? _error;                     // errori geolocalizzazione
+  Position? _pos;                     // posizione utente
 
   @override
   void initState() {
@@ -38,15 +39,17 @@ class _DealerMapCardState extends State<DealerMapCard> {
     _bootstrap();
   }
 
+  // Avvio: chiede permessi + posizione, poi prepara mappa
   Future<void> _bootstrap() async {
     try {
-      // 1) Permessi + posizione
+      // controlla servizi attivi
       final enabled = await Geolocator.isLocationServiceEnabled();
       if (!enabled) {
         setState(() => _error = 'Servizi di localizzazione disabilitati.');
         return;
       }
 
+      // gestisce permessi posizione
       LocationPermission perm = await Geolocator.checkPermission();
       if (perm == LocationPermission.denied) {
         perm = await Geolocator.requestPermission();
@@ -57,31 +60,29 @@ class _DealerMapCardState extends State<DealerMapCard> {
         return;
       }
 
+      // prende posizione utente
       final pos = await Geolocator.getCurrentPosition(
         locationSettings: const LocationSettings(
           accuracy: LocationAccuracy.high,
         ),
       );
 
-      setState(() {
-        _pos = pos;
-      });
+      setState(() => _pos = pos);
 
-      // 2) Prepara mappa
       await _prepare();
     } catch (e) {
       setState(() => _error = 'Errore geolocalizzazione: $e');
     }
   }
 
+  // Prepara marker + camera centrata sul dealer più vicino
   Future<void> _prepare() async {
-    if (!mounted) return;
-    if (_pos == null) return;
+    if (!mounted || _pos == null) return;
 
     final all = await DealersRepo.load();
     final byId = {for (final d in all) d.id: d};
 
-    // Se l’auto limita i dealer, filtra; altrimenti usa tutti
+    // Filtra dealer se l’auto ha restrizioni
     final allowedIds = widget.car.availableAt;
     List<DealerPoint> visible;
     if (allowedIds.isNotEmpty) {
@@ -106,7 +107,7 @@ class _DealerMapCardState extends State<DealerMapCard> {
     final distM = _distanceMeters(
         user.latitude, user.longitude, nearest.lat, nearest.lng);
 
-    // Marker dei dealer (evidenzia il più vicino in verde)
+    // marker: utente + dealer
     final markers = <Marker>{
       for (final d in visible)
         Marker(
@@ -149,17 +150,13 @@ class _DealerMapCardState extends State<DealerMapCard> {
 
   @override
   Widget build(BuildContext context) {
-    if (_error != null) {
-      return _errorBox(_error!, _bootstrap);
-    }
-
-    if (_pos == null || _initial == null) {
-      return _skeleton(widget.height);
-    }
+    if (_error != null) return _errorBox(_error!, _bootstrap);
+    if (_pos == null || _initial == null) return _skeleton(widget.height);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        // mappa google
         Container(
           height: widget.height,
           decoration: BoxDecoration(
@@ -175,6 +172,7 @@ class _DealerMapCardState extends State<DealerMapCard> {
             onMapCreated: (c) => _controller = c,
           ),
         ),
+        // banner sotto la mappa con info dealer più vicino
         if (_centeredDealerId != null && _nearestDistanceM != null)
           Padding(
             padding: const EdgeInsets.only(top: 8.0, left: 6, right: 6),
@@ -198,8 +196,7 @@ class _DealerMapCardState extends State<DealerMapCard> {
     );
   }
 
-  // --- helpers UI/geo ---
-
+  //UI helper per caricamento/errore
   Widget _skeleton(double h) => Container(
         height: h,
         decoration: BoxDecoration(
@@ -209,26 +206,25 @@ class _DealerMapCardState extends State<DealerMapCard> {
         child: const Center(child: CircularProgressIndicator()),
       );
 
-  Widget _errorBox(String msg, VoidCallback onRetry) {
-    return Container(
-      height: widget.height,
-      decoration: BoxDecoration(
-        color: const Color(0xFFEFEFEF).withValues(alpha: 0.07),
-        borderRadius: BorderRadius.circular(22),
-      ),
-      child: Center(
-        child: Column(mainAxisSize: MainAxisSize.min, children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12),
-            child: Text(msg, textAlign: TextAlign.center),
-          ),
-          const SizedBox(height: 8),
-          ElevatedButton(onPressed: onRetry, child: const Text('Riprova')),
-        ]),
-      ),
-    );
-  }
+  Widget _errorBox(String msg, VoidCallback onRetry) => Container(
+        height: widget.height,
+        decoration: BoxDecoration(
+          color: const Color(0xFFEFEFEF).withValues(alpha: 0.07),
+          borderRadius: BorderRadius.circular(22),
+        ),
+        child: Center(
+          child: Column(mainAxisSize: MainAxisSize.min, children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              child: Text(msg, textAlign: TextAlign.center),
+            ),
+            const SizedBox(height: 8),
+            ElevatedButton(onPressed: onRetry, child: const Text('Riprova')),
+          ]),
+        ),
+      );
 
+  //funzioni di supporto
   Future<void> _openExternalMaps(double lat, double lng) async {
     final uri = Uri.parse(
         'https://www.google.com/maps/dir/?api=1&destination=$lat,$lng');
@@ -236,12 +232,11 @@ class _DealerMapCardState extends State<DealerMapCard> {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
     }
   }
+  //formatta la distanza in un testo leggibile
+  String _formatDistance(double meters) =>
+      meters < 950 ? '${meters.toStringAsFixed(0)} m' : '${(meters / 1000).toStringAsFixed(1)} km';
 
-  String _formatDistance(double meters) {
-    if (meters < 950) return '${meters.toStringAsFixed(0)} m';
-    return '${(meters / 1000).toStringAsFixed(1)} km';
-  }
-
+  // distanza con formula Haversine
   double _distanceMeters(double lat1, double lon1, double lat2, double lon2) {
     const R = 6371000.0;
     final dLat = _toRad(lat2 - lat1);
@@ -251,13 +246,13 @@ class _DealerMapCardState extends State<DealerMapCard> {
             math.cos(_toRad(lat2)) *
             math.sin(dLon / 2) *
             math.sin(dLon / 2);
-    final c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a));
-    return R * c;
+    return 2 * R * math.atan2(math.sqrt(a), math.sqrt(1 - a));
   }
 
   double _toRad(double deg) => deg * (math.pi / 180.0);
 }
 
+//Banner sotto la mappa con info del dealer più vicino
 class _NearestBanner extends StatelessWidget {
   final String title;
   final String city;

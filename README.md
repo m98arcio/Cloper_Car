@@ -1,7 +1,3 @@
-Perfetto! Ecco il README aggiornato con la parte di **configurazione Gradle saltata** e istruzioni complete su keytool e key.properties integrate:
-
----
-
 # Concessionario Supercar
 
 App Flutter che mostra un catalogo di supercar con schede dettaglio, pagina **In Arrivo** (con effetti tilt), galleria immagini, mappa dei concessionari e profilo utente con valuta preferita.
@@ -97,13 +93,11 @@ Se non è installato, scaricalo da [sito ufficiale Oracle](https://www.oracle.co
 
 `keytool` si trova all’interno del JDK:
 
-* macOS/Linux: `/usr/lib/jvm/java-17-openjdk/bin/keytool`
 * Windows: `C:\Program Files\Java\jdk-17\bin\keytool.exe`
 
 Verifica se è nel PATH:
 
 ```bash
-which keytool      # macOS/Linux
 where keytool      # Windows
 ```
 
@@ -158,5 +152,3 @@ build/app/outputs/flutter-apk/app-release.apk
 ```
 
 ---
-
-Se vuoi, posso anche aggiungere una **piccola sezione di suggerimenti per errori comuni** durante la firma, così il README è completo. Vuoi che lo faccia?

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 
+// Barra superiore riutilizzabile con titolo, sottotitolo opzionale e icona.
+// Usata per intestare le varie pagine con uno stile coerente.
 class PageTopBar extends StatelessWidget {
-  final String title;
-  final String? subtitle;
-  final IconData? icon;
+  final String title;      // titolo principale
+  final String? subtitle;  // sottotitolo opzionale
+  final IconData? icon;    // icona opzionale a sinistra del titolo
 
   const PageTopBar({
     super.key,
@@ -19,6 +21,7 @@ class PageTopBar extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
+          // Titolo con gradiente (e icona se presente)
           ShaderMask(
             shaderCallback: (bounds) => const LinearGradient(
               colors: [Colors.redAccent, Colors.orangeAccent],
@@ -45,6 +48,7 @@ class PageTopBar extends StatelessWidget {
               ],
             ),
           ),
+          // Sottotitolo (se fornito)
           if (subtitle != null) ...[
             const SizedBox(height: 6),
             Text(

@@ -7,12 +7,13 @@ import 'package:url_launcher/url_launcher.dart';
 import '../models/car.dart';
 import '../models/dealer_point.dart';
 
+// Card che mostra un’auto "in arrivo".
 class FlipIncomingCard extends StatefulWidget {
-  final Car car;
-  final DateTime eta;
-  final DealerPoint? dealer;
-  final AnimationController glow;
-  final Position? userPos;
+  final Car car;                // auto da mostrare
+  final DateTime eta;           // data prevista di arrivo
+  final DealerPoint? dealer;    // concessionario più vicino
+  final AnimationController glow; // animazione per effetto bagliore
+  final Position? userPos;      // posizione utente
 
   const FlipIncomingCard({
     super.key,
@@ -29,15 +30,15 @@ class FlipIncomingCard extends StatefulWidget {
 
 class _FlipIncomingCardState extends State<FlipIncomingCard>
     with SingleTickerProviderStateMixin {
-  late final AnimationController _flip;
-  bool get _isBack => _flip.value >= 0.5;
+  late final AnimationController _flip; // controlla animazione flip
+  bool get _isBack => _flip.value >= 0.5; // true se si vede il retro
 
   @override
   void initState() {
     super.initState();
     _flip = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 420),
+      duration: const Duration(milliseconds: 420), // velocità del flip
     );
   }
 
@@ -47,6 +48,7 @@ class _FlipIncomingCardState extends State<FlipIncomingCard>
     super.dispose();
   }
 
+  // Inverte lato card
   void _toggle() {
     if (_isBack) {
       _flip.reverse();
@@ -58,14 +60,14 @@ class _FlipIncomingCardState extends State<FlipIncomingCard>
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: _toggle,
+      onTap: _toggle, // flip al tap
       child: AnimatedBuilder(
         animation: _flip,
         builder: (context, _) {
-          final angle = _flip.value * math.pi;
-          final showBack = angle > math.pi / 2;
+          final angle = _flip.value * math.pi; // angolo in radianti
+          final showBack = angle > math.pi / 2; // retro visibile se oltre metà
           final transform = Matrix4.identity()
-            ..setEntry(3, 2, 0.0012)
+            ..setEntry(3, 2, 0.0012) // prospettiva
             ..rotateY(angle);
 
           return Transform(
@@ -75,7 +77,7 @@ class _FlipIncomingCardState extends State<FlipIncomingCard>
               borderRadius: BorderRadius.circular(24),
               child: Stack(
                 children: [
-                  // FRONT
+                  // Lato frontale
                   Opacity(
                     opacity: showBack ? 0.0 : 1.0,
                     child: IgnorePointer(
@@ -87,7 +89,7 @@ class _FlipIncomingCardState extends State<FlipIncomingCard>
                       ),
                     ),
                   ),
-                  // BACK
+                  // Lato retro
                   Transform(
                     alignment: Alignment.center,
                     transform: Matrix4.identity()..rotateY(math.pi),
@@ -114,8 +116,9 @@ class _FlipIncomingCardState extends State<FlipIncomingCard>
   }
 }
 
-/* ========================= FRONT FACE ========================= */
+//FRONT FACE 
 
+// Mostra immagine auto + data arrivo + titolo
 class _FrontFace extends StatelessWidget {
   final Car car;
   final DateTime eta;
@@ -138,22 +141,25 @@ class _FrontFace extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(24),
         border: Border.all(color: cs.primary.withValues(alpha: 0.35)),
+        // effetto glow animato
         boxShadow: [
           BoxShadow(
             color: cs.primary.withValues(
-                alpha: 0.3 * (0.6 + 0.4 * math.sin(glow.value * math.pi))),
+              alpha: 0.3 * (0.6 + 0.4 * math.sin(glow.value * math.pi)),
+            ),
             blurRadius: 24,
             spreadRadius: 1,
           ),
         ],
         gradient: const LinearGradient(
+          colors: [Color(0xFF0F1733), Color(0xFF141C3A)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [Color(0xFF0F1733), Color(0xFF141C3A)],
         ),
       ),
       child: Stack(
         children: [
+          // Immagine auto
           Positioned.fill(
             child: Image.asset(
               img,
@@ -164,21 +170,19 @@ class _FrontFace extends StatelessWidget {
               ),
             ),
           ),
+          // Scrim nero in basso
           Positioned.fill(
             child: DecoratedBox(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [
-                    Colors.transparent,
-                    Colors.black.withValues(alpha: 0.55)
-                  ],
+                  colors: [Colors.transparent, Colors.black.withValues(alpha: 0.55)],
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                 ),
               ),
             ),
           ),
-          // Pill "Arrivo"
+          // Pill con data arrivo
           Positioned(
             right: 16,
             top: 16,
@@ -191,7 +195,6 @@ class _FrontFace extends StatelessWidget {
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
-                mainAxisSize: MainAxisSize.min,
                 children: [
                   const Text('Arrivo',
                       style: TextStyle(fontSize: 12, color: Colors.white70)),
@@ -202,7 +205,7 @@ class _FrontFace extends StatelessWidget {
               ),
             ),
           ),
-          // Titolo + hint
+          // Titolo e hint "tocca"
           Positioned(
             left: 16,
             right: 16,
@@ -217,8 +220,7 @@ class _FrontFace extends StatelessWidget {
                         fontSize: 22, fontWeight: FontWeight.w700)),
                 const SizedBox(height: 6),
                 Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   decoration: BoxDecoration(
                     color: Colors.white.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(10),
@@ -241,8 +243,9 @@ class _FrontFace extends StatelessWidget {
       '${d.day.toString().padLeft(2, '0')}/${d.month.toString().padLeft(2, '0')}/${d.year}';
 }
 
-/* ========================= BACK FACE ========================= */
+//BACK FACE
 
+// Mostra dettagli auto + specs + mappa dealer
 class _BackFace extends StatelessWidget {
   final Car car;
   final DateTime eta;
@@ -259,6 +262,8 @@ class _BackFace extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+
+    // Specifiche tecniche raccolte
     final specs = <String>[
       if (car.engine?.isNotEmpty == true) 'Motore: ${car.engine}',
       '${car.powerHp} CV',
@@ -276,14 +281,14 @@ class _BackFace extends StatelessWidget {
         borderRadius: BorderRadius.circular(24),
         border: Border.all(color: cs.primary.withValues(alpha: 0.35)),
         gradient: const LinearGradient(
+          colors: [Color(0xFF0F1733), Color(0xFF141C3A)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [Color(0xFF0F1733), Color(0xFF141C3A)],
         ),
       ),
       child: Column(
         children: [
-          // Header titolo + data
+          // Titolo e data arrivo
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 16, 16, 6),
             child: Row(
@@ -298,8 +303,7 @@ class _BackFace extends StatelessWidget {
                   ),
                 ),
                 Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   decoration: BoxDecoration(
                     color: Colors.white.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(10),
@@ -307,15 +311,14 @@ class _BackFace extends StatelessWidget {
                   ),
                   child: Text(
                     _fmtDate(eta),
-                    style: const TextStyle(
-                        fontSize: 14, fontWeight: FontWeight.w700),
+                    style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
                   ),
                 ),
               ],
             ),
           ),
 
-          // Specs
+          // Specifiche tecniche
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
             child: Align(
@@ -324,25 +327,22 @@ class _BackFace extends StatelessWidget {
                 spacing: 10,
                 runSpacing: 6,
                 children: specs
-                    .map(
-                      (s) => Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 6),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.08),
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: Colors.white24),
-                        ),
-                        child: Text(s, style: const TextStyle(fontSize: 13)),
-                      ),
-                    )
+                    .map((s) => Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.08),
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: Colors.white24),
+                          ),
+                          child: Text(s, style: const TextStyle(fontSize: 13)),
+                        ))
                     .toList(),
               ),
             ),
           ),
           const SizedBox(height: 8),
 
-          // Mappa SOLO se esiste un dealer
+          // Mappa solo se c’è un dealer
           if (hasDealer)
             Expanded(
               child: ClipRRect(
@@ -351,6 +351,7 @@ class _BackFace extends StatelessWidget {
                   initialCameraPosition:
                       CameraPosition(target: latLng!, zoom: 12.5),
                   markers: {
+                    // Marker concessionario
                     Marker(
                       markerId: const MarkerId('dealer'),
                       position: latLng,
@@ -363,6 +364,7 @@ class _BackFace extends StatelessWidget {
                         ),
                       ),
                     ),
+                    // Marker utente
                     if (userPos != null)
                       Marker(
                         markerId: const MarkerId('me'),
@@ -384,7 +386,7 @@ class _BackFace extends StatelessWidget {
 
           const SizedBox(height: 10),
 
-          // Footer (se non c'è dealer → messaggio richiesto)
+          // Footer: info dealer o messaggio "non disponibile"
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
             child: Align(
@@ -403,6 +405,7 @@ class _BackFace extends StatelessWidget {
     );
   }
 
+  // Apre Google Maps esterno per navigazione
   Future<void> _openExternalMaps(double lat, double lng) async {
     final uri = Uri.parse(
         'https://www.google.com/maps/dir/?api=1&destination=$lat,$lng');
