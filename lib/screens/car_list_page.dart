@@ -9,6 +9,7 @@ import '../widgets/app_bottom_bar.dart';
 import 'profile_page.dart';
 import '../services/currency_service.dart';
 
+// Pagina elenco modelli per un singolo brand
 class CarListPage extends StatefulWidget {
   final String brand;
   final List<Car> cars;
@@ -30,8 +31,8 @@ class CarListPage extends StatefulWidget {
 }
 
 class _CarListPageState extends State<CarListPage> {
-  VideoPlayerController? _videoController;
-  Future<void>? _videoInit;
+  VideoPlayerController? _videoController;  // controller video hero
+  Future<void>? _videoInit;                 // future init video 
   final PageController _pageController = PageController(viewportFraction: 0.6);
 
   // ------- ORDINAMENTO -------
@@ -40,7 +41,7 @@ class _CarListPageState extends State<CarListPage> {
   @override
   void initState() {
     super.initState();
-    _loadBrandVideo(_videoForBrand(widget.brand));
+    _loadBrandVideo(_videoForBrand(widget.brand)); // carica video del brand
   }
 
   @override
@@ -58,6 +59,7 @@ class _CarListPageState extends State<CarListPage> {
     super.dispose();
   }
 
+  // Mappa brand -> path video (fallback Ferrari)
   String _videoForBrand(String brand) {
     final b = brand.toLowerCase().trim();
     if (b.contains('ferrari')) return 'assets/video/ferrari.mp4';
@@ -73,7 +75,8 @@ class _CarListPageState extends State<CarListPage> {
     if (b.contains('lotus')) return 'assets/video/Lotus.mp4';
     return 'assets/video/ferrari.mp4';
   }
-
+  
+  // Inizializza il controller video e lo avvia in loop muto.
   void _loadBrandVideo(String assetPath) {
     _videoController?.dispose();
     final controller = VideoPlayerController.asset(assetPath);
@@ -117,8 +120,9 @@ class _CarListPageState extends State<CarListPage> {
   @override
   Widget build(BuildContext context) {
     final brand = widget.brand;
+    //filtra le auto in arrivo
     final availableCars = widget.cars.where((c) => !c.incoming).toList();
-
+    //builder dell'ordinamento
     final List<Car> sorted = List.of(availableCars);
     switch (_sort) {
       case _SortOrder.priceAsc:
@@ -157,7 +161,7 @@ class _CarListPageState extends State<CarListPage> {
           const DarkLiveBackground(),
           Column(
             children: [
-              /* ================== HERO VIDEO ================== */
+              //HERO VIDEO
               Stack(
                 children: [
                   SizedBox(
@@ -212,7 +216,7 @@ class _CarListPageState extends State<CarListPage> {
                 ],
               ),
 
-              /* ====== TITOLO SEZIONE + MENU ORDINAMENTO ====== */
+              // TITOLO SEZIONE + MENU ORDINAMENTO
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
                 child: Row(
@@ -226,6 +230,7 @@ class _CarListPageState extends State<CarListPage> {
                         ),
                       ),
                     ),
+                    // popup per scegliere ordinamento
                     AnimatedSize(
                       duration: const Duration(milliseconds: 180),
                       curve: Curves.easeOut,
@@ -339,7 +344,7 @@ class _CarListPageState extends State<CarListPage> {
                 ),
               ),
 
-              /* ============== LISTA VERTICALE ANIMATA ============== */
+              //LISTA VERTICALE ANIMATA
               Expanded(
                 child: PageView.builder(
                   controller: _pageController,
@@ -349,6 +354,7 @@ class _CarListPageState extends State<CarListPage> {
                   itemBuilder: (context, index) {
                     final car = sorted[index];
 
+                    //effetto scalato in base alla posizione pagina
                     return AnimatedBuilder(
                       animation: _pageController,
                       builder: (context, child) {
@@ -410,7 +416,7 @@ class _CarListPageState extends State<CarListPage> {
       ),
     );
   }
-
+  //testo orfdinamento
   String _sortLabel(_SortOrder s) {
     switch (s) {
       case _SortOrder.normal:
@@ -421,7 +427,7 @@ class _CarListPageState extends State<CarListPage> {
         return 'Prezzo Decrescente';
     }
   }
-
+ //icona ordinamento
   IconData _sortIcon(_SortOrder s) {
     switch (s) {
       case _SortOrder.normal:
@@ -436,8 +442,7 @@ class _CarListPageState extends State<CarListPage> {
 
 enum _SortOrder { normal, priceAsc, priceDesc }
 
-/* ---------- resto del file invariato ---------- */
-
+//card singola auto
 class _CarCard extends StatefulWidget {
   final Car car;
   final VoidCallback onTap;
@@ -449,7 +454,7 @@ class _CarCard extends StatefulWidget {
 }
 
 class _CarCardState extends State<_CarCard> {
-  double _scale = 1.0;
+  double _scale = 1.0; // effetto pressione
 
   void _onTapDown(TapDownDetails details) => setState(() => _scale = 0.95);
   void _onTapUp(TapUpDetails details) => setState(() => _scale = 1.0);
@@ -578,7 +583,7 @@ class _CarCardState extends State<_CarCard> {
   }
 }
 
-/* ---------- frosted glass helper ---------- */
+//frosted glass helper
 class _Frosted extends StatelessWidget {
   final Widget child;
   final double borderRadius;
@@ -611,7 +616,7 @@ class _Frosted extends StatelessWidget {
   }
 }
 
-/* ---------- GradientText per AppBar ---------- */
+//GradientText per AppBar
 class _GradientText extends StatelessWidget {
   final String text;
   final TextStyle style;

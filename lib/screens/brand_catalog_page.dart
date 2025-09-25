@@ -306,7 +306,12 @@ class _GradientText extends StatelessWidget {
   final TextStyle style;
   final List<Color> colors;
 
-  const _GradientText(this.text, {required this.style, required this.colors});
+  const _GradientText(
+    this.text, {
+    required this.style, 
+    required this.colors
+    }
+  );
 
   @override
   Widget build(BuildContext context) {

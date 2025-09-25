@@ -8,10 +8,10 @@ import '../widgets/dark_live_background.dart';
 import '../services/currency_service.dart';
 
 class ProfilePage extends StatefulWidget {
-  final String initialCurrency; // 'EUR' | 'USD' | 'GBP'
-  final ValueChanged<String> onChanged;
-  final List<Car> cars; // lista completa di auto
-  final Map<String, double>? rates;
+  final String initialCurrency; // valuta iniziale
+  final ValueChanged<String> onChanged; // callback cambio valuta
+  final List<Car> cars; // lista completa auto (per bottom bar)
+  final Map<String, double>? rates; // cambi (se disponibili)
 
   const ProfilePage({
     super.key,
@@ -26,41 +26,45 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  late String _currency;
+  late String _currency; // valuta selezionata
 
   @override
   void initState() {
     super.initState();
+    // usa preferenza salvata, altrimenti quella passata
     _currency = CurrencyService.preferred.isNotEmpty
         ? CurrencyService.preferred
         : widget.initialCurrency;
   }
 
+  // salva e notifica nuova valuta
   Future<void> _set(String code) async {
     setState(() => _currency = code);
     await CurrencyService.save(code);
     widget.onChanged(code);
   }
 
+  // profilo già aperto (placeholder)
   Future<void> _openProfile() async {
-    // già nella pagina profilo
+    // niente: siamo già qui
   }
 
   @override
   Widget build(BuildContext context) {
-    final subtitle = CurrencyService.labelFor(_currency);
+    final subtitle = CurrencyService.labelFor(_currency); // label leggibile
 
     return Scaffold(
       backgroundColor: Colors.transparent,
-      appBar: const _ProfileAppBar(),
+      appBar: const _ProfileAppBar(), // appbar con gradiente
       body: Stack(
         children: [
-          const DarkLiveBackground(),
+          const DarkLiveBackground(), // sfondo animato
           SafeArea(
             top: false,
             child: ListView(
               children: [
                 const SizedBox(height: 8),
+                // sezione impostazioni
                 const Padding(
                   padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   child: Text(
@@ -68,6 +72,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
                   ),
                 ),
+                // tile intestazione valuta
                 _tile(
                   title: 'Valuta preferita',
                   subtitle: subtitle,
@@ -75,6 +80,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
                 const Divider(height: 1, color: Colors.white12),
 
+                // elenco scelte valuta 
                 for (final c in CurrencyService.currencies) ...[
                   ListTile(
                     leading: Icon(
@@ -95,11 +101,12 @@ class _ProfilePageState extends State<ProfilePage> {
                         Text(_nameFromLabel(c['label']!)),
                       ],
                     ),
-                    onTap: () => _set(c['code']!),
+                    onTap: () => _set(c['code']!), // cambia valuta
                   ),
                   const Divider(height: 1, color: Colors.white12),
                 ],
-                // ------------------- PULSANTE ESCI -------------------
+
+                // pulsante uscita app (Android/iOS)
                 Padding(
                   padding:
                       const EdgeInsets.symmetric(vertical: 24, horizontal: 32),
@@ -114,9 +121,9 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                     onPressed: () {
                       if (Platform.isAndroid) {
-                        SystemNavigator.pop();
+                        SystemNavigator.pop(); // chiude app su Android
                       } else if (Platform.isIOS) {
-                        exit(0);
+                        exit(0); // forza uscita su iOS (non consigliato in prod)
                       }
                     },
                     child: Ink(
@@ -146,6 +153,7 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
         ],
       ),
+      // bottom bar: indice profilo, passa lista auto e valute
       bottomNavigationBar: AppBottomBar(
         currentIndex: 3,
         cars: widget.cars,
@@ -157,7 +165,7 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  // ----- helpers UI -----
+  //helper UI per una riga titolo/sottotitolo con icona
   Widget _tile({
     required String title,
     required String subtitle,
@@ -170,11 +178,13 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
+  // estrae nome valuta dalla label (es. "Euro (€)" -> "Euro")
   String _nameFromLabel(String label) {
     final idx = label.indexOf('(');
     return (idx > 0) ? label.substring(0, idx).trim() : label;
   }
 
+  // estrae simbolo dalla label (es. "Euro (€)" -> "€")
   String _symbolFromLabel(String label) {
     final start = label.indexOf('(');
     final end = label.indexOf(')');
@@ -185,7 +195,7 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 }
 
-/* ---------------- AppBar con titolo a gradiente ---------------- */
+//AppBar con titolo a gradiente
 class _ProfileAppBar extends StatelessWidget implements PreferredSizeWidget {
   const _ProfileAppBar();
 
@@ -213,7 +223,7 @@ class _ProfileAppBar extends StatelessWidget implements PreferredSizeWidget {
   }
 }
 
-/* ---------------- GradientText riutilizzabile (privato) ---------------- */
+//Testo con gradiente
 class _GradientText extends StatelessWidget {
   final String text;
   final TextStyle style;

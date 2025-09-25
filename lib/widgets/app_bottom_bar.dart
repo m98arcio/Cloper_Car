@@ -25,7 +25,7 @@ class AppBottomBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return BottomNavigationBar(
       currentIndex: currentIndex,
-      selectedItemColor: Colors.white, // sarà sostituito dal gradient
+      selectedItemColor: Colors.white,
       unselectedItemColor: Colors.grey.shade400,
       backgroundColor: Colors.black.withValues(alpha: 0.95),
       type: BottomNavigationBarType.fixed,

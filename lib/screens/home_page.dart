@@ -398,7 +398,7 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-/* ---------- Titolo AppBar con gradiente ---------- */
+//Titolo AppBar con gradiente
 
 class _AppBarBrandTitle extends StatelessWidget {
   const _AppBarBrandTitle();
@@ -438,7 +438,7 @@ class _GradientText extends StatelessWidget {
   }
 }
 
-// ----------- Chip brand (invariato) -----------
+//Chip brand
 
 class _BrandChip extends StatefulWidget {
   final String brand;

@@ -21,8 +21,8 @@ class IncomingPage extends StatefulWidget {
     this.allCars,
   });
 
-  final List<Car> cars;
-  final List<Car>? allCars;
+  final List<Car> cars;     // auto passate dal chiamante
+  final List<Car>? allCars; // lista completa 
 
   @override
   State<IncomingPage> createState() => _IncomingPageState();
@@ -30,49 +30,52 @@ class IncomingPage extends StatefulWidget {
 
 class _IncomingPageState extends State<IncomingPage>
     with SingleTickerProviderStateMixin {
-  // -------- sensori / animazioni --------
-  StreamSubscription? _accSub, _gyroSub;
-  double _roll = 0, _pitch = 0, _accRoll = 0, _accPitch = 0;
-  DateTime? _lastGyroTime;
-  static const _alpha = 0.92;
-  static const _clamp = 0.30;
-  double _deadzone(double v, [double eps = 0.02]) => v.abs() < eps ? 0 : v;
 
-  // Baseline con calibrazione ritardata
+  //sensori / animazioni
+  StreamSubscription? _accSub, _gyroSub; // sottoscrizioni ai sensori
+  double _roll = 0, _pitch = 0, _accRoll = 0, _accPitch = 0; // angoli
+  DateTime? _lastGyroTime;               // timestamp ultimo gyro
+  static const _alpha = 0.92;            // filtro complementare
+  static const _clamp = 0.30;            // limite angolo
+  double _deadzone(double v, [double eps = 0.02]) => v.abs() < eps ? 0 : v; // zona morta
+
+  // calibrazione iniziale
   double? _offsetRoll, _offsetPitch;
   Timer? _calibTimer;
   bool _calibrated = false;
 
-  late final PageController _page;
-  late final AnimationController _glow;
+  late final PageController _page;        // pager card
+  late final AnimationController _glow;   // bagliore animato
 
-  // -------- dealers + posizione utente --------
+  //dealer + posizione utente
   List<DealerPoint> _dealers = const [];
-  Position? _pos;
-  String? _loadError;
+  Position? _pos;          // posizione corrente
+  String? _loadError;      // errore caricamento dealer/posizione
 
-  // -------- catalogo completo --------
+  //catalogo completo
   List<Car>? _allCars;
   bool _loadingCars = false;
 
-  int _index = 0;
+  int _index = 0; // indice pagina corrente
 
   @override
   void initState() {
     super.initState();
-    _page = PageController(viewportFraction: 0.78);
+    _page = PageController(viewportFraction: 0.78); // card “quasi” a tutta larghezza
     _glow = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 4),
     )..repeat(reverse: true);
-    _bootstrap();
+    _bootstrap(); // carica dati e poi avvia sensori
   }
 
+  // Avvio iniziale: dealer/posizione + eventuale catalogo completo
   Future<void> _bootstrap() async {
     await Future.wait([_initData(), _ensureAllCarsLoaded()]);
     _startSensors();
   }
 
+  // Se allCars non è passato, carica da JSON locale
   Future<void> _ensureAllCarsLoaded() async {
     if (widget.allCars != null) {
       setState(() => _allCars = widget.allCars);
@@ -95,6 +98,7 @@ class _IncomingPageState extends State<IncomingPage>
     }
   }
 
+  // Ottiene posizione con permessi “soft”
   Future<Position?> _getPosition() async {
     final enabled = await Geolocator.isLocationServiceEnabled();
     if (!enabled) return null;
@@ -106,6 +110,7 @@ class _IncomingPageState extends State<IncomingPage>
         perm == LocationPermission.denied) {
       return null;
     }
+    // alta precisione su Android
     return Geolocator.getCurrentPosition(
       locationSettings: AndroidSettings(
         accuracy: LocationAccuracy.high,
@@ -113,6 +118,7 @@ class _IncomingPageState extends State<IncomingPage>
     );
   }
 
+  // Carica dealer e posizione
   Future<void> _initData() async {
     try {
       final dealers = await DealersRepo.load();
@@ -129,11 +135,12 @@ class _IncomingPageState extends State<IncomingPage>
     }
   }
 
+  // Avvia lettura accelerometro + giroscopio e calcola roll/pitch
   void _startSensors() {
     _accSub = accelerometerEventStream().listen((e) {
       final ax = e.x.toDouble(), ay = e.y.toDouble(), az = e.z.toDouble();
-      _accRoll = math.atan2(ay, az);
-      _accPitch = math.atan2(-ax, math.sqrt(ay * ay + az * az));
+      _accRoll = math.atan2(ay, az);                            // roll da accelerometro
+      _accPitch = math.atan2(-ax, math.sqrt(ay * ay + az * az)); // pitch da accelerometro
     });
 
     _gyroSub = gyroscopeEventStream().listen((g) {
@@ -143,13 +150,15 @@ class _IncomingPageState extends State<IncomingPage>
           : (now.difference(_lastGyroTime!).inMicroseconds / 1e6);
       _lastGyroTime = now;
 
+      // filtro complementare
       _roll = (_alpha * (_roll + g.y * dt)) + ((1 - _alpha) * _accRoll);
       _pitch = (_alpha * (_pitch + g.x * dt)) + ((1 - _alpha) * _accPitch);
 
+      // limito per non esagerare
       _roll = _roll.clamp(-_clamp, _clamp);
       _pitch = _pitch.clamp(-_clamp, _clamp);
 
-      // Calibrazione ritardata
+      // calibro dopo un attimo
       _calibTimer ??= Timer(const Duration(milliseconds: 400), () {
         _offsetRoll = _roll;
         _offsetPitch = _pitch;
@@ -173,10 +182,12 @@ class _IncomingPageState extends State<IncomingPage>
 
   @override
   Widget build(BuildContext context) {
+    // da dove prendo le auto: allCars -> widget.allCars -> widget.cars
     final source = _allCars ?? widget.allCars ?? widget.cars;
-    final cars = source.where((c) => c.incoming).toList();
+    final cars = source.where((c) => c.incoming).toList(); // solo “in arrivo”
 
     if (_loadingCars) {
+      // caricamento catalogo completo
       return const Scaffold(
         appBar: _IncomingAppBar(),
         body: Stack(
@@ -192,6 +203,7 @@ class _IncomingPageState extends State<IncomingPage>
     }
 
     if (cars.isEmpty) {
+      // nessuna auto incoming
       return const Scaffold(
         appBar: _IncomingAppBar(),
         body: Stack(
@@ -207,6 +219,7 @@ class _IncomingPageState extends State<IncomingPage>
     }
 
     if (_loadError != null) {
+      // errore caricando dealer/posizione
       return Scaffold(
         appBar: const _IncomingAppBar(),
         body: Stack(
@@ -221,6 +234,7 @@ class _IncomingPageState extends State<IncomingPage>
       );
     }
 
+    // layout principale
     return Scaffold(
       appBar: const _IncomingAppBar(),
       body: Stack(
@@ -231,6 +245,7 @@ class _IncomingPageState extends State<IncomingPage>
             child: Column(
               children: [
                 const SizedBox(height: 8),
+                // carosello verticale delle card
                 Expanded(
                   child: PageView.builder(
                     controller: _page,
@@ -238,11 +253,14 @@ class _IncomingPageState extends State<IncomingPage>
                     itemCount: cars.length,
                     itemBuilder: (context, i) {
                       final car = cars[i];
+                      // ETA fittizia deterministica
                       final eta = DateTime.now().add(
                         Duration(days: (car.id.hashCode % 20).abs() + 3),
                       );
+                      // dealer consigliato per quell’auto (in base alla posizione)
                       final dealer = _nearestDealerFor(car);
 
+                      // rotazioni card da sensori (centrate sulla calibrazione)
                       double rotX = 0, rotY = 0;
                       if (_calibrated &&
                           _offsetRoll != null &&
@@ -259,6 +277,7 @@ class _IncomingPageState extends State<IncomingPage>
                             horizontal: 8,
                             vertical: 12,
                           ),
+                          // card front/back con flip su tap
                           child: FlipIncomingCard(
                             car: car,
                             eta: eta,
@@ -271,6 +290,7 @@ class _IncomingPageState extends State<IncomingPage>
                     },
                   ),
                 ),
+                // banner con città consigliata + data
                 Padding(
                   padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
                   child: _AvailabilityBanner(
@@ -285,6 +305,7 @@ class _IncomingPageState extends State<IncomingPage>
           ),
         ],
       ),
+      // bottom bar (In Arrivo è index 2)
       bottomNavigationBar: AppBottomBar(
         currentIndex: 2,
         cars: source,
@@ -308,9 +329,11 @@ class _IncomingPageState extends State<IncomingPage>
     );
   }
 
+  // Trova il dealer migliore per l'auto (rispettando availableAt).
   DealerPoint? _nearestDealerFor(Car car) {
     if (_dealers.isEmpty) return null;
 
+    // restringe ai dealer ammessi dalla scheda
     final List<DealerPoint> candidates;
     if (car.availableAt.isNotEmpty) {
       final byId = {for (final d in _dealers) d.id: d};
@@ -323,8 +346,10 @@ class _IncomingPageState extends State<IncomingPage>
       candidates = _dealers;
     }
 
+    // senza posizione → primo disponibile
     if (_pos == null) return candidates.first;
 
+    // con posizione → minimo per distanza (Haversine)
     final user = LatLng(_pos!.latitude, _pos!.longitude);
     DealerPoint best = candidates.first;
     double bestD =
@@ -341,6 +366,7 @@ class _IncomingPageState extends State<IncomingPage>
     return best;
   }
 
+  // Distanza Haversine in metri
   double _haversine(double lat1, double lon1, double lat2, double lon2) {
     const R = 6371000.0;
     final dLat = _toRad(lat2 - lat1);
@@ -356,6 +382,7 @@ class _IncomingPageState extends State<IncomingPage>
 
   double _toRad(double d) => d * math.pi / 180.0;
 
+  // Matrice di prospettiva + rotazioni per l’effetto 3D
   Matrix4 _perspective({double rotX = 0, double rotY = 0}) {
     return Matrix4.identity()
       ..setEntry(3, 2, 0.0016)
@@ -364,8 +391,7 @@ class _IncomingPageState extends State<IncomingPage>
   }
 }
 
-/* ---------------- AppBar con titolo a gradiente ---------------- */
-
+//AppBar con titolo a gradiente
 class _IncomingAppBar extends StatelessWidget implements PreferredSizeWidget {
   const _IncomingAppBar();
 
@@ -393,8 +419,7 @@ class _IncomingAppBar extends StatelessWidget implements PreferredSizeWidget {
   }
 }
 
-/* ---------------- GradientText ---------------- */
-
+//GradientText
 class _GradientText extends StatelessWidget {
   final String text;
   final TextStyle style;
@@ -415,11 +440,10 @@ class _GradientText extends StatelessWidget {
   }
 }
 
-/* ---------------- Availability Banner ---------------- */
-
+//Banner disponibilità
 class _AvailabilityBanner extends StatelessWidget {
-  final String city;
-  final DateTime eta;
+  final String city;   // città del dealer consigliato
+  final DateTime eta;  // data di arrivo stimata
   const _AvailabilityBanner({required this.city, required this.eta});
 
   @override
