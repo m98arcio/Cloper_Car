@@ -100,3 +100,8 @@ linux/**/build/
 # =========================
 app.*.symbols
 app.*.map.json
+
+# 🔑 Chiavi e file sensibili
+**/key.properties
+**/*.jks
+**/*.keystore
