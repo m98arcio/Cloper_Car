@@ -73,21 +73,22 @@ class _CarDetailPageState extends State<CarDetailPage> {
       setState(() => _locError = e.toString());
     }
   }
-  /// Apre pagina profilo
-  Future<void> _openProfile() async {
-    await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => ProfilePage(
-          initialCurrency: CurrencyService.preferred,
-          onChanged: (_) {},
-          cars: widget.cars,
-          rates: widget.rates,
-        ),
+// Apre pagina profilo
+Future<void> _openProfile() async {
+  await Navigator.push(
+    context,
+    MaterialPageRoute(
+      settings: const RouteSettings(name: '/profile'),
+      builder: (_) => ProfilePage(
+        initialCurrency: CurrencyService.preferred,
+        onChanged: (_) {},
+        cars: widget.cars,
+        rates: widget.rates,
       ),
-    );
-    if (mounted) setState(() {});
-  }
+    ),
+  );
+  if (mounted) setState(() {});
+}
   // Testo di fallback se manca descrizione
   String _defaultDesc(Car c) =>
       '${c.brand} ${c.model} unisce design iconico e prestazioni da pista. Questa scheda è alimentata dai dati locali del catalogo.';

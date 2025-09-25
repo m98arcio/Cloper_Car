@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:webfeed/webfeed.dart';
 
+// Modello che rappresenta una notizia
 class NewsItem {
   final String title;
   final String link;
@@ -18,7 +19,9 @@ class NewsItem {
   });
 }
 
+// Servizio che scarica e gestisce feed RSS/Atom
 class NewsService {
+  // URL dei feed di notizie da cui leggere
   static const Map<String, String> _feeds = {
     'Motor1': 'https://www.motor1.com/rss/news/',
     'Autoblog': 'https://www.autoblog.com/rss.xml',
@@ -28,23 +31,26 @@ class NewsService {
     'Autocar': 'https://www.autocar.co.uk/rss',
   };
 
+  // Header per far accettare la richiesta come browser
   static const _headers = {
-    'User-Agent': 'Mozilla/5.0 (Android 14; Mobile) AppleWebKit/537.36 '
-        '(KHTML, like Gecko) Chrome/124.0 Mobile Safari/537.36',
+    'User-Agent': 'Mozilla/5.0 (Android 14; Mobile)...',
     'Accept': 'application/rss+xml, application/xml;q=0.9, */*;q=0.8',
   };
 
+  // Scarica le notizie più recenti
   Future<List<NewsItem>> fetchLatest({
-    int maxPerFeed = 8,
-    int totalMax = 18,
+    int maxPerFeed = 8,   // max per ogni feed
+    int totalMax = 18,    // max totale
   }) async {
     final out = <NewsItem>[];
 
+    // Cicla su ogni feed
     for (final entry in _feeds.entries) {
       final source = entry.key;
       final url = entry.value;
 
       try {
+        // Richiesta HTTP
         final res = await http
             .get(Uri.parse(url), headers: _headers)
             .timeout(const Duration(seconds: 12));
@@ -52,6 +58,7 @@ class NewsService {
 
         final body = utf8.decode(res.bodyBytes);
 
+        // Prova a leggere come RSS
         try {
           final rss = RssFeed.parse(body);
           for (final item
@@ -61,6 +68,7 @@ class NewsService {
           continue;
         } catch (_) {}
 
+        // Se non è RSS, prova come Atom
         try {
           final atom = AtomFeed.parse(body);
           for (final item
@@ -71,17 +79,22 @@ class NewsService {
       } catch (_) {}
     }
 
+    // Ordina le notizie dalla più recente alla più vecchia
     out.sort((a, b) {
       final ad = a.pubDate?.millisecondsSinceEpoch ?? 0;
       final bd = b.pubDate?.millisecondsSinceEpoch ?? 0;
       return bd.compareTo(ad);
     });
+
+    // Limita al numero massimo
     if (out.length > totalMax) out.removeRange(totalMax, out.length);
     return out;
   }
 
+  // Converte un RSS item in NewsItem
   NewsItem _fromRss(RssItem i, String source) {
     String? img;
+    // Cerca immagine in vari campi dell'RSS
     if (i.media?.thumbnails?.isNotEmpty == true) {
       img = i.media!.thumbnails!.first.url;
     } else if (i.media?.contents?.isNotEmpty == true) {
@@ -89,14 +102,12 @@ class NewsService {
     } else if (i.enclosure?.url != null) {
       img = i.enclosure!.url;
     } else if ((i.description ?? '').contains('img')) {
-      final m = RegExp(r'<img[^>]+src="([^"]+)"', caseSensitive: false)
-          .firstMatch(i.description!);
+      final m = RegExp(r'<img[^>]+src="([^"]+)"').firstMatch(i.description!);
       if (m != null) img = m.group(1);
     }
 
     return NewsItem(
-      title:
-          (i.title ?? '').trim().isEmpty ? '(senza titolo)' : i.title!.trim(),
+      title: (i.title ?? '').trim().isEmpty ? '(senza titolo)' : i.title!.trim(),
       link: (i.link ?? '').trim(),
       pubDate: i.pubDate,
       imageUrl: img,
@@ -104,6 +115,7 @@ class NewsService {
     );
   }
 
+  // Converte un Atom item in NewsItem
   NewsItem _fromAtom(AtomItem i, String source) {
     final linkHref = (i.links != null && i.links!.isNotEmpty)
         ? (i.links!.first.href ?? '')
@@ -117,8 +129,7 @@ class NewsService {
     }
 
     return NewsItem(
-      title:
-          (i.title ?? '').trim().isEmpty ? '(senza titolo)' : i.title!.trim(),
+      title: (i.title ?? '').trim().isEmpty ? '(senza titolo)' : i.title!.trim(),
       link: linkHref,
       pubDate: i.updated,
       imageUrl: img,

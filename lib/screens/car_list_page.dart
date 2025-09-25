@@ -32,11 +32,15 @@ class CarListPage extends StatefulWidget {
 
 class _CarListPageState extends State<CarListPage> {
   VideoPlayerController? _videoController;  // controller video hero
-  Future<void>? _videoInit;                 // future init video 
+  Future<void>? _videoInit;                 // future init video
   final PageController _pageController = PageController(viewportFraction: 0.6);
 
   // ------- ORDINAMENTO -------
   _SortOrder _sort = _SortOrder.normal;
+
+  // ------- GUARDIE NAVIGAZIONE -------
+  bool _navigatingProfile = false;
+  bool _pushingDetail = false;
 
   @override
   void initState() {
@@ -75,7 +79,7 @@ class _CarListPageState extends State<CarListPage> {
     if (b.contains('lotus')) return 'assets/video/Lotus.mp4';
     return 'assets/video/ferrari.mp4';
   }
-  
+
   // Inizializza il controller video e lo avvia in loop muto.
   void _loadBrandVideo(String assetPath) {
     _videoController?.dispose();
@@ -102,10 +106,16 @@ class _CarListPageState extends State<CarListPage> {
     });
   }
 
+  // ---- NAV: Profilo (con guardia anti-duplicato + route name) ----
   Future<void> _openProfile() async {
+    if (_navigatingProfile) return;
+    if (ModalRoute.of(context)?.settings.name == '/profile') return;
+
+    _navigatingProfile = true;
     await Navigator.push(
       context,
       MaterialPageRoute(
+        settings: const RouteSettings(name: '/profile'),
         builder: (_) => ProfilePage(
           initialCurrency: CurrencyService.preferred,
           onChanged: (_) {},
@@ -114,15 +124,18 @@ class _CarListPageState extends State<CarListPage> {
         ),
       ),
     );
-    if (mounted) setState(() {});
+    _navigatingProfile = false;
+
+    if (!mounted) return;
+    setState(() {}); // refresh se la valuta è cambiata
   }
 
   @override
   Widget build(BuildContext context) {
     final brand = widget.brand;
-    //filtra le auto in arrivo
+    // filtra le auto in arrivo
     final availableCars = widget.cars.where((c) => !c.incoming).toList();
-    //builder dell'ordinamento
+    // builder dell'ordinamento
     final List<Car> sorted = List.of(availableCars);
     switch (_sort) {
       case _SortOrder.priceAsc:
@@ -161,7 +174,7 @@ class _CarListPageState extends State<CarListPage> {
           const DarkLiveBackground(),
           Column(
             children: [
-              //HERO VIDEO
+              // HERO VIDEO
               Stack(
                 children: [
                   SizedBox(
@@ -171,8 +184,7 @@ class _CarListPageState extends State<CarListPage> {
                         ? FutureBuilder<void>(
                             future: _videoInit,
                             builder: (context, snap) {
-                              if (snap.connectionState ==
-                                      ConnectionState.done &&
+                              if (snap.connectionState == ConnectionState.done &&
                                   _videoController!.value.isInitialized) {
                                 return VideoPlayer(_videoController!);
                               }
@@ -230,7 +242,6 @@ class _CarListPageState extends State<CarListPage> {
                         ),
                       ),
                     ),
-                    // popup per scegliere ordinamento
                     AnimatedSize(
                       duration: const Duration(milliseconds: 180),
                       curve: Curves.easeOut,
@@ -257,14 +268,7 @@ class _CarListPageState extends State<CarListPage> {
                                 children: [
                                   Icon(Icons.sort, size: 18),
                                   SizedBox(width: 12),
-                                  Flexible(
-                                    child: Text(
-                                      'Default',
-                                      maxLines: 1,
-                                      softWrap: false,
-                                      overflow: TextOverflow.visible,
-                                    ),
-                                  ),
+                                  Flexible(child: Text('Default')),
                                 ],
                               ),
                             ),
@@ -278,14 +282,7 @@ class _CarListPageState extends State<CarListPage> {
                                 children: [
                                   Icon(Icons.arrow_upward, size: 18),
                                   SizedBox(width: 12),
-                                  Flexible(
-                                    child: Text(
-                                      'Prezzo crescente',
-                                      maxLines: 1,
-                                      softWrap: false,
-                                      overflow: TextOverflow.visible,
-                                    ),
-                                  ),
+                                  Flexible(child: Text('Prezzo crescente')),
                                 ],
                               ),
                             ),
@@ -299,14 +296,7 @@ class _CarListPageState extends State<CarListPage> {
                                 children: [
                                   Icon(Icons.arrow_downward, size: 18),
                                   SizedBox(width: 12),
-                                  Flexible(
-                                    child: Text(
-                                      'Prezzo decrescente',
-                                      maxLines: 1,
-                                      softWrap: false,
-                                      overflow: TextOverflow.visible,
-                                    ),
-                                  ),
+                                  Flexible(child: Text('Prezzo decrescente')),
                                 ],
                               ),
                             ),
@@ -344,7 +334,7 @@ class _CarListPageState extends State<CarListPage> {
                 ),
               ),
 
-              //LISTA VERTICALE ANIMATA
+              // LISTA VERTICALE ANIMATA
               Expanded(
                 child: PageView.builder(
                   controller: _pageController,
@@ -354,7 +344,7 @@ class _CarListPageState extends State<CarListPage> {
                   itemBuilder: (context, index) {
                     final car = sorted[index];
 
-                    //effetto scalato in base alla posizione pagina
+                    // effetto scalato in base alla posizione pagina
                     return AnimatedBuilder(
                       animation: _pageController,
                       builder: (context, child) {
@@ -384,10 +374,14 @@ class _CarListPageState extends State<CarListPage> {
                       },
                       child: _CarCard(
                         car: car,
-                        onTap: () {
-                          Navigator.push(
+                        onTap: () async {
+                          if (_pushingDetail) return; // evita doppio tap
+                          _pushingDetail = true;
+
+                          await Navigator.push(
                             context,
                             MaterialPageRoute(
+                              settings: RouteSettings(name: '/car/${car.id}'),
                               builder: (_) => CarDetailPage(
                                 car: car,
                                 rates: widget.rates,
@@ -396,6 +390,8 @@ class _CarListPageState extends State<CarListPage> {
                               ),
                             ),
                           );
+
+                          _pushingDetail = false;
                         },
                       ),
                     );
@@ -416,7 +412,8 @@ class _CarListPageState extends State<CarListPage> {
       ),
     );
   }
-  //testo orfdinamento
+
+  // testo ordinamento
   String _sortLabel(_SortOrder s) {
     switch (s) {
       case _SortOrder.normal:
@@ -427,7 +424,8 @@ class _CarListPageState extends State<CarListPage> {
         return 'Prezzo Decrescente';
     }
   }
- //icona ordinamento
+
+  // icona ordinamento
   IconData _sortIcon(_SortOrder s) {
     switch (s) {
       case _SortOrder.normal:
@@ -442,7 +440,7 @@ class _CarListPageState extends State<CarListPage> {
 
 enum _SortOrder { normal, priceAsc, priceDesc }
 
-//card singola auto
+// card singola auto
 class _CarCard extends StatefulWidget {
   final Car car;
   final VoidCallback onTap;
@@ -583,7 +581,7 @@ class _CarCardState extends State<_CarCard> {
   }
 }
 
-//frosted glass helper
+// frosted glass helper
 class _Frosted extends StatelessWidget {
   final Widget child;
   final double borderRadius;
@@ -616,7 +614,7 @@ class _Frosted extends StatelessWidget {
   }
 }
 
-//GradientText per AppBar
+// GradientText per AppBar
 class _GradientText extends StatelessWidget {
   final String text;
   final TextStyle style;

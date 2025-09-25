@@ -5,7 +5,7 @@ Tecnologie principali: **Flutter**, **Google Maps**, **Geolocator**, **Video Pla
 
 # **API & Sensori**
 Nell'app CloperCar abbiamo deciso di utilizzare 
-2 API e 2 Sensori
+3 API e 2 Sensori
 # **Sensori:**
 Accellerometro:
 inclina le card della pagina 'in arrivo' in base al movimento del telefono
@@ -16,6 +16,8 @@ Google Maps API:
 ci permette di usare le mappe gi google
 Rates API:
 API esterna pubblica raggiunta tramite richiesta HTTP, recupera i tassi di cambio per modificare i prezzi in altre valute
+News API:
+API esterne pubbliche basate su feed RSS/Atom di siti automobilistici, permettono di recuperare notizie di automobili aggiornate dai maggiori giornali nazionali
 
 ## Requisiti
 

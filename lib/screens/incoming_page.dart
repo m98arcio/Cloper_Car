@@ -14,6 +14,34 @@ import '../models/car.dart';
 import '../models/dealer_point.dart';
 import '../services/local_catalog.dart';
 
+/* ====== Helper di navigazione per evitare duplicati ====== */
+
+bool _popUntilName(BuildContext context, String name) {
+  var found = false;
+  Navigator.popUntil(context, (route) {
+    if (route.settings.name == name) found = true;
+    return found || route.isFirst;
+  });
+  return found;
+}
+
+void _navigateUnique(
+  BuildContext context, {
+  required String name,
+  required WidgetBuilder builder,
+}) {
+  final exists = _popUntilName(context, name);
+  if (!exists) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        settings: RouteSettings(name: name),
+        builder: builder,
+      ),
+    );
+  }
+}
+
 class IncomingPage extends StatefulWidget {
   const IncomingPage({
     super.key,
@@ -313,15 +341,14 @@ class _IncomingPageState extends State<IncomingPage>
         rates: null,
         preferredCurrency: 'EUR',
         onProfileTap: () {
-          Navigator.push(
+          _navigateUnique(
             context,
-            MaterialPageRoute(
-              builder: (_) => ProfilePage(
-                initialCurrency: 'EUR',
-                onChanged: (_) {},
-                cars: source,
-                rates: null,
-              ),
+            name: '/profile',
+            builder: (_) => ProfilePage(
+              initialCurrency: 'EUR',
+              onChanged: (_) {},
+              cars: source,
+              rates: null,
             ),
           );
         },

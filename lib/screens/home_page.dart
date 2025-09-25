@@ -21,6 +21,34 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
+/* ====== Helper di navigazione per evitare duplicati ====== */
+
+bool _popUntilName(BuildContext context, String name) {
+  var found = false;
+  Navigator.popUntil(context, (route) {
+    if (route.settings.name == name) found = true;
+    return found || route.isFirst;
+  });
+  return found;
+}
+
+void _navigateUnique(
+  BuildContext context, {
+  required String name,
+  required WidgetBuilder builder,
+}) {
+  final exists = _popUntilName(context, name);
+  if (!exists) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        settings: RouteSettings(name: name),
+        builder: builder,
+      ),
+    );
+  }
+}
+
 class _HomePageState extends State<HomePage> {
   static const _prefKeyCurrency = 'preferred_currency';
   String _preferred = 'EUR';
@@ -102,6 +130,7 @@ class _HomePageState extends State<HomePage> {
     final changed = await Navigator.push<bool>(
       context,
       MaterialPageRoute(
+        settings: const RouteSettings(name: '/profile'),
         builder: (_) => ProfilePage(
           initialCurrency: _preferred,
           onChanged: (c) async {
@@ -163,7 +192,6 @@ class _HomePageState extends State<HomePage> {
       'Lamborghini': 'assets/loghi/lamborghini_logo.png',
     };
 
-    // Ordine fisso dei primi 4 brand
     final fixedBrands = ['Ferrari', 'Lotus', 'Lamborghini'];
     final displayedBrands =
         fixedBrands.where((b) => allBrands.contains(b)).toList();
@@ -171,7 +199,7 @@ class _HomePageState extends State<HomePage> {
     return ListView(
       padding: const EdgeInsets.only(bottom: 16),
       children: [
-        // Hero con titolo incavato
+        // Hero
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
           child: ClipRRect(
@@ -237,14 +265,13 @@ class _HomePageState extends State<HomePage> {
               ),
               TextButton.icon(
                 onPressed: () {
-                  Navigator.push(
+                  _navigateUnique(
                     context,
-                    MaterialPageRoute(
-                      builder: (_) => BrandCatalogPage(
-                        cars: _cars,
-                        rates: _rates,
-                        preferredCurrency: _preferred,
-                      ),
+                    name: '/catalog',
+                    builder: (_) => BrandCatalogPage(
+                      cars: _cars,
+                      rates: _rates,
+                      preferredCurrency: _preferred,
                     ),
                   );
                 },
@@ -259,7 +286,7 @@ class _HomePageState extends State<HomePage> {
           child: ListView.separated(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             scrollDirection: Axis.horizontal,
-            itemCount: displayedBrands.length + 1, // 4 brand + SeeAll
+            itemCount: displayedBrands.length + 1,
             separatorBuilder: (_, __) => const SizedBox(width: 12),
             itemBuilder: (_, i) {
               if (i < displayedBrands.length) {
@@ -269,20 +296,18 @@ class _HomePageState extends State<HomePage> {
                   brand: b,
                   imagePath: logo,
                   onTap: () {
-                    final filtered = _cars
-                        .where(
-                          (c) => c.brand.toLowerCase() == b.toLowerCase(),
-                        )
-                        .toList();
-                    Navigator.push(
+                    // Route nominata univoca per brand (utile per back/popup)
+                    _navigateUnique(
                       context,
-                      MaterialPageRoute(
-                        builder: (_) => CarListPage(
-                          brand: b,
-                          cars: filtered,
-                          rates: _rates,
-                          preferredCurrency: _preferred,
-                        ),
+                      name: '/carlist/$b',
+                      builder: (_) => CarListPage(
+                        brand: b,
+                        cars: _cars
+                            .where((c) =>
+                                c.brand.toLowerCase() == b.toLowerCase())
+                            .toList(),
+                        rates: _rates,
+                        preferredCurrency: _preferred,
                       ),
                     );
                   },
@@ -290,14 +315,13 @@ class _HomePageState extends State<HomePage> {
               } else {
                 return _SeeAllChip(
                   onTap: () {
-                    Navigator.push(
+                    _navigateUnique(
                       context,
-                      MaterialPageRoute(
-                        builder: (_) => BrandCatalogPage(
-                          cars: _cars,
-                          rates: _rates,
-                          preferredCurrency: _preferred,
-                        ),
+                      name: '/catalog',
+                      builder: (_) => BrandCatalogPage(
+                        cars: _cars,
+                        rates: _rates,
+                        preferredCurrency: _preferred,
                       ),
                     );
                   },
@@ -398,7 +422,7 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-//Titolo AppBar con gradiente
+/* ---------- Titolo AppBar con gradiente ---------- */
 
 class _AppBarBrandTitle extends StatelessWidget {
   const _AppBarBrandTitle();
@@ -411,7 +435,7 @@ class _AppBarBrandTitle extends StatelessWidget {
         fontSize: 28,
         fontWeight: FontWeight.w900,
         letterSpacing: 1.1,
-        color: Colors.white, // sostituito dal gradient
+        color: Colors.white,
       ),
       colors: [Colors.orangeAccent, Colors.deepOrange],
     );
@@ -438,7 +462,7 @@ class _GradientText extends StatelessWidget {
   }
 }
 
-//Chip brand
+/* ---------- Chip brand ---------- */
 
 class _BrandChip extends StatefulWidget {
   final String brand;

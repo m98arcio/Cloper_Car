@@ -16,6 +16,7 @@ class DealerPoint {
     required this.latLng,
   });
 
+  // crea un DealerPoint da JSON (dati presi dal file dealers.json)
   factory DealerPoint.fromJson(Map<String, dynamic> j) => DealerPoint(
         id: j['id'] as String,
         name: j['name'] as String,
@@ -28,12 +29,11 @@ class DealerPoint {
 }
 
 class DealersRepo {
-  static List<DealerPoint>? _cache;
+  static List<DealerPoint>? _cache; // cache per evitare ricariche
 
-  /// Carica tutti i dealer da assets/dealers.json (una volta sola, poi cache).
+  // Carica i dealer dal file JSON (solo la prima volta, poi usa la cache)
   static Future<List<DealerPoint>> load() async {
     if (_cache != null) return _cache!;
-    // 👇 PATH CORRETTO in base al tuo pubspec.yaml
     final txt = await rootBundle.loadString('assets/dealers.json');
     final raw = json.decode(txt) as List<dynamic>;
     _cache = raw
@@ -42,20 +42,23 @@ class DealersRepo {
     return _cache!;
   }
 
-  /// Dealer più vicino alla posizione [user].
-  /// Se [allowedDealerIds] è non vuoto, limita la ricerca a quell'elenco.
+  // Trova il dealer più vicino a una posizione utente.
+  // Se passo degli ID, considera solo quelli.
   static Future<DealerPoint> nearestTo(
     LatLng user, {
     List<String>? allowedDealerIds,
   }) async {
     final all = await load();
+
+    // filtra per allowedDealerIds (se forniti)
     final pool = (allowedDealerIds == null || allowedDealerIds.isEmpty)
         ? all
         : all.where((d) => allowedDealerIds.contains(d.id)).toList();
 
-    // safety: se il filtro svuota l’elenco, ricadi su tutti
+    // se il filtro è vuoto, usa comunque tutti
     final list = pool.isEmpty ? all : pool;
 
+    // calcola il più vicino
     DealerPoint best = list.first;
     double bestDist = _haversine(user, best.latLng);
     for (final d in list.skip(1)) {
@@ -68,9 +71,9 @@ class DealersRepo {
     return best;
   }
 
-  // Distanza Haversine in metri
+  // formula di Haversine -> distanza in metri tra due coordinate
   static double _haversine(LatLng a, LatLng b) {
-    const R = 6371e3; // metri
+    const R = 6371e3; // raggio Terra in metri
     final dLat = _toRad(b.latitude - a.latitude);
     final dLon = _toRad(b.longitude - a.longitude);
     final lat1 = _toRad(a.latitude);
@@ -82,5 +85,6 @@ class DealersRepo {
     return 2 * R * math.asin(math.min(1, math.sqrt(h)));
   }
 
+  // converte gradi in radianti
   static double _toRad(double deg) => deg * math.pi / 180.0;
 }

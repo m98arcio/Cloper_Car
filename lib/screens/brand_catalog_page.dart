@@ -41,18 +41,20 @@ class _BrandCatalogPageState extends State<BrandCatalogPage> {
   Future<void> _bootstrapRatesIfNeeded() async {
     if (_rates != null) return;
     try {
-      final r = await RatesApi().fetchRates(); //rischiama API esterna
+      final r = await RatesApi().fetchRates(); // richiama API esterna
       if (!mounted) return;
       setState(() => _rates = r);
     } catch (_) {
-      //Se fallisce usa solo EUR
+      // Se fallisce usa solo EUR
     }
   }
-  // apre pagina profilo
+
+  // apre pagina profilo (aggiunto settings name)
   Future<void> _openProfile() async {
     await Navigator.push(
       context,
       MaterialPageRoute(
+        settings: const RouteSettings(name: '/profile'),
         builder: (_) => ProfilePage(
           initialCurrency: CurrencyService.preferred,
           onChanged: (_) {},
@@ -114,20 +116,25 @@ class _BrandCatalogPageState extends State<BrandCatalogPage> {
                   cover: cover,
                   logo: logo,
                   onTap: () {
-                    //apre lista auto di quel marchio
+                    // apre lista auto di quel marchio (aggiunto settings name)
                     final filtered = availableCars
-                        .where(
-                            (c) => c.brand.toLowerCase() == brand.toLowerCase())
+                        .where((c) =>
+                            c.brand.toLowerCase() == brand.toLowerCase())
                         .toList();
+
+                    // route name stabile per singolo brand
+                    final routeName =
+                        '/catalog/${brand.toLowerCase().replaceAll(' ', '-')}';
+
                     Navigator.push(
                       context,
                       MaterialPageRoute(
+                        settings: RouteSettings(name: routeName),
                         builder: (_) => CarListPage(
                           brand: brand,
                           cars: filtered,
                           rates: _rates,
-                          preferredCurrency:
-                              _preferredCurrency,
+                          preferredCurrency: _preferredCurrency,
                           allCars: widget.cars,
                         ),
                       ),
@@ -308,10 +315,9 @@ class _GradientText extends StatelessWidget {
 
   const _GradientText(
     this.text, {
-    required this.style, 
-    required this.colors
-    }
-  );
+    required this.style,
+    required this.colors,
+  });
 
   @override
   Widget build(BuildContext context) {
