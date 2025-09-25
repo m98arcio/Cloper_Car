@@ -84,7 +84,7 @@ class AppBottomBar extends StatelessWidget {
             name: '/incoming',
             builder: (_) => IncomingPage(
               cars: allCars ?? cars,
-              allCars: allCars ?? cars,
+              allCars: allCars,
             ),
           );
         } else if (i == 3) {

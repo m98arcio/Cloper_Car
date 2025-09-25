@@ -18,6 +18,7 @@ class CarDetailPage extends StatefulWidget {
   final Map<String, double>? rates;
   final String preferredCurrency;
   final List<Car> cars;
+  final List<Car>? allCars;
 
   const CarDetailPage({
     super.key,
@@ -25,6 +26,7 @@ class CarDetailPage extends StatefulWidget {
     this.rates,
     required this.preferredCurrency,
     required this.cars,
+    this.allCars,
   });
 
   @override
@@ -202,7 +204,7 @@ class _CarDetailPageState extends State<CarDetailPage> {
       bottomNavigationBar: AppBottomBar(
         currentIndex: 1,
         cars: widget.cars,
-        allCars: widget.cars,
+        allCars: widget.allCars,
         rates: widget.rates,
         preferredCurrency: currentCurrency,
         onProfileTap: _openProfile,
@@ -227,8 +229,9 @@ class _HeroGalleryState extends State<_HeroGallery> {
   int _i = 0;
   Timer? _timer;
 
-  List<String> get imgs =>
-      widget.images.isNotEmpty ? widget.images : ['assets/macchine/supercar.jpg'];
+  List<String> get imgs => widget.images.isNotEmpty
+      ? widget.images
+      : ['assets/macchine/supercar.jpg'];
 
   @override
   void initState() {
@@ -323,7 +326,8 @@ class _SegmentedPill extends StatelessWidget {
         children: [
           AnimatedAlign(
             duration: const Duration(milliseconds: 180),
-            alignment: index == 0 ? Alignment.centerLeft : Alignment.centerRight,
+            alignment:
+                index == 0 ? Alignment.centerLeft : Alignment.centerRight,
             child: Padding(
               padding: const EdgeInsets.all(4),
               child: Container(
@@ -401,7 +405,8 @@ class _DescriptionCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Descrizione', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800)),
+          const Text('Descrizione',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800)),
           const SizedBox(height: 8),
           Text(text, style: const TextStyle(fontSize: 16, height: 1.35)),
         ],
@@ -416,8 +421,11 @@ class _SpecsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String fmtCm(double? v) =>
-        v == null ? '—' : (v % 1 == 0 ? '${v.toStringAsFixed(0)} cm' : '${v.toStringAsFixed(1)} cm');
+    String fmtCm(double? v) => v == null
+        ? '—'
+        : (v % 1 == 0
+            ? '${v.toStringAsFixed(0)} cm'
+            : '${v.toStringAsFixed(1)} cm');
 
     MapEntry<String, String> kv(String k, String v) => MapEntry(k, v);
 
@@ -425,7 +433,9 @@ class _SpecsCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(car.model.toUpperCase(), style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w900)),
+          Text(car.model.toUpperCase(),
+              style:
+                  const TextStyle(fontSize: 22, fontWeight: FontWeight.w900)),
           const SizedBox(height: 6),
           Row(
             children: const [
@@ -466,7 +476,8 @@ class _SpecGroup extends StatelessWidget {
   final String title;
   final IconData icon;
   final List<MapEntry<String, String>> rows;
-  const _SpecGroup({required this.title, required this.icon, required this.rows});
+  const _SpecGroup(
+      {required this.title, required this.icon, required this.rows});
 
   @override
   Widget build(BuildContext context) {
@@ -476,7 +487,9 @@ class _SpecGroup extends StatelessWidget {
         Row(children: [
           Icon(icon, size: 18),
           const SizedBox(width: 8),
-          Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),
+          Text(title,
+              style:
+                  const TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),
         ]),
         const SizedBox(height: 8),
         ...rows.map(
@@ -484,9 +497,14 @@ class _SpecGroup extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: 3),
             child: Row(
               children: [
-                Expanded(child: Text('${e.key}:', style: const TextStyle(fontWeight: FontWeight.w700))),
+                Expanded(
+                    child: Text('${e.key}:',
+                        style: const TextStyle(fontWeight: FontWeight.w700))),
                 const SizedBox(width: 6),
-                Expanded(child: Text(e.value, textAlign: TextAlign.right, style: const TextStyle(color: Colors.white70))),
+                Expanded(
+                    child: Text(e.value,
+                        textAlign: TextAlign.right,
+                        style: const TextStyle(color: Colors.white70))),
               ],
             ),
           ),
@@ -521,7 +539,7 @@ class _PriceCard extends StatelessWidget {
         curve: Curves.easeOutCubic,
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: const Color(0xFFEFEFEF).withValues(alpha:0.07),
+          color: const Color(0xFFEFEFEF).withValues(alpha: 0.07),
           borderRadius: BorderRadius.circular(22),
           boxShadow: const [BoxShadow(blurRadius: 14, color: Colors.black38)],
         ),
@@ -532,7 +550,9 @@ class _PriceCard extends StatelessWidget {
               children: [
                 const Icon(Icons.sell_outlined),
                 const SizedBox(width: 8),
-                const Text('Prezzo', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
+                const Text('Prezzo',
+                    style:
+                        TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
                 const Spacer(),
                 AnimatedRotation(
                   duration: const Duration(milliseconds: 200),
@@ -548,7 +568,9 @@ class _PriceCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(mainText, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w900)),
+                    Text(mainText,
+                        style: const TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.w900)),
                     for (final line in extras) ...[
                       const SizedBox(height: 6),
                       Text(line),
@@ -556,7 +578,8 @@ class _PriceCard extends StatelessWidget {
                   ],
                 ),
               ),
-              crossFadeState: open ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+              crossFadeState:
+                  open ? CrossFadeState.showSecond : CrossFadeState.showFirst,
               duration: const Duration(milliseconds: 200),
             ),
           ],
@@ -618,7 +641,10 @@ class _MapCardState extends State<_MapCard> {
     final allowedIds = widget.car.availableAt;
     List<DealerPoint> visible;
     if (allowedIds.isNotEmpty) {
-      visible = [for (final id in allowedIds) if (byId.containsKey(id)) byId[id]!];
+      visible = [
+        for (final id in allowedIds)
+          if (byId.containsKey(id)) byId[id]!
+      ];
       if (visible.isEmpty) {
         setState(() {
           _markers = const <Marker>{};
@@ -665,7 +691,8 @@ class _MapCardState extends State<_MapCard> {
 
     if (!mounted) return;
 
-    final shouldAnimate = _controller != null && _centeredDealerId != nearest.id;
+    final shouldAnimate =
+        _controller != null && _centeredDealerId != nearest.id;
 
     setState(() {
       _markers = markers;
@@ -688,7 +715,7 @@ class _MapCardState extends State<_MapCard> {
       return Container(
         height: 220,
         decoration: BoxDecoration(
-          color: const Color(0xFFEFEFEF).withValues(alpha:0.07),
+          color: const Color(0xFFEFEFEF).withValues(alpha: 0.07),
           borderRadius: BorderRadius.circular(22),
         ),
         child: const Center(child: CircularProgressIndicator()),
@@ -716,7 +743,7 @@ class _MapCardState extends State<_MapCard> {
     return Container(
       height: 220,
       decoration: BoxDecoration(
-        color: const Color(0xFFEFEFEF).withValues(alpha:0.07),
+        color: const Color(0xFFEFEFEF).withValues(alpha: 0.07),
         borderRadius: BorderRadius.circular(22),
       ),
       child: Center(

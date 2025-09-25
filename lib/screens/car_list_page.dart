@@ -387,6 +387,7 @@ class _CarListPageState extends State<CarListPage> {
                                 rates: widget.rates,
                                 preferredCurrency: currentCurrency,
                                 cars: sorted,
+                                allCars: widget.allCars,
                               ),
                             ),
                           );
