@@ -1,9 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Nome app e API key Google Maps -->
-    <string name="app_name">Concessionario SuperCar</string>
-    <string name="google_maps_api_key">AIzaSyAmWG5Uk1bhguysjOa-OI7jD1aRCyLdHws</string>
-
     <!-- Tema applicato alla finestra Android mentre il processo si avvia
          quando la modalità scura del sistema è disattivata -->
     <style name="LaunchTheme" parent="@android:style/Theme.Light.NoTitleBar">
